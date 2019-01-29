@@ -1,0 +1,25 @@
+{
+  "name": "ballcaststats",
+  "reason": {
+    "react-jsx": 2
+  },
+  "version": "0.1.0",
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
+  "package-specs": {
+    "module": "commonjs"
+  },
+  "suffix": ".bs.js",
+  "bs-dependencies": [
+    "reason-react",
+    "reductive",
+    "reductive-dev-tools"
+  ],
+  "warnings": {
+    "error" : "+101"
+  },
+  "refmt": 3,
+  "bsc-flags": ["-bs-g"]
+}
