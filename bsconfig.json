@@ -13,13 +13,18 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
+    "bs-css",
     "reason-react",
     "reductive",
-    "reductive-dev-tools"
+    "reductive-dev-tools",
+    "@jsiebern/bs-material-ui"
   ],
   "warnings": {
-    "error" : "+101"
+    
   },
   "refmt": 3,
-  "bsc-flags": ["-bs-g"]
+  "bsc-flags": ["-bs-g"],
+  "ppx-flags": [
+    "./node_modules/@jsiebern/bs-material-ui-ppx/ppx"
+  ]
 }

@@ -1,8 +1,11 @@
 import webpack from 'webpack'
 import path from 'path'
+import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HTMLWebpackPlugin from 'html-webpack-plugin'
-import { getIfUtils } from 'webpack-config-utils'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import { WebpackBundleSizeAnalyzerPlugin } from 'webpack-bundle-size-analyzer'
+import { getIfUtils, removeEmpty } from 'webpack-config-utils'
 
 const config = (env, ifProduction, ifNotProduction) => ({
   entry: {
@@ -17,7 +20,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	},
 
 	mode: ifProduction('production', 'development'),
-	devtool: 'eval',
+	devtool: ifProduction('source-map', 'eval'),
 	devServer: {
 		port: 8080,
 		historyApiFallback: true
@@ -33,22 +36,20 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	},
 	
 	module: {
-		rules: [
-			{
-				exclude: /node_modules/, // don't transpile node_modules
-				test: /\.jsx$/,          // do transpile any files ending in .jsx
-				use: {
-					loader: 'babel-loader',
-					options: {
-						plugins: ['@babel/plugin-transform-react-jsx']
-					}
+		rules: [{
+			exclude: /node_modules/, // don't transpile node_modules
+			test: /\.jsx$/,          // do transpile any files ending in .jsx
+			use: {
+				loader: 'babel-loader',
+				options: {
+					plugins: ['@babel/plugin-transform-react-jsx']
 				}
-			},
-			{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
-			{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, loader: 'file-loader?name=assets/[name].[ext]'}
-		]
+			}
+		},
+		{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
+		{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, loader: 'file-loader?name=assets/[name].[ext]'}]
 	},
-	plugins: [
+	plugins: removeEmpty([
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(env.production ? 'production' : 'development'),
 			ENVIRONMENT: JSON.stringify({
@@ -69,10 +70,32 @@ const config = (env, ifProduction, ifNotProduction) => ({
 			// amr codecs, lazy-loaded for arm playback used in gt-card-files
 			{ from: './assets/favicon', to: './' },
 			// copy version file to deployment root
-			
 		]),
 
-	]
+    new WebpackBundleSizeAnalyzerPlugin('./bundle-report.log'),
+
+    env.analyze ? new BundleAnalyzerPlugin() : undefined
+	]),
+
+	// Webpack 4 has default optimization plugin entry,
+	// modify settings here
+	optimization: {
+    minimizer: [
+			new TerserPlugin({
+				cache: true,
+				parallel: true,
+				// sourceMap: true, // XXX: Enable me if needed
+				terserOptions: {
+					safari10: true,
+					mangle: true,
+					output: {
+						comments: false,
+						beautify: false
+					},
+				}
+			})
+		]
+	}
 })
 
 const envextract = config => env => {
