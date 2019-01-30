@@ -4,7 +4,6 @@ import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HTMLWebpackPlugin from 'html-webpack-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-import { WebpackBundleSizeAnalyzerPlugin } from 'webpack-bundle-size-analyzer'
 import { getIfUtils, removeEmpty } from 'webpack-config-utils'
 
 const config = (env, ifProduction, ifNotProduction) => ({
@@ -72,9 +71,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 			// copy version file to deployment root
 		]),
 
-    new WebpackBundleSizeAnalyzerPlugin('./bundle-report.log'),
-
-    env.analyze ? new BundleAnalyzerPlugin() : undefined
+    	env.analyze ? new BundleAnalyzerPlugin() : undefined
 	]),
 
 	// Webpack 4 has default optimization plugin entry,
