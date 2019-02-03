@@ -1,0 +1,57 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "ballcaststats-20190202014004-authRole",
+			"UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190202014004-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190202014004-authRole",
+			"Region": "ap-southeast-1",
+			"DeploymentBucketName": "ballcaststats-20190202014004-deployment",
+			"UnauthRoleName": "ballcaststats-20190202014004-unauthRole",
+			"StackName": "ballcaststats-20190202014004",
+			"StackId": "arn:aws:cloudformation:ap-southeast-1:229321913319:stack/ballcaststats-20190202014004/68c20f80-2648-11e9-aa35-0285c5482420"
+		}
+	},
+	"auth": {
+		"cognito09433be8": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190202014004-deployment/amplify-cfn-templates/auth/cognito09433be8-cloudformation-template.yml",
+				"logicalId": "authcognito09433be8"
+			},
+			"lastPushTimeStamp": "2019-02-03T12:01:24.768Z",
+			"output": {
+				"AppClientSecret": "54s5aeg2j5qe2op7koe5pgjfj4peacev4cpjjaebjmdfr0lsqqd",
+				"UserPoolId": "ap-southeast-1_6GGNF2MOt",
+				"AppClientIDWeb": "2un6s78arb5ogfl9s4ghrdomt9",
+				"AppClientID": "14vtlj2nicbbmeuljijbv4aboo",
+				"IdentityPoolId": "ap-southeast-1:26d8a14f-59e0-4af8-8fbe-ac53434c9d99",
+				"IdentityPoolName": "cognito09433be8_identitypool_09433be8",
+				"UserPoolName": "cognito09433be8_userpool_09433be8"
+			},
+			"lastPushDirHash": "thLdx2FU0nNT37Zmj6mhqygkBS0="
+		}
+	},
+	"function": {
+		"helloworld": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true,
+			"dependsOn": [],
+			"lastBuildTimeStamp": "2019-02-03T11:59:50.104Z",
+			"lastPackageTimeStamp": "2019-02-03T11:59:50.154Z",
+			"distZipFilename": "helloworld-1549195190-latest-build.zip",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190202014004-deployment/amplify-cfn-templates/function/helloworld-cloudformation-template.json",
+				"logicalId": "functionhelloworld"
+			},
+			"lastPushTimeStamp": "2019-02-03T12:01:24.770Z",
+			"output": {
+				"Region": "ap-southeast-1",
+				"Arn": "arn:aws:lambda:ap-southeast-1:229321913319:function:helloworld",
+				"Name": "helloworld"
+			},
+			"lastPushDirHash": "P3I0tiOANlwjJFR5Ab36T5DsUwk="
+		}
+	}
+}

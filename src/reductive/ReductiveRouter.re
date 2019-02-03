@@ -1,3 +1,5 @@
+open ReductiveDevTools.Utilities;
+
 type withRouter('state) = {
   route: ReasonReact.Router.url,
   state: 'state
@@ -13,9 +15,6 @@ let emptyRoute: ReasonReact.Router.url = {
   hash: "",
   search: ""
 };
-
-open ReductiveDevTools.Utilities;
-
 let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
   let routerReducer = (state, action) => 
     switch(action){
@@ -39,3 +38,4 @@ let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) 
   let _watcherId = ReasonReact.Router.watchUrl(url => Reductive.Store.dispatch(store, `RouterLocationChanged(url |. tagRecord([|"path", "hash", "search"|]))));
   store
 };
+

@@ -35,6 +35,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	},
 	
 	module: {
+		// noParse: [/aws/],
 		rules: [{
 			exclude: /node_modules/, // don't transpile node_modules
 			test: /\.jsx$/,          // do transpile any files ending in .jsx
@@ -45,6 +46,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 				}
 			}
 		},
+		{ test: /\.js$/, exclude: /node_modules/ },
 		{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
 		{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, loader: 'file-loader?name=assets/[name].[ext]'}]
 	},

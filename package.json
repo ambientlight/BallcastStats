@@ -13,6 +13,7 @@
   ],
   "author": "Ballcast",
   "devDependencies": {
+    "@aws-amplify/cli": "^0.1.44",
     "@babel/core": "^7.2.2",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.3.1",
@@ -40,6 +41,8 @@
     "@jsiebern/bs-material-ui": "^1.0.0",
     "@material-ui/core": "^3.8.1",
     "@material-ui/icons": "^3.0.1",
+    "aws-amplify": "^1.1.19",
+    "aws-sdk": "^2.395.0",
     "bs-css": "git+https://github.com/ambientlight/bs-css.git",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
