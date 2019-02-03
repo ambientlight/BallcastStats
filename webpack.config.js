@@ -48,7 +48,13 @@ const config = (env, ifProduction, ifNotProduction) => ({
 		},
 		{ test: /\.js$/, exclude: /node_modules/ },
 		{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
-		{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, loader: 'file-loader?name=assets/[name].[ext]'}]
+		{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, use: { 
+			loader: 'url-loader', 
+			options: {
+				limit: 8192,
+				fallback: 'file-loader'
+			}
+		}}]
 	},
 	plugins: removeEmpty([
 		new webpack.DefinePlugin({
@@ -79,7 +85,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	// Webpack 4 has default optimization plugin entry,
 	// modify settings here
 	optimization: {
-    minimizer: [
+		minimizer: [
 			new TerserPlugin({
 				cache: true,
 				parallel: true,

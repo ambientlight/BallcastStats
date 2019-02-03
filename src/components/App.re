@@ -1,18 +1,10 @@
+GlobalCss.inject();
+
 module RouterProvider = {
   let make = Reductive.Lense.createMake(
     ~lense=(state: ReductiveRouter.withRouter(Store.State.t)) => state.route, 
     Store.store);
 };
-
-module Landing = {
-  let make = (~title, _children) => {
-    ...ReasonReact.statelessComponent("Landing"),
-    render: _self => 
-      <MaterialUi.Typography variant=`Display1>
-        (ReasonReact.string(title))
-      </MaterialUi.Typography>
-  };
-}
 
 /** Base routing login goes here */
 module Shell = {
@@ -29,7 +21,7 @@ module Shell = {
 module Root = {
   let component = ReasonReact.statelessComponent("Root");
   let make = (~title: string, _children) => {
-    ...component,
+    ...ReasonReact.statelessComponent("Root"),
     render: _self => 
       <RouterProvider component=Shell.make(~title)/>
   };

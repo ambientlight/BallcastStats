@@ -8,7 +8,7 @@ const ReasonRoot = ReasonAppModule[ReasonAppModule.length - 1]
 
 // Reason app gets wrapped for the sake of hot reloading
 const Root = () => (
-    <ReasonRoot title="BallcastStats"></ReasonRoot>
+    <ReasonRoot title="Ballcast Stats"></ReasonRoot>
 )
 
 export default hot(module)(Root)
