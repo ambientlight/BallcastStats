@@ -145,3 +145,16 @@ module Jost {
     ()
   );
 };
+
+module Gobold {
+  let regular = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Regular.otf')"])],
+    ~fontStyle=normal,
+    ~fontWeight=`num(500),
+    ()
+  );
+};  
+
+let jost = Jost.medium;
+let gobold = Gobold.regular;

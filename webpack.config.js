@@ -48,7 +48,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 		},
 		{ test: /\.js$/, exclude: /node_modules/ },
 		{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
-		{ test: /\.(woff|woff2|eot|ttf|svg|png)$/, use: { 
+		{ test: /\.(woff|woff2|eot|ttf|otf|svg|png)$/, use: { 
 			loader: 'url-loader', 
 			options: {
 				limit: 8192,
