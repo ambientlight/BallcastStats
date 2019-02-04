@@ -4,7 +4,7 @@ module Core {
   let make = _children => {
     ...ReasonReact.statelessComponent("Logo"),
     render: _self => 
-      <svg width="41px" height="42px" viewBox="0 0 41 42" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <svg width="41px" height="42px" viewBox="0 0 41 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
         <title>{ReasonReact.string("Ballcast Logo")}</title>
         <defs>
           <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
@@ -46,7 +46,7 @@ module Core {
   };
 };
 
-let make = LogoCore.make;
+let make = Core.make;
 
 module WithCaption {
   let captionStyle = style([

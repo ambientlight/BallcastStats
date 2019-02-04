@@ -147,11 +147,67 @@ module Jost {
 };
 
 module Gobold {
+  let light = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Light.otf')"])],
+    ~fontStyle=normal,
+    ~fontWeight=`num(200),
+    ()
+  );
+
+  let lightItalic = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Light_Italic.otf')"])],
+    ~fontStyle=italic,
+    ~fontWeight=`num(200),
+    ()
+  );
+
+  let thin = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Thin.otf')"])],
+    ~fontStyle=normal,
+    ~fontWeight=`num(300),
+    ()
+  );
+
+  let thinItalic = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Thin_Italic.otf')"])],
+    ~fontStyle=italic,
+    ~fontWeight=`num(300),
+    ()
+  );
+
   let regular = fontFace(
     ~fontFamily="Gobold",
     ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Regular.otf')"])],
     ~fontStyle=normal,
     ~fontWeight=`num(500),
+    ()
+  );
+
+  let regularItalic = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Regular_Italic.otf')"])],
+    ~fontStyle=italic,
+    ~fontWeight=`num(500),
+    ()
+  );
+
+  let bold = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Bold.otf')"])],
+    ~fontStyle=normal,
+    ~fontWeight=`num(800),
+    ()
+  );
+
+  let boldItalic = fontFace(
+    ~fontFamily="Gobold",
+    ~src=[`url([%bs.raw "require('assets/fonts/Gobold/Gobold_Bold_Italic.otf')"])],
+    ~fontStyle=italic,
+    ~fontWeight=`num(800),
     ()
   );
 };  

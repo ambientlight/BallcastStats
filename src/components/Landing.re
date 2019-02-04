@@ -1,18 +1,32 @@
-open MaterialUi;
+open List;
 open Css;
 module Styles = LandingStyles;
-module Classes = Typography.Classes;
 
 module NavHeader {
-  let style = style([
-    padding2(~v=px(26), ~h=px(54))
+  let navStyle = style([
+    padding2(~v=px(26), ~h=px(54)),
+
+    display(`flex)
   ]);
 
   let make = (~title, _children) => {
     ...ReasonReact.statelessComponent("NavHeader"),
     render: _self =>
-      <div className=style>
+      <div className=navStyle>
         <Logo.WithCaption caption=title/>
+        <FlexOne/>
+        <Button.Blended>
+          {"About Us"}
+        </Button.Blended>
+        <Button.Blended>
+          {"Pricing"}
+        </Button.Blended>
+        <Button.Blended>
+          {"Sign Up"}
+        </Button.Blended>
+        <Button.Blended>
+          {"Sign In"}
+        </Button.Blended>
       </div>
   }
 };
@@ -22,9 +36,5 @@ let make = (~title, _children) => {
   render: _self => 
     <div className=Styles.root>
       <NavHeader title/>
-
-      /* <Typography variant=`Display1 classes=[Classes.Root(Styles.typography)]>
-        (ReasonReact.string(""))
-      </Typography> */
     </div>
 };
