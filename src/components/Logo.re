@@ -64,7 +64,7 @@ module WithCaption {
     render: _self => 
       <div className=style([display(`flex), alignItems(center)])>
         <Core/>
-        <span className=merge([captionStyle, Media.Classes.atMostPhone])>
+        <span className=merge([captionStyle, Media.Classes.atLeastTablet])>
           {ReasonReact.string(caption)}
         </span>
       </div>

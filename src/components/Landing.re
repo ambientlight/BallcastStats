@@ -4,10 +4,14 @@ module Styles = LandingStyles;
 
 module NavHeader {
   let navStyle = style([
-    padding2(~v=px(26), ~h=px(54)),
     display(`flex),
     selector("&>button", [
       margin2(~v=px(0), ~h=px(12))
+    ]),
+
+    padding2(~v=px(16), ~h=px(24)),
+    Media.atLeast(Media.Breakpoint.Laptop, [
+      padding2(~v=px(26), ~h=px(54)),  
     ])
   ]);
 
