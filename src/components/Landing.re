@@ -1,40 +1,17 @@
-open List;
 open Css;
-module Styles = LandingStyles;
 
-module NavHeader {
-  let navStyle = style([
-    display(`flex),
-    selector("&>button", [
-      margin2(~v=px(0), ~h=px(12))
-    ]),
+module Styles {
+  let root = style([
+    padding(px(0)),
+    backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"])),
 
-    padding2(~v=px(16), ~h=px(24)),
-    Media.atLeast(Media.Breakpoint.Laptop, [
-      padding2(~v=px(26), ~h=px(54)),  
+    display(grid),
+    gridTemplateRows([`auto, `minMax(`zero, `fr(1.0))]),
+    gridTemplateColumns([`percent(45.0), `percent(55.0)]),
+    Media.atMost(Media.Breakpoint.Tablet, [
+      gridTemplateColumns([`fr(1.0)]),
     ])
   ]);
-
-  let make = (~title, _children) => {
-    ...ReasonReact.statelessComponent("NavHeader"),
-    render: _self =>
-      <div className=navStyle>
-        <Logo.WithCaption caption=title/>
-        <FlexOne/>
-        <Button.Blended className=Media.Classes.atLeastTablet>
-          {"About Us"}
-        </Button.Blended>
-        <Button.Blended>
-          {"Pricing"}
-        </Button.Blended>
-        <Button.Blended className=Media.Classes.atLeastTablet>
-          {"Sign Up"}
-        </Button.Blended>
-        <Button.Blended>
-          {"Sign In"}
-        </Button.Blended>
-      </div>
-  }
 };
 
 let make = (~title, _children) => {
@@ -42,5 +19,7 @@ let make = (~title, _children) => {
   render: _self => 
     <div className=Styles.root>
       <NavHeader title/>
+      <div className=style([height(`px(400)), backgroundColor(orange)])></div>
+      <div className=style([height(`px(400)), backgroundColor(purple)])></div>
     </div>
 };
