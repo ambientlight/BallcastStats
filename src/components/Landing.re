@@ -5,8 +5,10 @@ module Styles = LandingStyles;
 module NavHeader {
   let navStyle = style([
     padding2(~v=px(26), ~h=px(54)),
-
-    display(`flex)
+    display(`flex),
+    selector("&>button", [
+      margin2(~v=px(0), ~h=px(12))
+    ])
   ]);
 
   let make = (~title, _children) => {
@@ -15,13 +17,13 @@ module NavHeader {
       <div className=navStyle>
         <Logo.WithCaption caption=title/>
         <FlexOne/>
-        <Button.Blended>
+        <Button.Blended className=Media.Classes.atLeastTablet>
           {"About Us"}
         </Button.Blended>
         <Button.Blended>
           {"Pricing"}
         </Button.Blended>
-        <Button.Blended>
+        <Button.Blended className=Media.Classes.atLeastTablet>
           {"Sign Up"}
         </Button.Blended>
         <Button.Blended>
