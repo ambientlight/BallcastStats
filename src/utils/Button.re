@@ -1,17 +1,13 @@
 open List;
 open MaterialUi.Button;
+open Operators;
 
-let withDef = Belt.Option.getWithDefault;
-module Blended {
-  let blendedStyle = Css.(
-    style([
-      color(white),
-      fontFamily(Fonts.gobold), 
-      fontWeight(`num(300)),
-      letterSpacing(pxFloat(0.64))
-    ]|> map(e => important(e)))
-  );
+module type StyleRef = {
+  let buttonStyle: string;
+  let raised: bool;
+};
 
+module Build = (Style: StyleRef) => {
   let make = (
     ~className: option(string)=?,
     ~color: option(color)=?,
@@ -64,10 +60,44 @@ module Blended {
     ...ReasonReact.statelessComponent("Button.Blended"),
     render: _self => 
       <MaterialUi.Button 
-        className=([blendedStyle, withDef(className, "")] |> List.fold_left((a, b) => a ++ " " ++ b, ""))
-        ?color ?component ?disabled ?disableFocusRipple ?disableRipple ?focusVisibleClassName ?fullWidth ?href ?mini ?size ?type_ ?variant ?action ?buttonRef ?centerRipple ?disableTouchRipple ?focusRipple ?onBlur ?onClick ?onFocus ?onFocusVisible ?onKeyDown ?onKeyUp ?onMouseUp ?onMouseDown ?onMouseLeave ?onTouchEnd ?onTouchMove ?onTouchStart ?role ?tabIndex ?_TouchRippleProps ?classes ?style
+        className=([Style.buttonStyle, className |? ""] >|< " ")
+        variant=?(Style.raised ? Some(`Contained) : variant)
+        ?color ?component ?disabled ?disableFocusRipple ?disableRipple ?focusVisibleClassName ?fullWidth ?href ?mini ?size ?type_ ?action ?buttonRef ?centerRipple ?disableTouchRipple ?focusRipple ?onBlur ?onClick ?onFocus ?onFocusVisible ?onKeyDown ?onKeyUp ?onMouseUp ?onMouseDown ?onMouseLeave ?onTouchEnd ?onTouchMove ?onTouchStart ?role ?tabIndex ?_TouchRippleProps ?classes ?style
       >
         {children}
       </MaterialUi.Button>
   }
 };
+
+module BlendedBase_ {
+  let buttonStyle = Css.(
+    style([
+      color(white),
+      fontFamily(Fonts.gobold), 
+      fontWeight(`num(300)),
+      letterSpacing(pxFloat(0.64)),
+
+      Media.atMost(Media.Breakpoint.Tablet, [
+        fontSize(`px(16)),
+        padding2(~v=px(24), ~h=px(20))
+      ] |> map(e => important(e)))
+    ]|> map(e => important(e)))
+  );
+
+  let raised = false;
+}
+
+module RaisedBase_ {
+  let buttonStyle = Css.(
+    style([
+      fontFamily(Fonts.jost), 
+      fontWeight(`num(500)),
+      backgroundColor(white)
+    ])
+  )
+
+  let raised = true;
+}
+
+module Blended = Build(BlendedBase_);
+module Raised = Build(RaisedBase_);

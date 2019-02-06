@@ -1,34 +1,47 @@
+open Operators;
 open Css;
 
-module Styles {
-  let root = style([
-    padding(px(0)),
-    backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"])),
-    
-    display(grid),
-    gridTemplateRows([`auto, `minMax(`zero, `fr(1.0))]),
-    gridTemplateColumns([`repeat(`num(12), `fr(1.0))]),
-    Media.atMost(Media.Breakpoint.Tablet, [
-      gridTemplateColumns([`repeat(`num(5), `fr(1.0))]),
-    ])
-  ]);
+module TopCTA {
+  module Styles = LandingStyles.TopCTA;
+  let make = (~className=?, _children) => {
+    ...ReasonReact.statelessComponent("TopCTA"),
+    render: _self => 
+      <div className=([Styles.root, className |? ""] >|< " ")>
+        <span className=Styles.title>
+          {ReasonReact.string("Enhance your")}
+          <br/>
+          {ReasonReact.string("football publications.")}
+        </span>
+        <span className=Styles.subtitle>
+          {ReasonReact.string("Quickly build stats and assemble formations.")}
+          <br/>
+          {ReasonReact.string("Embed it directly into your publication.")}
+        </span>
+        <div>
+          <Button.Raised className=Styles.ctaButton>{"Try now for free"}</Button.Raised>
+        </div>
+      </div>
+  }
 };
 
+module TopPreview {
+  module Styles = LandingStyles.TopPreview;
+  let make = (~className=?, _children) => {
+    ...ReasonReact.statelessComponent("TopPreview"),
+    render: _self =>
+      <div className=([Styles.root, className |? ""] >|< " ")>
+      </div>
+  }
+};
+
+module Styles = LandingStyles.Root;
 let make = (~title, _children) => {
   ...ReasonReact.statelessComponent("Landing"),
   render: _self => 
     <div className=Styles.root>
-      <NavHeader title/>
-      <div className=style([
-        height(`px(200)), 
-        backgroundColor(orange), 
-        unsafe("grid-column", "span 5")
-      ])></div>
-      <div className=style([
-        height(`px(200)), 
-        backgroundColor(purple),
-        unsafe("grid-column", "span 7")
-      ])></div>
+      <NavHeader title className=style([gridColumn(`num(1), `num(-1))])/>
+      <TopCTA className=style([gridColumnStart(`spanNum(5))])/>
+      <TopPreview className=style([gridColumnStart(`spanNum(7))])/>
     </div>
 
 };
