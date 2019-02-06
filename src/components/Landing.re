@@ -39,9 +39,8 @@ let make = (~title, _children) => {
   ...ReasonReact.statelessComponent("Landing"),
   render: _self => 
     <div className=Styles.root>
-      <NavHeader title className=style([gridColumn(`num(1), `num(-1))])/>
-      <TopCTA className=style([gridColumnStart(`spanNum(5))])/>
-      <TopPreview className=style([gridColumnStart(`spanNum(7))])/>
+      <NavHeader title className=Styles.navHeader/>
+      <TopCTA className=Styles.topCTA/>
+      <TopPreview className=Styles.topPreview/>
     </div>
-
 };

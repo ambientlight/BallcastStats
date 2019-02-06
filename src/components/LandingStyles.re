@@ -79,4 +79,9 @@ module Root {
   
     backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"]))
   ]);
+
+  /** grid item placements */
+  let navHeader = style([gridColumn(`num(1), `num(-1))]);
+  let topCTA = style([gridColumnStart(`spanNum(5))]);
+  let topPreview = style([gridColumnStart(`spanNum(7))]);
 }
