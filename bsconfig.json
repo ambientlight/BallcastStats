@@ -26,5 +26,5 @@
   "bsc-flags": ["-bs-g"],
   "ppx-flags": [
     "./node_modules/@jsiebern/bs-material-ui-ppx/ppx"
-  ]
+  ] 
 }

@@ -1,3 +1,4 @@
+open Operators;
 GlobalCss.inject();
 
 module RouterProvider = {
@@ -10,10 +11,12 @@ module RouterProvider = {
 module Shell = {
   let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, _children) => {
     ...ReasonReact.statelessComponent("Shell"),
-    render: _self => 
+    render: _self => {
       {switch(state.path){
-      | _ => <Landing title/>
+      | ["sign-in", ..._] => <SignIn title/>
+      | _ => <Landing dispatch title/>
       }}
+    }
   };
 };
 
@@ -32,8 +35,6 @@ module Root = {
   };
 
   let jsComponent = ReasonReact.wrapReasonForJs(~component, jsProps => 
-    make(
-      ~title=jsProps|.titleGet,
-      [||])
+    make(~title=jsProps|.titleGet, [||])
   );
 };

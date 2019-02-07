@@ -1,5 +1,4 @@
 open Operators;
-open Css;
 
 module TopCTA {
   module Styles = LandingStyles.TopCTA;
@@ -35,11 +34,11 @@ module TopPreview {
 };
 
 module Styles = LandingStyles.Root;
-let make = (~title, _children) => {
+let make = (~title, ~dispatch: 'action => unit, _children) => {
   ...ReasonReact.statelessComponent("Landing"),
   render: _self => 
     <div className=Styles.root>
-      <NavHeader title className=Styles.navHeader/>
+      <NavHeader dispatch title className=Styles.navHeader/>
       <TopCTA className=Styles.topCTA/>
       <TopPreview className=Styles.topPreview/>
     </div>

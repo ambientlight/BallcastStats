@@ -28,7 +28,7 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
       ()));
 
 let initial: ReductiveRouter.withRouter(State.t) = {
-  route: ReductiveRouter.emptyRoute,
+  route: ReductiveRouter.initialRoute,
   state: {
     session: ""
   }

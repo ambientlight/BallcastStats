@@ -10,11 +10,11 @@ type routerActions = [
   | `RouterPushRoute(string)
 ];
 
-let emptyRoute: ReasonReact.Router.url = {
-  path: [],
-  hash: "",
-  search: ""
-};
+let initialRoute = { 
+  ...ReasonReact.Router.dangerouslyGetInitialUrl(),
+  path: ReasonReact.Router.dangerouslyGetInitialUrl().path |. tagList
+} |. tagRecord([|"path", "hash", "search"|]);
+
 let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
   let routerReducer = (state, action) => 
     switch(action){
@@ -35,7 +35,12 @@ let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) 
     };
   
   let store = storeCreator(~reducer=routerReducer, ~preloadedState, ~enhancer=interceptPushRoute, ());
-  let _watcherId = ReasonReact.Router.watchUrl(url => Reductive.Store.dispatch(store, `RouterLocationChanged(url |. tagRecord([|"path", "hash", "search"|]))));
+  let _watcherId = ReasonReact.Router.watchUrl(url => 
+    Reductive.Store.dispatch(
+      store, 
+      `RouterLocationChanged({ ...url, path: url.path |. tagList } |. tagRecord([|"path", "hash", "search"|])
+  )));
+
   store
 };
 

@@ -7,21 +7,23 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { getIfUtils, removeEmpty } from 'webpack-config-utils'
 
 const config = (env, ifProduction, ifNotProduction) => ({
-  entry: {
-    main: [
-      './src/index.jsx'
-    ]
-  },
-  output: {
+  	entry: {
+    	main: [
+    		'./src/index.jsx'
+    	]
+ 	},
+  	output: {
 		filename: "[name].bundle.js",
 		path: path.resolve(__dirname, 'dist'),
-		publicPath: ''
+		publicPath: '/'
 	},
 
 	mode: ifProduction('production', 'development'),
 	devtool: ifProduction('source-map', 'eval'),
 	devServer: {
 		port: 8080,
+		clientLogLevel: 'info',
+		publicPath: '/',
 		historyApiFallback: true
 	},
 	

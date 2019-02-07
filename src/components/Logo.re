@@ -67,12 +67,12 @@ module WithCaption {
     ]);
   }
 
-  let make = (~caption, _children) => {
+  let make = (~caption, ~hideCaptionOnSmall=true, ~className=?, _children) => {
     ...ReasonReact.statelessComponent("Logo.WithCaption"),
     render: _self => 
-      <div className=Styles.root>
+      <div className=([Styles.root, className |? ""] >|< " ")>
         <Core/>
-        <span className=([Styles.caption, Media.Classes.atLeastTablet] >|< " ")>
+        <span className=([Styles.caption, hideCaptionOnSmall ? Media.Classes.atLeastTablet : ""] >|< " ")>
           {ReasonReact.string(caption)}
         </span>
       </div>

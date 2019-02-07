@@ -9,6 +9,22 @@ module Breakpoint {
     | Desktop
     | FullHD;
 
+  let prev = fun
+    | SmallPhone => SmallPhone
+    | Phone => SmallPhone
+    | Tablet => Phone 
+    | Laptop => Tablet
+    | Desktop => Laptop
+    | FullHD => Desktop;
+
+  let next = fun
+    | SmallPhone => Phone
+    | Phone => Tablet
+    | Tablet => Laptop
+    | Laptop => Desktop
+    | Desktop => FullHD
+    | FullHD => FullHD; 
+
   let toString = fun
     | SmallPhone => "SmallPhone"
     | Phone => "Phone"
@@ -63,6 +79,9 @@ let atMost = (breakpoint: Breakpoint.t, rules: list(Css.rule)) => {
   media({j|(max-width: $(upperMinus1).9px)|j}, rules)
 }
 
+let above = (breakpoint, rules) => atLeast(Breakpoint.next(breakpoint), rules);
+let below = (breakpoint, rules) => atMost(Breakpoint.prev(breakpoint), rules);
+
 let exactly = (breakpoint: Breakpoint.t, rules: list(Css.rule)) => {
   let (lower, upper) = Breakpoint.range(breakpoint);
   let upperMinus1 = upper - 1;
@@ -83,6 +102,27 @@ let between = (lower: Breakpoint.t, upper: Breakpoint.t, rules: list(rule)) => {
   let targetLower = lowerRange |> Breakpoint.rangeL;
   let targetUpperMinus1 = Breakpoint.rangeU(upperRange) - 1;
   media({j|(min-width: $(targetLower)px) and (max-width: $(targetUpperMinus1).9px)|j}, rules)
+};
+
+let rulesSplitOn = (breakpoint: Breakpoint.t, ~lower: list(rule), ~upper: list(rule)) => [
+  below(breakpoint, lower),
+  atLeast(breakpoint, upper)
+];
+
+let propertySplitOn = (breakpoint: Breakpoint.t, ~rule: 'a => rule, ~lower: 'a, ~upper: 'a) => [
+  below(breakpoint, [rule(lower)]),
+  atLeast(breakpoint, [rule(upper)])
+];
+
+let property2SplitOn = (breakpoint: Breakpoint.t, ~rule: ('a => rule, 'b => rule), ~lower: ('a, 'b), ~upper: ('a, 'b)) => {
+  let (rule1, rule2) = rule;
+  let (lower1, lower2) = lower;
+  let (upper1, upper2) = upper;
+
+  [
+    below(breakpoint, [rule1(lower1), rule2(lower2)]),
+    atLeast(breakpoint, [rule1(upper1), rule2(upper2)])
+  ]
 };
 
 let property = (

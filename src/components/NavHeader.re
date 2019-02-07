@@ -13,7 +13,7 @@ let rootStyle = style([
   ])
 ]);
 
-let make = (~title, ~className=?, _children) => {
+let make = (~title, ~dispatch: 'action => unit, ~className=?, _children) => {
   ...ReasonReact.statelessComponent("NavHeader"),
   render: _self =>
     <div className=([rootStyle, className |? ""] >|< " ")>
@@ -28,7 +28,7 @@ let make = (~title, ~className=?, _children) => {
       <Button.Blended className=Media.Classes.atLeastTablet>
         {"Sign Up"}
       </Button.Blended>
-      <Button.Blended>
+      <Button.Blended onClick=((_event) => dispatch(`RouterPushRoute("sign-in/")))>
         {"Sign In"}
       </Button.Blended>
     </div>

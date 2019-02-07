@@ -58,7 +58,7 @@ module TopPreview {
     ]),
 
     /* hack for safari so top preview occupies enough space */
-    Media.atLeast(Media.Breakpoint.Laptop, [
+    Media.above(Media.Breakpoint.Tablet, [
       minHeight(`vh(75.0))
     ])
   ]);
@@ -78,7 +78,7 @@ module Root {
      * since we cannot use vh safely, this allows second grid row to occupy remaining screen space 
      * unfortunately this doesn't really work with safari
      */
-    Media.atLeast(Media.Breakpoint.Laptop, [
+    Media.above(Media.Breakpoint.Tablet, [
       position(fixed),
       left(`zero),
       right(`zero),
