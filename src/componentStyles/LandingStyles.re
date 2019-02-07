@@ -55,6 +55,11 @@ module TopPreview {
      */
     Media.atMost(Media.Breakpoint.Tablet, [
       height(`px(524))
+    ]),
+
+    /* hack for safari so top preview occupies enough space */
+    Media.atLeast(Media.Breakpoint.Laptop, [
+      minHeight(`vh(75.0))
     ])
   ]);
 };
@@ -62,13 +67,17 @@ module TopPreview {
 module Root {
   let root = style([
     display(grid),
+    /* on safari second row won't stretch to the parent height unfortunately */
     gridTemplateRows([`auto, `minMax(`zero, `fr(1.0))]),
     gridTemplateColumns([`repeat(`num(12), `fr(1.0))]),
     Media.atMost(Media.Breakpoint.Tablet, [
       gridTemplateColumns([`repeat(`num(5), `fr(1.0))]),
     ]),
   
-    /* since we cannot use vh safely, this allows second grid row to occupy remaining screen space */
+    /*
+     * since we cannot use vh safely, this allows second grid row to occupy remaining screen space 
+     * unfortunately this doesn't really work with safari
+     */
     Media.atLeast(Media.Breakpoint.Laptop, [
       position(fixed),
       left(`zero),
@@ -77,7 +86,8 @@ module Root {
       bottom(`zero)
     ]),
   
-    backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"]))
+    backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"])),
+    backgroundSize(`cover)
   ]);
 
   /** grid item placements */

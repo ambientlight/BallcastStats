@@ -1,4 +1,5 @@
 open Css;
+open Operators;
 
 module Core {
   let make = _children => {
@@ -49,22 +50,29 @@ module Core {
 let make = Core.make;
 
 module WithCaption {
-  let captionStyle = style([
-    marginLeft(px(16)),
+  module Styles {
+    let root = style([
+      display(`flex), 
+      alignItems(center)
+    ]);
 
-    color(white),
-    fontSize(em(1.2)),
-    fontFamily(Fonts.jost),
-    fontWeight(`normal),
-    letterSpacing(pxFloat(0.5))
-  ]);
+    let caption = style([
+      marginLeft(px(16)),
+
+      color(white),
+      fontSize(em(1.2)),
+      fontFamily(Fonts.jost),
+      fontWeight(`normal),
+      letterSpacing(pxFloat(0.5))
+    ]);
+  }
 
   let make = (~caption, _children) => {
     ...ReasonReact.statelessComponent("Logo.WithCaption"),
     render: _self => 
-      <div className=style([display(`flex), alignItems(center)])>
+      <div className=Styles.root>
         <Core/>
-        <span className=merge([captionStyle, Media.Classes.atLeastTablet])>
+        <span className=([Styles.caption, Media.Classes.atLeastTablet] >|< " ")>
           {ReasonReact.string(caption)}
         </span>
       </div>
