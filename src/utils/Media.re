@@ -104,16 +104,19 @@ let between = (lower: Breakpoint.t, upper: Breakpoint.t, rules: list(rule)) => {
   media({j|(min-width: $(targetLower)px) and (max-width: $(targetUpperMinus1).9px)|j}, rules)
 };
 
+/*** split on the lowest of breakpoint range */
 let rulesSplitOn = (breakpoint: Breakpoint.t, ~lower: list(rule), ~upper: list(rule)) => [
   below(breakpoint, lower),
   atLeast(breakpoint, upper)
 ];
 
+/*** split on the lowest of breakpoint range */
 let propertySplitOn = (breakpoint: Breakpoint.t, ~rule: 'a => rule, ~lower: 'a, ~upper: 'a) => [
   below(breakpoint, [rule(lower)]),
   atLeast(breakpoint, [rule(upper)])
 ];
 
+/*** split on the lowest of breakpoint range */
 let property2SplitOn = (breakpoint: Breakpoint.t, ~rule: ('a => rule, 'b => rule), ~lower: ('a, 'b), ~upper: ('a, 'b)) => {
   let (rule1, rule2) = rule;
   let (lower1, lower2) = lower;

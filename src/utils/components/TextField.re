@@ -3,13 +3,20 @@ open MaterialUi.TextField;
 open Css;
 
 module Styles {
+  let _rootInputLabelStyle = style([
+    fontFamily(Fonts.jost),
+    textTransform(`uppercase),
+    color(white)
+  ] |> List.map(e => important(e)));
+
+  /* default margin is a bit too small so the label easily hits above objects */
+  let baseMargin = style([
+    marginTop(`px(8)) |> important
+  ]);
+
   let inputLabelProps = [%bs.obj {
     classes: {
-      root: style([
-        fontFamily(Fonts.jost),
-        textTransform(`uppercase),
-        color(white)
-      ] |> List.map(e => important(e)))
+      root: _rootInputLabelStyle
     }
   }];
 
@@ -35,6 +42,7 @@ module Styles {
 };
 
 let make = (
+  /* hides focused label on layouts with small phone breakpoint range */
   ~autoComplete: option(string)=?,
   ~autoFocus: option(bool)=?,
   ~className: option(string)=?,
@@ -100,9 +108,10 @@ let make = (
   ...ReasonReact.statelessComponent("TextField"),
   render: _self =>
     <MaterialUi.TextField
-      _InputLabelProps=Styles.inputLabelProps 
+      className=([Styles.baseMargin, className |? ""] >|< " ")
+      _InputLabelProps=Styles.inputLabelProps
       _InputProps=Styles.inputProps
-      ?autoComplete ?autoFocus ?className ?defaultValue ?disabled ?error ?_FormHelperTextProps ?fullWidth ?helperText ?id ?inputProps ?inputRef ?label ?margin ?multiline ?name ?onBlur ?onChange ?onFocus ?placeholder ?required ?rows ?rowsMax ?select ?_SelectProps ?type_ ?value ?variant ?component
+      ?autoComplete ?autoFocus ?defaultValue ?disabled ?error ?_FormHelperTextProps ?fullWidth ?helperText ?id ?inputProps ?inputRef ?label ?margin ?multiline ?name ?onBlur ?onChange ?onFocus ?placeholder ?required ?rows ?rowsMax ?select ?_SelectProps ?type_ ?value ?variant ?component
     >
       {children}
     </MaterialUi.TextField>

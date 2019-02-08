@@ -16,9 +16,12 @@ module TopCTA {
     marginBottom(px(36)),
 
     fontFamily(Fonts.jost),
-    fontSize(px(42)),
-    lineHeight(px(58)),
-    color(white)
+    color(white),
+
+    ...Media.property2SplitOn(Media.Breakpoint.Phone, ~rule=(fontSize, lineHeight), 
+      ~lower=(px(28), px(36)),
+      ~upper=(px(42), px(58))
+    )
   ]);
 
   let subtitle = style([
@@ -27,7 +30,12 @@ module TopCTA {
     fontFamily(Fonts.jost),
     fontSize(px(20)),    
     opacity(0.73),
-    color(white)
+    color(white),
+
+    ...Media.propertySplitOn(Media.Breakpoint.Phone, ~rule=display,
+      ~lower=`none,
+      ~upper=`initial
+    )
   ])
 
   let ctaButton = style([

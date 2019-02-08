@@ -53,7 +53,8 @@ module WithCaption {
   module Styles {
     let root = style([
       display(`flex), 
-      alignItems(center)
+      alignItems(center),
+      justifyContent(center)
     ]);
 
     let caption = style([
