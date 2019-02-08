@@ -24,7 +24,8 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="BallcastStats",
-      ~actionCreators=Js.Dict.fromList([]),
+      ~actionCreators=Js.Dict.fromList([
+      ]),
       ()));
 
 let initial: ReductiveRouter.withRouter(State.t) = {

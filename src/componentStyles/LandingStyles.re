@@ -36,7 +36,7 @@ module TopCTA {
     height(px(80)),
     fontSize(px(18)),
     borderRadius(px(2)),
-    fontWeight(`num(600)),
+    fontWeight(`num(500)),
   ] |> List.map(e => important(e)))
 };
 

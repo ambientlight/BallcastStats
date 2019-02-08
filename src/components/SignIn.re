@@ -71,31 +71,50 @@ module Styles {
   let textField = style([
     marginTop(`px(8)) |> important,
     width(`percent(100.0))
+  ]);
+
+  let button = style([
+    marginTop(px(24)),
+    marginBottom(px(12)),
+    padding2(~v=px(20), ~h=px(0)),
+    border(px(1), `solid, hex("ffffff30")),
+    width(`percent(80.0))
+  ] |> List.map(e => important(e)));
+
+  let actionPanel = style([
+    width(`percent(100.0)),
+    display(`flex),
+    justifyContent(`spaceBetween),
+    alignItems(`center)
+  ]);
+
+  let checkbox = style([
+    color(white) |> important
+  ]);
+
+  let label = style([
+    color(white),
+    fontFamily(Fonts.jost)
+  ]);
+
+  let accesoryLabel = style([
+    color(white),
+    fontFamily(Fonts.jost),
+    opacity(0.50)
+  ]);
+
+  let actionLabel = style([
+    selector("&:hover", [
+      textDecoration(`underline),
+      cursor(`pointer)
+    ])
+  ]);
+
+  let signUpContainer = style([
+    selector("&>*", [
+      margin2(~v=px(0), ~h=px(4))
+    ])
   ])
-
-  let inputLabelProps = [%bs.obj {
-    classes: {
-      root: style([
-        fontFamily(Fonts.jost),
-        textTransform(`uppercase),
-        color(white)
-      ] |> List.map(e => important(e)))
-    }
-  }];
-
-  let inputProps = [%bs.obj {
-    classes: {
-      root: style([
-        color(white) |> important
-      ]),
-      underline: style([
-        borderBottom(px(1), `solid, white) |> important,
-        selector("&:after", [
-          borderBottom(px(1), `solid, white) |> important
-        ])
-      ])
-    }
-  }];
 };
 
 let make = (~title, _children) => {
@@ -106,17 +125,29 @@ let make = (~title, _children) => {
       <MaterialUi.Card className=Styles.card>
         <form className=Styles.form>
           <span className=Styles.welcomeTitle>{ReasonReact.string("Glad to see you back!")}</span>
-          <MaterialUi.TextField 
+          <TextField 
             label=ReasonReact.string("email")
-            className=Styles.textField
-            _InputLabelProps=Styles.inputLabelProps 
-            _InputProps=Styles.inputProps/>
-          <MaterialUi.TextField 
+            className=Styles.textField/>
+          <TextField 
             label=ReasonReact.string("password")
-            className=Styles.textField
-            _InputLabelProps=Styles.inputLabelProps 
-            _InputProps=Styles.inputProps/>
-          
+            className=Styles.textField/>
+          <div className=Styles.actionPanel>
+            <MaterialUi.FormControl>
+              <MaterialUi.FormControlLabel 
+                label=<span className=Styles.label>{ReasonReact.string("Stay signed in")}</span>
+                control=<MaterialUi.Checkbox classes=[
+                  MaterialUi.Checkbox.Classes.Root(Styles.checkbox),
+                  MaterialUi.Checkbox.Classes.Checked(Styles.checkbox)
+                ]/>
+              />
+            </MaterialUi.FormControl>
+            <span className=([Styles.accesoryLabel, Styles.actionLabel] >|< " ")>{ReasonReact.string("Forgot password?")}</span>
+          </div>
+          <Button.Blended className=Styles.button>"Sign In"</Button.Blended>
+          <div className=Styles.signUpContainer>
+            <span className=Styles.accesoryLabel>{ReasonReact.string("Don't have an account?")}</span>
+            <span className=([Styles.label, Styles.actionLabel] >|< " ")>{ReasonReact.string("Sign up")}</span>
+          </div>
         </form>
       </MaterialUi.Card>
     </div>

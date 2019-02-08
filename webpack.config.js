@@ -19,7 +19,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	},
 
 	mode: ifProduction('production', 'development'),
-	devtool: ifProduction('source-map', 'eval'),
+	devtool: ifProduction('source-map', 'none'),
 	devServer: {
 		port: 8080,
 		clientLogLevel: 'info',
@@ -40,15 +40,11 @@ const config = (env, ifProduction, ifNotProduction) => ({
 		// noParse: [/aws/],
 		rules: [{
 			exclude: /node_modules/, // don't transpile node_modules
-			test: /\.jsx$/,          // do transpile any files ending in .jsx
+			test: /\.(js|jsx)$/,     // do transpile any files ending in .jsx
 			use: {
 				loader: 'babel-loader',
-				options: {
-					plugins: ['@babel/plugin-transform-react-jsx']
-				}
 			}
 		},
-		{ test: /\.js$/, exclude: /node_modules/ },
 		{ test: /\.css$/, loaders: ['style-loader', 'css-loader']},
 		{ test: /\.(woff|woff2|eot|ttf|otf|svg|png)$/, use: { 
 			loader: 'url-loader', 
