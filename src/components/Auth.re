@@ -62,6 +62,17 @@ let signUpForm =
     </div>
   </form>
 
+let forgotPasswordForm = 
+  <form className=Styles.form>
+    <span className=Styles.welcomeTitle>{ReasonReact.string("Forgot your password?")}</span>
+    <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly.")}</span>
+    <TextField
+      type_="email"
+      label=ReasonReact.string("email")
+      className=Styles.textField/>
+    <Button.Blended className=Styles.button>"Send"</Button.Blended>
+  </form>
+
 let make = (~mode, ~title, _children) => {
   ...ReasonReact.statelessComponent("SignIn"),
   render: _self => 
@@ -75,7 +86,7 @@ let make = (~mode, ~title, _children) => {
         {switch(mode){
         | SignIn => signInForm
         | SignUp => signUpForm
-        | ForgotPassword => ReasonReact.string("")
+        | ForgotPassword => forgotPasswordForm
         }}
       </MaterialUi.Card>
 

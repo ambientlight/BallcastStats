@@ -154,3 +154,7 @@ let additionalInfoContainer = style([
     margin2(~v=px(0), ~h=px(2))
   ])
 ]);
+
+let smallTopMargin = style([
+  marginTop(px(32))
+]);
