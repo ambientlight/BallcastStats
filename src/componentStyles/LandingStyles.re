@@ -29,7 +29,11 @@ module TopCTA {
     marginBottom(px(54)),
 
     fontFamily(Fonts.jost),
-    fontSize(px(20)),    
+    fontSize(px(16)),
+    Media.atLeast(Media.Breakpoint.Tablet, [
+      fontSize(px(20))
+    ]),
+
     opacity(0.73),
     color(white),
 

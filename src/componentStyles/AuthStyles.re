@@ -39,6 +39,14 @@ let logo = style([
     ])
 ]);
 
+/* in sign up, to fit all 3 inputs cleanly, hide the logo */
+let hideLogoHackOnNarrowLayout = style([
+  display(`none),
+  media("(min-height: 430px)", [
+    display(`flex)
+  ])
+]);
+
 let card = style([
   display(`flex),
   flexDirection(`column),
@@ -54,7 +62,7 @@ let card = style([
 
   ...Media.property2SplitOn(Media.Breakpoint.Tablet, ~rule=(Css.width, Css.height), 
     ~lower=(`percent(100.0), `percent(100.0)), 
-    ~upper=(`px(500), `px(400))
+    ~upper=(`px(500), `px(450))
   )
 ]);
 
@@ -118,15 +126,31 @@ let accesoryLabel = style([
   opacity(0.50)
 ]);
 
+let additionalInfoLabel = style([
+  color(white),
+  fontFamily(Fonts.jost),
+  fontSize(px(12)),
+  opacity(0.50)
+]);
+
 let actionLabel = style([
   selector("&:hover", [
     textDecoration(`underline),
     cursor(`pointer)
-  ])
+  ]),
+  opacity(1.0)
 ]);
 
 let signUpContainer = style([
   selector("&>*", [
     margin2(~v=px(0), ~h=px(4))
+  ])
+]);
+
+let additionalInfoContainer = style([
+  textAlign(`center),
+  marginTop(px(8)),
+  selector("&>*", [
+    margin2(~v=px(0), ~h=px(2))
   ])
 ]);

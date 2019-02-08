@@ -6,7 +6,7 @@ module Styles {
   let _rootInputLabelStyle = style([
     fontFamily(Fonts.jost),
     textTransform(`uppercase),
-    color(white)
+    color(rgba(255, 255, 255, 0.6))
   ] |> List.map(rule => !# rule));
 
   /* default margin is a bit too small so the label easily hits above objects */
@@ -26,7 +26,7 @@ module Styles {
         !# color(white)
       ]),
       underline: style([
-        !# borderBottom(px(1), `solid, white),
+        !# borderBottom(px(1), `solid, rgba(255, 255, 255, 0.6)),
         selector("&:before", [
           !# borderBottom(px(0), `solid, white)
         ]),

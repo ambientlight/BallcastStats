@@ -61,12 +61,17 @@ module Breakpoint {
     | _ => FullHD;
   }
 
-  let logResize = () => 
-    Window.addEventListener(`resize(_event => {
+  let logResize = () => {
+    let log = () => {
       let current = current() |> toString;
       let width = Window.innerWidth;
-      Js.log({j|$width: $current|j});
-    }));
+      let height = Window.innerHeight;
+      Js.log({j|($width, $height): $current|j});
+    };
+
+    Window.addEventListener(`resize(_event => log()));
+    log();
+  }
 };
 
 let atLeast = (breakpoint: Breakpoint.t, rules: list(Css.rule)) => {
