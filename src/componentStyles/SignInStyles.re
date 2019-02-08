@@ -1,3 +1,4 @@
+open Operators;
 open Css;
 
 let root = style([
@@ -44,10 +45,10 @@ let card = style([
   alignItems(`center),
   justifyContent(`center),
 
-  backgroundColor(hsla(133, 51, 27, 1.0)) |> important,
+  !#backgroundColor(hsla(133, 51, 27, 1.0)),
   Media.atLeast(Media.Breakpoint.Tablet, [
     /* TODO: fix important fo box shadow on bs-css */
-    /* boxShadow(`transparent) |> important, */
+    /* !#boxShadow(`transparent), */
     unsafe("box-shadow", "0 0 0 0 transparent !important")
   ]),
 
@@ -90,10 +91,10 @@ let button = style([
   width(`percent(80.0)),
 
   ...Media.rulesSplitOn(Media.Breakpoint.Phone,
-    ~lower=[padding2(~v=px(12), ~h=px(0)) |> important],
-    ~upper=[padding2(~v=px(20), ~h=px(0)) |> important]
+    ~lower=[!# padding2(~v=px(12), ~h=px(0))],
+    ~upper=[!# padding2(~v=px(20), ~h=px(0))]
   )
-] |> List.map(e => important(e)));
+] |> List.map(rule => !# rule));
 
 let actionPanel = style([
   width(`percent(100.0)),
@@ -103,7 +104,7 @@ let actionPanel = style([
 ]);
 
 let checkbox = style([
-  color(white) |> important
+  !# color(white)
 ]);
 
 let label = style([

@@ -80,8 +80,8 @@ module BlendedBase_ {
       Media.atMost(Media.Breakpoint.Tablet, [
         fontSize(`px(16)),
         padding2(~v=px(24), ~h=px(20))
-      ] |> map(e => important(e)))
-    ]|> map(e => important(e)))
+      ] |> map(rule => !# rule))
+    ]|> map(rule => !# rule))
   );
 
   let raised = false;

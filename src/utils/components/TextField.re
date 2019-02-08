@@ -7,11 +7,11 @@ module Styles {
     fontFamily(Fonts.jost),
     textTransform(`uppercase),
     color(white)
-  ] |> List.map(e => important(e)));
+  ] |> List.map(rule => !# rule));
 
   /* default margin is a bit too small so the label easily hits above objects */
   let baseMargin = style([
-    marginTop(`px(8)) |> important
+    !# marginTop(`px(8))
   ]);
 
   let inputLabelProps = [%bs.obj {
@@ -23,18 +23,18 @@ module Styles {
   let inputProps = [%bs.obj {
     classes: {
       root: style([
-        color(white) |> important
+        !# color(white)
       ]),
       underline: style([
-        borderBottom(px(1), `solid, white) |> important,
+        !# borderBottom(px(1), `solid, white),
         selector("&:before", [
-          borderBottom(px(0), `solid, white) |> important
+          !# borderBottom(px(0), `solid, white)
         ]),
         selector("&:hover::before", [
-          borderBottom(px(1), `solid, white) |> important
+          !# borderBottom(px(1), `solid, white)
         ]),
         selector("&:after", [
-          borderBottom(px(1), `solid, white) |> important
+          !# borderBottom(px(1), `solid, white)
         ])
       ])
     }

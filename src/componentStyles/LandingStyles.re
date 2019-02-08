@@ -1,3 +1,4 @@
+open Operators;
 open Css;
 
 module TopCTA {
@@ -45,7 +46,7 @@ module TopCTA {
     fontSize(px(18)),
     borderRadius(px(2)),
     fontWeight(`num(500)),
-  ] |> List.map(e => important(e)))
+  ] |> List.map(rule => !# rule))
 };
 
 module TopPreview {
