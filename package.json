@@ -51,7 +51,8 @@
     "react-dom": "^16.7.0",
     "react-hot-loader": "^4.6.3",
     "reason-react": "^0.5.3",
-    "reductive": "git+https://github.com/ambientlight/reductive.git"
+    "reductive": "git+https://github.com/ambientlight/reductive.git",
+    "rxjs": "^6.2.0"
   },
   "babel": {
     "presets": [
