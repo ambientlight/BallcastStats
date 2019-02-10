@@ -28,9 +28,19 @@ let middleware = (rootEpicObservable) => {
 
   (store: Reductive.Store.t('action, 'state), next: 'action => unit, action: 'action) => {
     if(subscriptionRef^ == None){
+      let actionObservable = 
+        actionSubject 
+        |. Subject.asObservable
+        |> observeOn(Scheduler.queue);
+      let stateObservable = 
+        stateSubject
+        |. Subject.asObservable
+        |> observeOn(Scheduler.queue);
+      
       let subscription = 
-        epicInstantiator(actionSubject |. Subject.asObservable, stateSubject |. Subject.asObservable)
+        epicInstantiator(actionObservable, stateObservable)
         |> Observable.subscribe(~next=Reductive.Store.dispatch(store));
+
       subscriptionRef := Some(subscription);
     };
 

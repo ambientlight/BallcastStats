@@ -69,3 +69,8 @@ let observeOn = (~delay=?, scheduler, source) =>
 external _subscribeOn: (Rx_Scheduler.t, ~delay: int=?) => operatorFunction('a, 'a) = "subscribeOn";
 let subscribeOn = (~delay=?, scheduler, source) => 
   (_subscribeOn(scheduler, ~delay?))(. source); */
+
+[@bs.module "rxjs/operators"]
+external _withLatestFrom: (t('b)) => operatorFunction('a, ('a, 'b)) = "withLatestFrom";
+let withLatestFrom = (other, source) => 
+  (_withLatestFrom(other))(. source);

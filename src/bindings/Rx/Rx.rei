@@ -78,6 +78,8 @@ module Observable: {
 
     let observeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a);
     /* let subscribeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a); */
+    
+    let withLatestFrom: (t('b), t('a)) => t(('a, 'b));
   };
 };
 
