@@ -1,4 +1,7 @@
-let middleware = (rootEpicObservable) => Rx.({
+open Rx;
+open Rx.Observable.Operators;
+
+let middleware = (rootEpicObservable) => {
   /* observables passed to our epics */
   let actionSubject = Subject.make();
   let stateSubject = Subject.make();
@@ -20,7 +23,7 @@ let middleware = (rootEpicObservable) => Rx.({
    */
   let epicInstantiator = (actionObservable, stateObservable) => 
     rootEpicObservable 
-    |. Observable.switchMap(epic => epic(actionObservable, stateObservable));
+    |> switchMap(epic => epic(actionObservable, stateObservable));
 
   (store: Reductive.Store.t('action, 'state), next: 'action => unit, action: 'action) => {
     if(subscriptionRef^ == None){
@@ -35,4 +38,4 @@ let middleware = (rootEpicObservable) => Rx.({
     Subject.next(actionSubject, action);
     Subject.next(stateSubject, Reductive.Store.getState(store));
   }
-});
+};

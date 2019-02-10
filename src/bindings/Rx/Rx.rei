@@ -44,7 +44,8 @@ module Observable: {
 
   /* operators */
 
-  let tap:
+  module Operators {
+    let tap:
     (
       ~next: 'a => unit=?,
       ~error: 'e => unit=?,
@@ -53,17 +54,18 @@ module Observable: {
     ) =>
     t('a);
 
-  let map: (t('a), 'a => 'b) => t('b);
-  let mapWithIndex: (t('a), (int, 'a) => 'b) => t('b);
+    let map: ('a => 'b, t('a)) => t('b);
+    let mapWithIndex: ((int, 'a) => 'b, t('a)) => t('b);
 
-  let filter: (t('a), 'a => bool) => t('a);
-  let filterWithIndex: (t('a), (int, 'a) => bool) => t('a);
+    let filter: ('a => bool, t('a)) => t('a);
+    let filterWithIndex: ((int, 'a) => bool, t('a)) => t('a);
 
-  let mergeMap: (~concurrent: int=?, t('a), 'a => t('b)) => t('b);
-  let switchMap: (t('a), 'a => t('b)) => t('b);
+    let mergeMap: (~concurrent: int=?, 'a => t('b), t('a)) => t('b);
+    let switchMap: ('a => t('b), t('a)) => t('b);
 
-  let mergeMapWithIndex:
-    (~concurrent: int=?, t('a), (int, 'a) => t('b)) => t('b);
+    let mergeMapWithIndex:
+      (~concurrent: int=?, (int, 'a) => t('b), t('a)) => t('b);
+    };
 };
 
 module Subject: {
