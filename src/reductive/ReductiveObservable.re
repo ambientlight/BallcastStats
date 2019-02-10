@@ -23,7 +23,8 @@ let middleware = (rootEpicObservable) => {
    */
   let epicInstantiator = (actionObservable, stateObservable) => 
     rootEpicObservable 
-    |> switchMap(epic => epic(actionObservable, stateObservable));
+    |> switchMap(epic => epic(actionObservable, stateObservable))
+    |> observeOn(Scheduler.queue);
 
   (store: Reductive.Store.t('action, 'state), next: 'action => unit, action: 'action) => {
     if(subscriptionRef^ == None){

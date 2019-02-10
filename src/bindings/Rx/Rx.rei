@@ -14,6 +14,14 @@ module Observer: {
   let complete: t('a) => unit;
 };
 
+module Scheduler: {
+  type t;
+  let queue: t;
+  let asap: t;
+  let async: t;
+  let animationFrame: t;
+};
+
 module Observable: {
   type t('a);
 
@@ -65,7 +73,10 @@ module Observable: {
 
     let mergeMapWithIndex:
       (~concurrent: int=?, (int, 'a) => t('b), t('a)) => t('b);
-    };
+
+    let observeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a);
+    /* let subscribeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a); */
+  };
 };
 
 module Subject: {

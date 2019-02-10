@@ -59,3 +59,13 @@ external _mergeMapWithIndex :
   "flatMap";
 let mergeMapWithIndex = (~concurrent=?, project, source) =>
   (_mergeMapWithIndex(flip(project), ~concurrent?))(. source);
+
+[@bs.module "rxjs/operators"]
+external _observeOn: (Rx_Scheduler.t, ~delay: int=?) => operatorFunction('a, 'a) = "observeOn";
+let observeOn = (~delay=?, scheduler, source) => 
+  (_observeOn(scheduler, ~delay?))(. source);
+
+/* [@bs.module "rxjs/operators"]
+external _subscribeOn: (Rx_Scheduler.t, ~delay: int=?) => operatorFunction('a, 'a) = "subscribeOn";
+let subscribeOn = (~delay=?, scheduler, source) => 
+  (_subscribeOn(scheduler, ~delay?))(. source); */
