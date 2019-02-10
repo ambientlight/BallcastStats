@@ -9,4 +9,4 @@ let epic = (action: Rx.Observable.t('action), state: Rx.Observable.t('state)) =>
     ~~action;
     ()
   })
-  |> map(_action => `DummySetSession("test"));
+  |> mergeMap(_action => Rx.Observable.empty);

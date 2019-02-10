@@ -9,6 +9,7 @@ let flip = (f, a, b) => f(b, a);
 [@bs.module "rxjs"] [@bs.new]
 external make : ((Rx_Observer.t('a), unit) => unit) => t('a) = "Observable";
 
+[@bs.module "rxjs"] external empty: t('a) = "EMPTY";
 [@bs.module "rxjs"] external of1 : 'a => t('a) = "of";
 [@bs.module "rxjs"] external of2 : ('a, 'a) => t('a) = "of";
 

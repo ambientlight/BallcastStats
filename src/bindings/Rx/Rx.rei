@@ -31,6 +31,8 @@ module Observable: {
 
   let of1: 'a => t('a);
   let of2: ('a, 'a) => t('a);
+
+  let empty: t('a);
   /* add scheduler */
 
   let fromArray: array('a) => t('a);
