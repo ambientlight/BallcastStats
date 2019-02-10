@@ -1,26 +1,11 @@
 open Operators;
 
-module State {
-  type t = {
-    session: string
-  }
-};
-
 module Action = {
   type t = [
     | `DummySetSession(string) 
     | ReductiveRouter.routerActions
   ];
 }
-
-let appReducer = (state: State.t, action) => 
-  switch(action){
-  | `DummySetSession(sessionDummy) => {
-    ...state,
-    session: sessionDummy
-  }
-  | _ => state
-  };
 
 let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveRouter.withRouter(State.t)) = 
   ReductiveDevTools.Connectors.reductiveEnhancer(
@@ -40,18 +25,33 @@ let initial: ReductiveRouter.withRouter(State.t) = {
 let storeCreator = devToolsEnhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
-  ~reducer=appReducer, 
+  ~reducer=Reducers.root, 
   ~preloadedState=initial, 
   ~enhancer=ReductiveObservable.middleware(epicFeeder |. Rx.BehaviorSubject.asObservable), 
   ());
 
+/* hot module reloading support for reductive */
 if(HMR.isAvailable(HMR.module_)){
   HMR.accept(HMR.module_, "./lib/js/src/reductive/Epics.bs.js", () => {
     let hotReloadedRootEpic: (Rx.Observable.t('action), Rx.Observable.t('state)) => Rx.Observable.t('action) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
+    
+    /**
+     * this is safe ONLY WHEN epics are stateless
+     * given RxJs nature, it's easy to introduce implicit states into epics
+     * when using anything utilizing BehaviourSubject/ReplaySubject/shareReplay etc.
+     * be VERY CAREFUL with it as it can lead to impredictable states when hot reloaded
+     */
     epicFeeder 
     |. Rx.BehaviorSubject.next(hotReloadedRootEpic);
+    Console.info("[HMR] (Store) ReductiveObservable epics hot reloaded");
+  });
 
-    Console.info("[HMR] (observableMiddleware) Epics hot reloaded");
+  HMR.accept(HMR.module_, "./lib/js/src/reductive/Reducers.bs.js", () => {
+    let hotReloadedRootReducer = [%bs.raw "require('reason/reductive/Reducers.bs.js').root"];
+
+    /** MAKE SURE TO APPLY ALL HIGHER-ORDER REDUCERS introduced in storeCreator constructions */
+    Reductive.Store.replaceReducer(store, ReductiveRouter.routerReducer(hotReloadedRootReducer));
+    Console.info("[HMR] (Store) Reducers hot reloaded");
   });
 
   HMR.decline(HMR.module_);

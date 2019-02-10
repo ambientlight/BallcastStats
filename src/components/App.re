@@ -3,7 +3,7 @@ GlobalCss.inject();
 
 module RouterProvider = {
   let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveRouter.withRouter(Store.State.t)) => state.route, 
+    ~lense=(state: ReductiveRouter.withRouter(State.t)) => state.route, 
     Store.store);
 };
 
