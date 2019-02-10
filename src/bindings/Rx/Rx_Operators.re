@@ -45,6 +45,14 @@ let mergeMap = (~concurrent=?, source, project) =>
   (_mergeMap(project, ~concurrent?))(. source);
 
 [@bs.module "rxjs/operators"]
+external _switchMap :
+  ([@bs.uncurry] ('a => t('b))) =>
+  operatorFunction('a, 'b) =
+  "switchMap";
+let switchMap = (source, project) =>
+  (_switchMap(project))(. source);
+
+[@bs.module "rxjs/operators"]
 external _mergeMapWithIndex :
   ([@bs.uncurry] (('a, int) => t('b)), ~concurrent: int=?) =>
   operatorFunction('a, 'b) =

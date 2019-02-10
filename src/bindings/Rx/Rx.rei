@@ -60,6 +60,8 @@ module Observable: {
   let filterWithIndex: (t('a), (int, 'a) => bool) => t('a);
 
   let mergeMap: (~concurrent: int=?, t('a), 'a => t('b)) => t('b);
+  let switchMap: (t('a), 'a => t('b)) => t('b);
+
   let mergeMapWithIndex:
     (~concurrent: int=?, t('a), (int, 'a) => t('b)) => t('b);
 };
@@ -67,6 +69,15 @@ module Observable: {
 module Subject: {
   type t('a);
   let make: unit => t('a);
+  let asObservable: t('a) => Observable.t('a);
+  let asObserver: t('a) => Observer.t('a);
+
+  let next: (t('a), 'a) => unit;
+};
+
+module BehaviorSubject: {
+  type t('a);
+  let make: 'a => t('a);
   let asObservable: t('a) => Observable.t('a);
   let asObserver: t('a) => Observer.t('a);
 
