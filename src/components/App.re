@@ -13,7 +13,7 @@ module Shell = {
     ...ReasonReact.statelessComponent("Shell"),
     render: _self => {
       {switch(state.path){
-      | ["sign-in", ..._] => <Auth title mode=SignIn/>
+      | ["sign-in", ..._] => <Auth title="magic" mode=SignIn/>
       | ["sign-up", ..._] => <Auth title mode=SignUp/>
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
       | _ => <Landing dispatch title/>

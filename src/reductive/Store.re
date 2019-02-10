@@ -37,17 +37,6 @@ let initial: ReductiveRouter.withRouter(State.t) = {
   }
 };
 
-let epic = (action: Rx.Observable.t('action), state: Rx.Observable.t('state)) => Rx.({
-  action 
-  |. Observable.filter(action => switch(action){ | `RouterLocationChanged(_) => true | _ => false })
-  |> Observable.tap(~next=action => {
-    ~~"test96";
-    ~~action;
-    ()
-  })
-  |. Observable.map(_action => `DummySetSession("test6"))
-});
-
 let observableMiddleware = (rootEpic) => Rx.({
   let actionSubject = Subject.make();
   let stateSubject = Subject.make();
@@ -56,23 +45,44 @@ let observableMiddleware = (rootEpic) => Rx.({
    * after the point when all middleware parameter got applied */
   let didSubscribe = ref(false);
 
-  (store: Reductive.Store.t('action, 'state)) => {
-    
-    if(!didSubscribe^){
-      /** 
-       * hack for hot reload of middleware to be working properly
-       * since middleware change will reload Store.re
-       * epic subscription is stored in another file so it's not reloaded (and thus we still keep track of our subscription)
-       * we then resubscribe
-       */
+  /**
+   * capture the store to have it available for the HMR
+   */
+  let storeRef: ref(option(Reductive.Store.t('action, 'state))) = ref(None);
+
+  if(HMR.isAvailable(HMR.module_)){
+    HMR.accept(HMR.module_, "./lib/js/src/reductive/Epics.bs.js", () => {
+      let hotReloadedRootEpic: (Rx.Observable.t('action), Rx.Observable.t('state)) => Rx.Observable.t('action) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
       let _ = Belt.Option.map(SubscriptionRef.value^, subscription => {
-        ~~"did unsubscribe";
         Rx.Subscription.unsubscribe(subscription);
       });
 
+      ~~storeRef;
+      switch(storeRef^){
+      | Some(store) => {
+        let subscription = 
+        hotReloadedRootEpic(actionSubject |. Subject.asObservable, stateSubject |. Subject.asObservable)
+          |> Observable.subscribe(~next=Reductive.Store.dispatch(store));
+
+        SubscriptionRef.value := Some(subscription);
+        Console.info("Epics hot reloaded");
+      }
+      | None => Console.warn("Store ref is unavailable while expected, hot reload of epic not performed")
+      };
+    });
+  
+    HMR.decline(HMR.module_);
+  };
+
+  (store: Reductive.Store.t('action, 'state)) => {
+    storeRef := Some(store);
+    ~~storeRef;
+
+    if(!didSubscribe^){
       let subscription = 
         rootEpic(actionSubject |. Subject.asObservable, stateSubject |. Subject.asObservable)
         |> Observable.subscribe(~next=Reductive.Store.dispatch(store));
+
       SubscriptionRef.value := Some(subscription);
       didSubscribe := true;
     };
@@ -88,4 +98,4 @@ let observableMiddleware = (rootEpic) => Rx.({
 });
 
 let storeCreator = devToolsEnhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
-let store = storeCreator(~reducer=appReducer, ~preloadedState=initial, ~enhancer=observableMiddleware(epic), ());
+let store = storeCreator(~reducer=appReducer, ~preloadedState=initial, ~enhancer=observableMiddleware(Epics.epic), ());
