@@ -1,10 +1,13 @@
+[%%debugger.chrome];
+
 open Operators;
 open Rx.Observable.Operators;
 
-let epic = (action: Rx.Observable.t('action), state: Rx.Observable.t('state)) => {
-  action 
-  |> tap(~next=action => {
-    ~~action
+let epic = (redObservable: Rx.Observable.t(('action, 'state))) => {
+  redObservable 
+  |> tap(~next=((action, state)) => {
+    ~~action;
+    ~~state;
   })
   |> mergeMap(_action => Rx.Observable.empty);
 }

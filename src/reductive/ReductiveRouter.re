@@ -27,14 +27,19 @@ let routerReducer = reducer => (state, action) =>
   }};
 
 let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
-  let interceptPushRoute = (store, next, action) => 
-    switch(action, enhancer){
-    | (`RouterPushRoute(path), _) => ReasonReact.Router.push(path);
-    | (_, Some(enhancer)) => enhancer(store, next, action)
-    | (_, None) => next(action)
+  let interceptPushRoute = (store, next, action) => {
+    switch(enhancer){
+    | Some(enhancer) => enhancer(store, next, action)
+    | None => next(action)
     };
+    
+    switch(action){
+    | `RouterPushRoute(path) => ReasonReact.Router.push(path)
+    | _ => ()
+    };
+  };
   
-  let store = storeCreator(~reducer=routerReducer(reducer), ~preloadedState, ~enhancer=interceptPushRoute, ());
+  let store = storeCreator(~reducer, ~preloadedState, ~enhancer=interceptPushRoute, ());
   let _watcherId = ReasonReact.Router.watchUrl(url => 
     Reductive.Store.dispatch(
       store, 

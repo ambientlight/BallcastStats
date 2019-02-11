@@ -4,10 +4,11 @@ module Action = {
   type t = [
     | `DummySetSession(string) 
     | ReductiveRouter.routerActions
+    | ReductiveCognito.cognitoAction
   ];
 }
 
-let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveRouter.withRouter(State.t)) = 
+let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) = 
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="BallcastStats",
@@ -15,17 +16,21 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
       ())
   );
 
-let initial: ReductiveRouter.withRouter(State.t) = {
-  route: ReductiveRouter.initialRoute,
+let initial: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)) = {
+  user: None,
   state: {
-    session: ""
+    route: ReductiveRouter.initialRoute,
+    state: {
+      session: ""
+    }
   }
 };
 
-let storeCreator = devToolsEnhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
+/*TODO: fix the type system back around storeCreator('action, 'origin, 'state) */
+let storeCreator = devToolsEnhancer @@ ReductiveCognito.enhancer @@ ReductiveRouter.enhancer @@ !!Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
-  ~reducer=Reducers.root, 
+  ~reducer=(!!ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ Reducers.root), 
   ~preloadedState=initial, 
   ~enhancer=ReductiveObservable.middleware(epicFeeder |. Rx.BehaviorSubject.asObservable), 
   ());
@@ -33,7 +38,7 @@ let store = storeCreator(
 /* hot module reloading support for reductive */
 if(HMR.isAvailable(HMR.module_)){
   HMR.accept(HMR.module_, "./lib/js/src/reductive/Epics.bs.js", () => {
-    let hotReloadedRootEpic: (Rx.Observable.t('action), Rx.Observable.t('state)) => Rx.Observable.t('action) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
+    let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action, 'state)) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
     
     /**
      * this is safe ONLY WHEN epics are stateless
@@ -50,7 +55,9 @@ if(HMR.isAvailable(HMR.module_)){
     let hotReloadedRootReducer = [%bs.raw "require('reason/reductive/Reducers.bs.js').root"];
 
     /** MAKE SURE TO APPLY ALL HIGHER-ORDER REDUCERS introduced in storeCreator constructions */
-    Reductive.Store.replaceReducer(store, ReductiveRouter.routerReducer(hotReloadedRootReducer));
+    Reductive.Store.replaceReducer(store, 
+      ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
+    );
     Console.info("[HMR] (Store) Reducers hot reloaded");
   });
 

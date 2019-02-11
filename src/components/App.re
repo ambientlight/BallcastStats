@@ -3,7 +3,7 @@ GlobalCss.inject();
 
 module RouterProvider = {
   let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveRouter.withRouter(State.t)) => state.route, 
+    ~lense=(state: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) => state.state.route, 
     Store.store);
 };
 

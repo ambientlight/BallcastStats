@@ -12,3 +12,7 @@ import { Auth } from 'aws-amplify'
 const root = document.createElement('div')
 document.body.appendChild(root)
 render(<Root />, root)
+
+// Auth.signIn('ambientlight', '').then(user => {
+//     console.log(user);
+// });
