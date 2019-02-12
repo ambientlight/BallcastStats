@@ -27,7 +27,7 @@ let initial: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)) = {
 };
 
 /*TODO: fix the type system back around storeCreator('action, 'origin, 'state) */
-let storeCreator = devToolsEnhancer @@ ReductiveCognito.enhancer @@ !!ReductiveRouter.enhancer @@ Reductive.Store.create;
+let storeCreator = devToolsEnhancer @@ !!ReductiveCognito.enhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
   ~reducer=Reducers.root, 

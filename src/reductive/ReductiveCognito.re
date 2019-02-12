@@ -20,17 +20,33 @@ type cognitoAction = [
 
 let cognitoReducer = reducer => (state, action) =>
   switch(action){
-  | `SignIn(_, _) => {
-    ...state,
-    state: reducer(state.state, action)
-  }
   | _ => { 
     ...state,
     state: reducer(state.state, action)
   }};
 
-let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
-  let store = storeCreator(~reducer, ~preloadedState, ~enhancer?, ());
+let cognitoEpics = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  reductiveObservable
+  |> mergeMap(_actionState => Rx.Observable.empty)
+});
+
+let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer, ()) => {
+  let withCognitoEpics = (store, next, action) => {
+    switch(enhancer){
+    | Some(enhancer) => enhancer(store, next, action)
+    | None => next(action)
+    };
+
+    ReductiveObservable.middleware(
+      Rx.Observable.of1(cognitoEpics),
+      store,
+      next,
+      action
+    );
+    ()
+  };
+  
+  let store = storeCreator(~reducer, ~preloadedState, ~enhancer=withCognitoEpics, ());
   Reductive.Store.replaceReducer(store, cognitoReducer(Obj.magic(store).reducer));
   store
 };
