@@ -1,5 +1,14 @@
 open ReductiveDevTools.Utilities;
 
+/* naked store type so we can access the reducer */
+type _reductiveState('action, 'state) = {
+  mutable state: 'state,
+  mutable reducer: ('state, 'action) => 'state,
+  mutable listeners: list(unit => unit),
+  customDispatcher:
+    option((_reductiveState('action, 'state), 'action => unit, 'action) => unit),
+};
+
 type withRouter('state) = {
   route: ReasonReact.Router.url,
   state: 'state
@@ -46,6 +55,7 @@ let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) 
       `RouterLocationChanged({ ...url, path: url.path |. tagList } |. tagRecord([|"path", "hash", "search"|])
   )));
 
+  Reductive.Store.replaceReducer(store, routerReducer(Obj.magic(store).reducer));
   store
 };
 
