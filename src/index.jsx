@@ -7,7 +7,7 @@ import Root from './Root'
 import { Auth } from 'aws-amplify'
 
 // configure Amplify
-// Amplify.configure(awsmobile);
+Amplify.configure(awsmobile);
 
 const root = document.createElement('div')
 document.body.appendChild(root)

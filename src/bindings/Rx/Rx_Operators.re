@@ -74,3 +74,8 @@ let subscribeOn = (~delay=?, scheduler, source) =>
 external _withLatestFrom: (t('b)) => operatorFunction('a, ('a, 'b)) = "withLatestFrom";
 let withLatestFrom = (other, source) => 
   (_withLatestFrom(other))(. source);
+
+[@bs.module "rxjs/operators"]
+external _catchErrror: ([@bs.uncurry] ('error => t('b))) => operatorFunction('a, 'b) = "catchError";
+let catchError = (error, source) =>
+  (_catchErrror(error))(. source);

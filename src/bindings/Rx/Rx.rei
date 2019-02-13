@@ -41,6 +41,8 @@ module Observable: {
   let defer: (unit => t('a)) => t('a);
   let deferPromise: (unit => Js.Promise.t('a)) => t('a);
 
+  let merge2: (t('a), t('b)) => t('c);
+
   /* subscribe */
 
   let subscribe:
@@ -80,6 +82,7 @@ module Observable: {
     /* let subscribeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a); */
     
     let withLatestFrom: (t('b), t('a)) => t(('a, 'b));
+    let catchError: ('error => t('b), t('a)) => t('b);
   };
 };
 

@@ -17,7 +17,7 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
   );
 
 let initial: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)) = {
-  user: None,
+  user: SignedOut(),
   state: {
     route: ReductiveRouter.initialRoute,
     state: {
