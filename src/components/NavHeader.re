@@ -14,7 +14,7 @@ let rootStyle = style([
 ]);
 
 let make = (~title, ~dispatch: 'action => unit, ~className=?, _children) => {
-  ...ReasonReact.statelessComponent("NavHeader"),
+  ...ReasonReact.statelessComponent(__MODULE__),
   render: _self =>
     <div className=([rootStyle, className |? ""] >|< " ")>
       <Logo.WithCaption caption=title/>

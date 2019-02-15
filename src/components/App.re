@@ -10,7 +10,7 @@ module RouterProvider = {
 /** Base routing login goes here */
 module Shell = {
   let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, _children) => {
-    ...ReasonReact.statelessComponent("Shell"),
+    ...ReasonReact.statelessComponent(__MODULE__),
     render: _self => {
       {switch(state.path){
       | ["sign-in", ..._] => <Auth title mode=SignIn/>
@@ -24,7 +24,7 @@ module Shell = {
 
 /** Root component connects app shell with reductive router state */
 module Root = {
-  let component = ReasonReact.statelessComponent("Root");
+  let component = ReasonReact.statelessComponent(__MODULE__);
   let make = (~title: string, _children) => {
     ...ReasonReact.statelessComponent("Root"),
     render: _self => 

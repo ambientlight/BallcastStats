@@ -80,7 +80,7 @@ module Inner {
     </form>
 
   let make = (~state, ~dispatch, ~mode, ~title, _children) => {
-    ...ReasonReact.statelessComponent("SignIn"),
+    ...ReasonReact.statelessComponent(__MODULE__),
     render: _self => 
       <div className=Styles.root>
         <Logo.WithCaption 
@@ -106,7 +106,7 @@ module UserProvider = {
 };
 
 let make = (~mode, ~title, _children) => {
-  ...ReasonReact.statelessComponent("Auth"),
+  ...ReasonReact.statelessComponent(__MODULE__),
   render: _self => 
     <UserProvider component=Inner.make(~mode, ~title)/>
 };

@@ -3,7 +3,7 @@ open Operators;
 module TopCTA {
   module Styles = LandingStyles.TopCTA;
   let make = (~className=?, _children) => {
-    ...ReasonReact.statelessComponent("TopCTA"),
+    ...ReasonReact.statelessComponent(__MODULE__),
     render: _self => 
       <div className=([Styles.root, className |? ""] >|< " ")>
         <span className=Styles.title>
@@ -26,7 +26,7 @@ module TopCTA {
 module TopPreview {
   module Styles = LandingStyles.TopPreview;
   let make = (~className=?, _children) => {
-    ...ReasonReact.statelessComponent("TopPreview"),
+    ...ReasonReact.statelessComponent(__MODULE__),
     render: _self =>
       <div className=([Styles.root, className |? ""] >|< " ")>
       </div>
@@ -35,7 +35,7 @@ module TopPreview {
 
 module Styles = LandingStyles.Root;
 let make = (~title, ~dispatch: 'action => unit, _children) => {
-  ...ReasonReact.statelessComponent("Landing"),
+  ...ReasonReact.statelessComponent(__MODULE__),
   render: _self => 
     <div className=Styles.root>
       <NavHeader dispatch title className=Styles.navHeader/>
