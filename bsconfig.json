@@ -17,6 +17,7 @@
     "reason-react",
     "reductive",
     "reductive-dev-tools",
+    "bs-webapi",
     "@jsiebern/bs-material-ui"
   ],
   "warnings": {

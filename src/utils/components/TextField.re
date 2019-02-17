@@ -24,6 +24,10 @@ module Styles {
     classes: {
       root: style([
         !# color(white),
+        selector("&:-webkit-autofill", [
+          unsafe("animation-name", "onAutoFillStart"),
+          unsafe("transition", "background-color 50000s ease-in-out 0s;")
+        ])
       ]),
       underline: style([
         !# borderBottom(px(1), `solid, rgba(255, 255, 255, 0.6)),

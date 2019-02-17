@@ -27,6 +27,9 @@ external deferPromise : (unit => Js.Promise.t('a)) => t('a) = "defer";
 [@bs.module "rxjs"]
 external merge2: (t('a), t('b)) => t('c) = "merge";
 
+[@bs.module "rxjs"]
+external interval: (int) => t(int) = "interval";
+
 /* consume */
 
 [@bs.send]

@@ -1,16 +1,28 @@
 open Operators;
 open Css;
+open Webapi;
 
 type mode = SignIn | SignUp | ForgotPassword;
 module Styles = AuthStyles;
 
 module Inner {
+  /* storing element refs outside of component state since redux-dev-tools are having a bit hard time with them */
+  type externalRefs = {
+    mutable emailRef: option(Dom.HtmlElement.t),
+    mutable passwordRef: option(Dom.HtmlElement.t)
+  };
+
+  let refs = {
+    emailRef: None,
+    passwordRef: None
+  };
+
   type state = {
     email: string,
     password: string,
     passwordConfirmation: string,
     staySignedIn: bool,
-    initialFocus: bool
+    showsAutofillInSignIn: bool
   };
 
   type action = [ 
@@ -21,6 +33,7 @@ module Inner {
     | `DevToolStateUpdate(state)
     | `SignInRequest(unit)
     | `RouterPushRoute(string)
+    | `ShowsAutofillInSignIn(bool)
   ];
     
   let signInForm = (state, dispatch: action => unit) =>
@@ -32,11 +45,22 @@ module Inner {
         _InputLabelProps=TextField.Styles.inputLabelProps
         _InputProps=TextField.Styles.inputProps
 
-        /**
-         * small hack to have autofilled values 'applied', 
-         * otherwise if no focus on inputs, send button is needed to be clicked twice
-         */
-        inputRef=`Callback((element) => [%bs.raw "element ? element.focus() : null"])
+        inputRef=`Callback((element: Js.Null.t(Dom.HtmlElement.t)) => {
+          refs.emailRef = Js.Null.toOption(element);
+        })
+
+        /* inputRef=`Callback((element: Js.Null.t('a)) => {
+          Js.log(element);
+          switch(Js.Null.toOption(element)){
+          | Some(element) => { 
+            ()
+            /* Dom.HtmlElement.focus(element); */
+          }
+          | None => ()
+          };
+        }) */
+
+
         autoComplete="username"
         type_="email"
         label=ReasonReact.string("email")
@@ -48,11 +72,11 @@ module Inner {
         _InputLabelProps=TextField.Styles.inputLabelProps
         _InputProps=TextField.Styles.inputProps
 
-        inputRef=`Callback((element) => Rx.Observable.Operators.(
+        inputRef=`Callback((element: Js.Null.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
           Rx.Observable.fromEvent(element, "keydown")
           |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
           |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignInRequest())))
-        ))
+        }))
         autoComplete="current-password"
         type_="password"
         label=ReasonReact.string("password")
@@ -80,8 +104,10 @@ module Inner {
       </div>
       <Button.Blended 
         className=Styles.button 
-        onClick=(_event => dispatch(`SignInRequest()))>
-        "Sign In"
+        onClick=(_event => { 
+          dispatch(`SignInRequest());
+        })>
+        {state.showsAutofillInSignIn ? "Use Autofilled Credentials" : "Sign In"}
       </Button.Blended>
       
       <div className=Styles.signUpContainer>
@@ -156,6 +182,20 @@ module Inner {
       </Button.Blended>
     </form>;
 
+  let didAutofillObservable = Rx.Observable.Operators.(
+    Rx.Observable.interval(400)
+    |> take(1)
+    |> map(_value => 
+      Dom.window 
+      |> WindowRe.document 
+      |> DocumentRe.querySelectorAll("input:-webkit-autofill")
+      |. NodeListRe.toArray
+      |> Array.fold_left((target, node) => {
+        target 
+        || Belt.Option.eq(Some(node), refs.emailRef, (lhs, rhs) => !!lhs === rhs)
+        || Belt.Option.eq(Some(node), refs.passwordRef, (lhs, rhs) => !!lhs === rhs)
+      }, false)));
+
   let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode, ~title, _children): ReasonReact.component(state, ReasonReact.noRetainedProps, action) => {
     ...ReasonReact.reducerComponent(__MODULE__),
     initialState: () => {
@@ -163,16 +203,20 @@ module Inner {
       password: "",
       passwordConfirmation: "",
       staySignedIn: false,
-      initialFocus: false
+      showsAutofillInSignIn: false
     },
 
     didMount: self => {
+      let _k = didAutofillObservable
+      |> Rx.Observable.Operators.filter(value => value)
+      |> Rx.Observable.subscribe(~next=_value => self.send(`ShowsAutofillInSignIn(true)));
+
       ReductiveDevTools.Connectors.register(
         ~connectionId=__MODULE__,
         ~component=self,
-        ~options=ReductiveDevTools.Extension.enhancerOptions(())
+        ~options=ReductiveDevTools.Extension.enhancerOptions(()),
+        ()
       )
-      ()
     },
 
     reducer: ReductiveDevTools.Connectors.componentReducerEnhancer(__MODULE__) @@ (action, state) =>
@@ -182,9 +226,10 @@ module Inner {
       | `PasswordConfirmationChanged(passwordConfirmation) => ReasonReact.Update({ ...state, passwordConfirmation })
       | `DevToolStateUpdate(devToolsState) => ReasonReact.Update(devToolsState)
       | `StaySignedInChanged(staySignedIn) => ReasonReact.Update({ ...state, staySignedIn })
+      | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ReasonReact.Update({ ...state, showsAutofillInSignIn })
       /* propagate actions to global store */
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
-      | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password)))
+      | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password))) 
       },
 
     render: ({ state, send }) => 

@@ -74,7 +74,7 @@ let form = style([
   width(`percent(100.0)),
   padding2(~v=px(0), ~h=px(32)),
 
-  selector("
+  /* selector("
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus, 
@@ -82,11 +82,7 @@ let form = style([
   ", [
     unsafe("-webkit-box-shadow", "0 0 0 30px #226731 inset !important"),
     unsafe("-webkit-text-fill-color", "white !important")
-  ]),
-
-  selector("&:-webkit-autofill", [
-    unsafe("animation-name", "onAutoFillStart")
-  ])
+  ]) */
 ]);
 
 let welcomeTitle = style([
