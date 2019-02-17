@@ -30,6 +30,9 @@ external merge2: (t('a), t('b)) => t('c) = "merge";
 [@bs.module "rxjs"]
 external interval: (int) => t(int) = "interval";
 
+[@bs.module "rxjs"]
+external intervalFromScheduler: (Rx_Scheduler.t) => t(int) = "interval";
+
 /* consume */
 
 [@bs.send]

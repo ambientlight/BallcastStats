@@ -8,11 +8,13 @@ module Styles = AuthStyles;
 module Inner {
   /* storing element refs outside of component state since redux-dev-tools are having a bit hard time with them */
   type externalRefs = {
+    mutable formRef: option(Dom.HtmlElement.t),
     mutable emailRef: option(Dom.HtmlElement.t),
     mutable passwordRef: option(Dom.HtmlElement.t)
   };
 
   let refs = {
+    formRef: None,
     emailRef: None,
     passwordRef: None
   };
@@ -37,7 +39,7 @@ module Inner {
   ];
     
   let signInForm = (state, dispatch: action => unit) =>
-    <form className=Styles.form>
+    <form className=Styles.form ref=(element => { refs.formRef = Js.Nullable.toOption(!!element) })>
       <span className=Styles.welcomeTitle>{ReasonReact.string("Glad to see you back!")}</span>
       <MaterialUi.TextField value=`String(state.email)
         /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
@@ -45,21 +47,9 @@ module Inner {
         _InputLabelProps=TextField.Styles.inputLabelProps
         _InputProps=TextField.Styles.inputProps
 
-        inputRef=`Callback((element: Js.Null.t(Dom.HtmlElement.t)) => {
-          refs.emailRef = Js.Null.toOption(element);
+        inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => {
+          refs.emailRef = Js.Nullable.toOption(element);
         })
-
-        /* inputRef=`Callback((element: Js.Null.t('a)) => {
-          Js.log(element);
-          switch(Js.Null.toOption(element)){
-          | Some(element) => { 
-            ()
-            /* Dom.HtmlElement.focus(element); */
-          }
-          | None => ()
-          };
-        }) */
-
 
         autoComplete="username"
         type_="email"
@@ -72,7 +62,7 @@ module Inner {
         _InputLabelProps=TextField.Styles.inputLabelProps
         _InputProps=TextField.Styles.inputProps
 
-        inputRef=`Callback((element: Js.Null.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
+        inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
           Rx.Observable.fromEvent(element, "keydown")
           |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
           |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignInRequest())))
@@ -183,18 +173,23 @@ module Inner {
     </form>;
 
   let didAutofillObservable = Rx.Observable.Operators.(
-    Rx.Observable.interval(400)
-    |> take(1)
+    Rx.Observable.intervalFromScheduler(Rx.Scheduler.animationFrame)
     |> map(_value => 
-      Dom.window 
-      |> WindowRe.document 
-      |> DocumentRe.querySelectorAll("input:-webkit-autofill")
-      |. NodeListRe.toArray
-      |> Array.fold_left((target, node) => {
-        target 
-        || Belt.Option.eq(Some(node), refs.emailRef, (lhs, rhs) => !!lhs === rhs)
-        || Belt.Option.eq(Some(node), refs.passwordRef, (lhs, rhs) => !!lhs === rhs)
-      }, false)));
+      switch(refs.formRef){
+      | Some(formRef) => 
+        !!formRef
+        |> ElementRe.querySelectorAll("input:-webkit-autofill")
+        |. NodeListRe.toArray
+        |> Array.fold_left((target, node) => {
+          target
+          || Belt.Option.eq(Some(node), refs.emailRef, (lhs, rhs) => !!lhs === rhs)
+          || Belt.Option.eq(Some(node), refs.passwordRef, (lhs, rhs) => !!lhs === rhs)
+        }, false)
+      | None => false
+      })
+    |> filter(value => value)
+    |> take(1));
+      
 
   let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode, ~title, _children): ReasonReact.component(state, ReasonReact.noRetainedProps, action) => {
     ...ReasonReact.reducerComponent(__MODULE__),
@@ -206,9 +201,9 @@ module Inner {
       showsAutofillInSignIn: false
     },
 
-    didMount: self => {
-      let _k = didAutofillObservable
-      |> Rx.Observable.Operators.filter(value => value)
+    didMount: self => Rx.Observable.Operators.({
+      let _sub = didAutofillObservable
+      |> filter(value => value)
       |> Rx.Observable.subscribe(~next=_value => self.send(`ShowsAutofillInSignIn(true)));
 
       ReductiveDevTools.Connectors.register(
@@ -217,7 +212,7 @@ module Inner {
         ~options=ReductiveDevTools.Extension.enhancerOptions(()),
         ()
       )
-    },
+    }),
 
     reducer: ReductiveDevTools.Connectors.componentReducerEnhancer(__MODULE__) @@ (action, state) =>
       switch (action) {

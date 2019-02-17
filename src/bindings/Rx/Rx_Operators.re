@@ -84,3 +84,10 @@ let catchError = (error, source) =>
 external _take: int => operatorFunction('a, 'a) = "take";
 let take = (count, source) => 
   (_take(count))(. source);
+
+[@bs.module "rxjs/operators"]
+external _takeWhile: 
+  ([@bs.uncurry] (('a) => bool)) =>
+  operatorFunction('a, 'a) = "takeWhile";
+let takeWhile = (condition, source) =>
+  (_takeWhile(condition))(. source);

@@ -44,6 +44,7 @@ module Observable: {
 
   let merge2: (t('a), t('b)) => t('c);
   let interval: int => t(int);
+  let intervalFromScheduler: Scheduler.t => t(int);
   /* subscribe */
 
   let subscribe:
@@ -86,6 +87,7 @@ module Observable: {
     let catchError: ('error => t('b), t('a)) => t('b);
 
     let take: (int, t('a)) => t('a);
+    let takeWhile: ('a => bool, t('a)) => t('a);
   };
 };
 
