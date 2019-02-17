@@ -19,7 +19,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 	},
 
 	mode: ifProduction('production', 'development'),
-	devtool: ifProduction('source-map', 'eval'),
+	devtool: ifProduction('source-map', 'none'),
 	devServer: {
 		port: 8080,
 		clientLogLevel: 'info',

@@ -11,7 +11,7 @@ module Action = {
 let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) = 
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
-      ~name="BallcastStats",
+      ~name="reductive",
       ~actionCreators=Js.Dict.fromList([]),
       ())
   );
@@ -38,7 +38,7 @@ let store = storeCreator(
 /* hot module reloading support for reductive */
 if(HMR.isAvailable(HMR.module_)){
   HMR.accept(HMR.module_, "./lib/js/src/reductive/Epics.bs.js", () => {
-    let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action, 'state)) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
+    let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action)) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
     
     /**
      * this is safe ONLY WHEN epics are stateless

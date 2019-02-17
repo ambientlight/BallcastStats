@@ -27,11 +27,11 @@ let make = (~title, ~dispatch: 'action => unit, ~className=?, _children) => {
       </Button.Blended>
       <Button.Blended
         className=Media.Classes.atLeastTablet
-        onClick=((_event) => dispatch(`RouterPushRoute("sign-up/")))
+        onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))
       >
         {"Sign Up"}
       </Button.Blended>
-      <Button.Blended onClick=((_event) => dispatch(`RouterPushRoute("sign-in/")))>
+      <Button.Blended onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
         {"Sign In"}
       </Button.Blended>
     </div>

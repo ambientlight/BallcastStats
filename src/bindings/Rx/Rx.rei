@@ -37,6 +37,7 @@ module Observable: {
 
   let fromArray: array('a) => t('a);
   let fromPromise: Js.Promise.t('a) => t('a);
+  let fromEvent: ('element, string) => t('b);
 
   let defer: (unit => t('a)) => t('a);
   let deferPromise: (unit => Js.Promise.t('a)) => t('a);

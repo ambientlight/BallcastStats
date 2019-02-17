@@ -4,6 +4,8 @@ import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Root from './Root'
 
+import 'babel-polyfill';
+import 'whatwg-fetch';
 import { Auth } from 'aws-amplify'
 
 // configure Amplify

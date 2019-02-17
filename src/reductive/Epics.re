@@ -1,14 +1,14 @@
-[%%debugger.chrome];
-
 open Operators;
 open Rx.Observable.Operators;
+open ReductiveObservable.Utils;
 
-let epic = (redObservable: Rx.Observable.t(('action, 'state))) => {
-  redObservable 
-  |> tap(~next=((action, state)) => {
-    /* ~~action;
-    ~~state; */
+let epic = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
+  reduxObservable 
+  /* |> tap(~next=((action, state)) => {
+    ~~"tap test";
+    ~~action;
+    ~~state;
     ()
-  })
-  |> mergeMap(_action => Rx.Observable.empty);
+  }) */
+  |> empty
 }

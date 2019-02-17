@@ -20,7 +20,7 @@ let middleware = (rootEpicObservable) => {
    * 
    * this allows us to support hot reloading of epics
    */
-  let epicInstantiator = (actionStateObservable) => 
+  let epicInstantiator: Rx.Observable.t(('action, 'state)) => Rx.Observable.t('action) = (actionStateObservable) => 
     rootEpicObservable 
     |> switchMap(epic => epic(actionStateObservable))
     |> observeOn(Scheduler.queue);
@@ -29,7 +29,7 @@ let middleware = (rootEpicObservable) => {
     if(subscriptionRef^ == None){
       let subscription = 
         epicInstantiator(actionStateSubject |. Subject.asObservable)
-        |> Observable.subscribe(~next=((action, _state)) => Reductive.Store.dispatch(store, action));
+        |> Observable.subscribe(~next=Reductive.Store.dispatch(store));
       subscriptionRef := Some(subscription);
     };
 
@@ -37,4 +37,8 @@ let middleware = (rootEpicObservable) => {
     next(action);
     Subject.next(actionStateSubject, (action, Reductive.Store.getState(store)));
   }
+};
+
+module Utils {
+  let empty = observable => observable |> mergeMap((_action) => Rx.Observable.empty);
 };

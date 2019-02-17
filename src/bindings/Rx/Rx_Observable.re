@@ -17,6 +17,9 @@ external make : ((Rx_Observer.t('a), unit) => unit) => t('a) = "Observable";
 [@bs.module "rxjs"]
 external fromPromise : Js.Promise.t('a) => t('a) = "from";
 
+[@bs.module "rxjs"]
+external fromEvent: ('element, string) => t('b) = "fromEvent";
+
 [@bs.module "rxjs"] external defer : (unit => t('a)) => t('a) = "defer";
 [@bs.module "rxjs"]
 external deferPromise : (unit => Js.Promise.t('a)) => t('a) = "defer";

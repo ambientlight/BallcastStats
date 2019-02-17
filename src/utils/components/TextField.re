@@ -23,7 +23,7 @@ module Styles {
   let inputProps = [%bs.obj {
     classes: {
       root: style([
-        !# color(white)
+        !# color(white),
       ]),
       underline: style([
         !# borderBottom(px(1), `solid, rgba(255, 255, 255, 0.6)),

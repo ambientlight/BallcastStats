@@ -1,6 +1,9 @@
 module Auth {
   module CognitoUser {
-    type t;
+    [@bs.deriving abstract]
+    type t = {
+      challengeName: string
+    }
   }
 
   [@bs.module "aws-amplify"][@bs.scope "Auth"]

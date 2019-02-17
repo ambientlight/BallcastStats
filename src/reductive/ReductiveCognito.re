@@ -52,13 +52,12 @@ module Epics {
     |> Utils.Rx.optMap(fun | (`SignInRequest(username, password), _) => Some((username, password)) | _ => None)
     |> mergeMap(((username, password)) => 
       Rx.Observable.merge2(
-        Rx.Observable.of1(`SignInStarted()),
+        Rx.Observable.of1(`SignInStarted(())),
         Amplify.Auth.signIn(~username, ~password)
         |> Rx.Observable.fromPromise
         |> map(user => `SignInCompleted(user))
-        |> catchError((error: error) => Rx.Observable.of1(`SignInError(error)))
-      ))
-    |> tap(~next=anything => Js.log(anything))
+        |> catchError((error: error) => Rx.Observable.of1(`SignInError(error))))
+      )
   });
 
   let root = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({

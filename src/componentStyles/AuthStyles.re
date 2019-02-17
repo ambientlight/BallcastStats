@@ -72,7 +72,21 @@ let form = style([
   alignItems(`center),
 
   width(`percent(100.0)),
-  padding2(~v=px(0), ~h=px(32))
+  padding2(~v=px(0), ~h=px(32)),
+
+  selector("
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active
+  ", [
+    unsafe("-webkit-box-shadow", "0 0 0 30px #226731 inset !important"),
+    unsafe("-webkit-text-fill-color", "white !important")
+  ]),
+
+  selector("&:-webkit-autofill", [
+    unsafe("animation-name", "onAutoFillStart")
+  ])
 ]);
 
 let welcomeTitle = style([
@@ -157,4 +171,8 @@ let additionalInfoContainer = style([
 
 let smallTopMargin = style([
   marginTop(px(32))
+]);
+
+let progressSpinner = style([
+  !# color(white)
 ]);

@@ -11,14 +11,14 @@ module RouterProvider = {
 module Shell = {
   let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, _children) => {
     ...ReasonReact.statelessComponent(__MODULE__),
-    render: _self => {
-      {switch(state.path){
+    render: _self => Routes.({
+      switch(state.path){
       | ["sign-in", ..._] => <Auth title mode=SignIn/>
       | ["sign-up", ..._] => <Auth title mode=SignUp/>
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
       | _ => <Landing dispatch title/>
-      }}
-    }
+      }
+    })
   };
 };
 
