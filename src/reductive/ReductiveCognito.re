@@ -25,6 +25,10 @@ type cognitoAction = [
   | `SignInStarted(unit)
   | `SignInCompleted(Amplify.Auth.CognitoUser.t)
   | `SignInError(error)
+  | `CompleteNewPasswordRequest(string as 'password)
+  | `CompleteNewPasswordRequestStarted(unit)
+  | `CompleteNewPasswordRequestCompleted(Amplify.Auth.CognitoUser.t)
+  | `CompleteNewPasswordRequestError(error)
 ];
 
 let cognitoReducer = reducer => (state, action) =>
@@ -39,6 +43,11 @@ let cognitoReducer = reducer => (state, action) =>
   }
   | `SignInError(error) => {
     user: Error(error),
+    state: reducer(state.state, action)
+  }
+  /* will pass a user but with same challenge name as it was */
+  | `CompleteNewPasswordRequestCompleted(_user) => {
+    user: SignedOut(),
     state: reducer(state.state, action)
   }
   | _ => { 
@@ -60,8 +69,25 @@ module Epics {
       )
   });
 
+  let completeNewPassword = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`CompleteNewPasswordRequest(password), state) => Some((state.user, password)) | _ => None)
+    |> Utils.Rx.optMap(fun | (SignedIn(user), password) => Some((user, password)) | _ => None)
+    |> mergeMap(((user, password)) => 
+      Rx.Observable.merge2(
+        Rx.Observable.of1(`CompleteNewPasswordRequestStarted()),
+        Amplify.Auth.completeNewPassword(~user, ~password, ())
+        |> Rx.Observable.fromPromise
+        |> map(target => `CompleteNewPasswordRequestCompleted(target))
+        |> catchError((error: error) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
+      ))
+  });
+
   let root = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
-    signIn(reductiveObservable)
+    Rx.Observable.merge2(
+      reductiveObservable|.signIn,
+      reductiveObservable|.completeNewPassword
+    )
   });
 };
 

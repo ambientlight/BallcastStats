@@ -21,15 +21,21 @@ module Inner {
     showsAutofillInSignIn: bool
   };
 
+  /* actions to propagate to global store */
+  type actionsToPropagate = [
+    | `SignInRequest(unit)
+    | `CompleteNewPasswordRequest(unit)
+    | `RouterPushRoute(string)
+  ];
+
   type action = [ 
     | `EmailChanged(string)
     | `PasswordChanged(string)
     | `PasswordConfirmationChanged(string)
     | `StaySignedInChanged(bool)
     | `DevToolStateUpdate(state)
-    | `SignInRequest(unit)
-    | `RouterPushRoute(string)
     | `ShowsAutofillInSignIn(bool)
+    | actionsToPropagate
   ];
     
   let signInForm = (state, retained, dispatch: action => unit) =>
@@ -148,20 +154,35 @@ module Inner {
     </form>;
 
   let newPasswordForm = (state, dispatch: action => unit) =>
-    <form className=Styles.form>
+    <form className=Styles.form autoComplete="nope">
       <span className=Styles.welcomeTitle>{ReasonReact.string("New password required")}</span>
       <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("You have logged in with a temporary password, you new to create a new password for your account.")}</span>
-      <TextField
+      <MaterialUi.TextField value=`String(state.password)
+        /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
+        className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
+        _InputLabelProps=TextField.Styles.inputLabelProps
+        _InputProps=TextField.Styles.inputProps
+
+        name="password"
         type_="password"
+        autoComplete="nope"
         label=ReasonReact.string("password")
-        className=Styles.textField/>
-      <TextField
+        onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))
+        />
+      <MaterialUi.TextField value=`String(state.passwordConfirmation)
+        /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
+        className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
+        _InputLabelProps=TextField.Styles.inputLabelProps
+        _InputProps=TextField.Styles.inputProps
+
         type_="password"
+        autoComplete="nope"
         label=ReasonReact.string("confirm password")
-        className=Styles.textField/>
+        onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))
+        />
       <Button.Blended 
         className=Styles.button 
-        onClick=(_event => ())>
+        onClick=(_event => dispatch(`CompleteNewPasswordRequest()))>
         "Confirm"
       </Button.Blended>
     </form>;
@@ -221,14 +242,15 @@ module Inner {
 
     reducer: ReductiveDevTools.Connectors.componentReducerEnhancer(__MODULE__) @@ (action, state) =>
       switch (action) {
-      | `EmailChanged(email) => ReasonReact.Update({ ...state, email })
-      | `PasswordChanged(password) => ReasonReact.Update({ ...state, password })
+      | `EmailChanged(email) => ReasonReact.Update({ ...state, email, showsAutofillInSignIn: false })
+      | `PasswordChanged(password) => ReasonReact.Update({ ...state, password, showsAutofillInSignIn: false })
       | `PasswordConfirmationChanged(passwordConfirmation) => ReasonReact.Update({ ...state, passwordConfirmation })
       | `DevToolStateUpdate(devToolsState) => ReasonReact.Update(devToolsState)
       | `StaySignedInChanged(staySignedIn) => ReasonReact.Update({ ...state, staySignedIn })
       | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ReasonReact.Update({ ...state, showsAutofillInSignIn })
-      /* propagate actions to global store */
+      
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
+      | `CompleteNewPasswordRequest() => ReasonReact.SideEffects(_self => dispatch(`CompleteNewPasswordRequest(state.password)))
       | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password))) 
       },
 
