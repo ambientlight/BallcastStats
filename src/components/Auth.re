@@ -6,17 +6,11 @@ type mode = SignIn | SignUp | ForgotPassword;
 module Styles = AuthStyles;
 
 module Inner {
-  /* storing element refs outside of component state since redux-dev-tools are having a bit hard time with them */
-  type externalRefs = {
+  type retained = {
     mutable formRef: option(Dom.HtmlElement.t),
     mutable emailRef: option(Dom.HtmlElement.t),
-    mutable passwordRef: option(Dom.HtmlElement.t)
-  };
-
-  let refs = {
-    formRef: None,
-    emailRef: None,
-    passwordRef: None
+    mutable passwordRef: option(Dom.HtmlElement.t),
+    willUnmount: Rx.Subject.t(bool)
   };
 
   type state = {
@@ -38,8 +32,8 @@ module Inner {
     | `ShowsAutofillInSignIn(bool)
   ];
     
-  let signInForm = (state, dispatch: action => unit) =>
-    <form className=Styles.form ref=(element => { refs.formRef = Js.Nullable.toOption(!!element) })>
+  let signInForm = (state, retained, dispatch: action => unit) =>
+    <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) })>
       <span className=Styles.welcomeTitle>{ReasonReact.string("Glad to see you back!")}</span>
       <MaterialUi.TextField value=`String(state.email)
         /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
@@ -48,7 +42,7 @@ module Inner {
         _InputProps=TextField.Styles.inputProps
 
         inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => {
-          refs.emailRef = Js.Nullable.toOption(element);
+          retained.emailRef = Js.Nullable.toOption(element);
         })
 
         autoComplete="username"
@@ -110,7 +104,7 @@ module Inner {
       </div>
     </form>;
   
-  let signUpForm = (state, dispatch: action => unit) =>
+  let signUpForm = (state, retained, dispatch: action => unit) =>
     <form className=Styles.form>
       <span className=Styles.welcomeTitle>{ReasonReact.string("Create your account")}</span>
       <TextField
@@ -172,18 +166,19 @@ module Inner {
       </Button.Blended>
     </form>;
 
-  let didAutofillObservable = Rx.Observable.Operators.(
+  let didAutofillObservable = retained => Rx.Observable.Operators.(
     Rx.Observable.intervalFromScheduler(Rx.Scheduler.animationFrame)
+    |> take(500)
     |> map(_value => 
-      switch(refs.formRef){
+      switch(retained.formRef){
       | Some(formRef) => 
         !!formRef
         |> ElementRe.querySelectorAll("input:-webkit-autofill")
         |. NodeListRe.toArray
         |> Array.fold_left((target, node) => {
           target
-          || Belt.Option.eq(Some(node), refs.emailRef, (lhs, rhs) => !!lhs === rhs)
-          || Belt.Option.eq(Some(node), refs.passwordRef, (lhs, rhs) => !!lhs === rhs)
+          || Belt.Option.eq(Some(node), retained.emailRef, (lhs, rhs) => !!lhs === rhs)
+          || Belt.Option.eq(Some(node), retained.passwordRef, (lhs, rhs) => !!lhs === rhs)
         }, false)
       | None => false
       })
@@ -191,8 +186,15 @@ module Inner {
     |> take(1));
       
 
-  let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode, ~title, _children): ReasonReact.component(state, ReasonReact.noRetainedProps, action) => {
-    ...ReasonReact.reducerComponent(__MODULE__),
+  let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode, ~title, _children): ReasonReact.component(state, retained, action) => {
+    ...ReasonReact.reducerComponentWithRetainedProps(__MODULE__),
+    retainedProps: {
+      formRef: None,
+      emailRef: None,
+      passwordRef: None,
+      willUnmount: Rx.Subject.make()
+    },
+
     initialState: () => {
       email: "",
       password: "",
@@ -202,8 +204,9 @@ module Inner {
     },
 
     didMount: self => Rx.Observable.Operators.({
-      let _sub = didAutofillObservable
+      let _sub = didAutofillObservable(self.retainedProps)
       |> filter(value => value)
+      |> takeUntil(self.retainedProps.willUnmount |. Rx.Subject.asObservable)
       |> Rx.Observable.subscribe(~next=_value => self.send(`ShowsAutofillInSignIn(true)));
 
       ReductiveDevTools.Connectors.register(
@@ -213,6 +216,8 @@ module Inner {
         ()
       )
     }),
+
+    willUnmount: self => Rx.Subject.next(self.retainedProps.willUnmount, true),
 
     reducer: ReductiveDevTools.Connectors.componentReducerEnhancer(__MODULE__) @@ (action, state) =>
       switch (action) {
@@ -227,7 +232,7 @@ module Inner {
       | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password))) 
       },
 
-    render: ({ state, send }) => 
+    render: ({ state, retainedProps, send }) => 
       <div className=Styles.root>
         <Logo.WithCaption 
           className=([Styles.logo, mode == SignUp ? Styles.hideLogoHackOnNarrowLayout : ""] >|< " ") 
@@ -241,8 +246,8 @@ module Inner {
             newPasswordForm(state, send)
           | (_, SignedIn(_user)) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
-          | (SignIn, _) => signInForm(state, send)
-          | (SignUp, _) => signUpForm(state, send)
+          | (SignIn, _) => signInForm(state, retainedProps, send)
+          | (SignUp, _) => signUpForm(state, retainedProps, send)
           | (ForgotPassword, _) => forgotPasswordForm(state, send)
           }}
         </MaterialUi.Card>

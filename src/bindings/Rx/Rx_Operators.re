@@ -91,3 +91,11 @@ external _takeWhile:
   operatorFunction('a, 'a) = "takeWhile";
 let takeWhile = (condition, source) =>
   (_takeWhile(condition))(. source);
+
+[@bs.module "rxjs/operators"]
+external _takeUntil: 
+  Rx_Observable.t('b) =>
+  operatorFunction('a, 'a) = "takeUntil";
+let takeUntil = (observable, source) =>
+  (_takeUntil(observable))(. source);
+  

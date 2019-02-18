@@ -88,6 +88,7 @@ module Observable: {
 
     let take: (int, t('a)) => t('a);
     let takeWhile: ('a => bool, t('a)) => t('a);
+    let takeUntil: (t('other), t('a)) => t('a);
   };
 };
 
