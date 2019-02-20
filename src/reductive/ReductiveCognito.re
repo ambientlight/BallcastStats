@@ -7,13 +7,20 @@ type _reductiveState('action, 'state) = {
     option((_reductiveState('action, 'state), 'action => unit, 'action) => unit),
 };
 
-type error;
+module Error {
+  [@bs.deriving abstract]
+  type t = {
+    code: string,
+    name: string,
+    message: string
+  };  
+}
 
 type signInState = 
   | SignedOut(unit)
   | SigningIn(unit)
   | SignedIn(Amplify.Auth.CognitoUser.t)
-  | Error(error);
+  | SignInError(Error.t);
 
 type withAuth('state) = {
   user: signInState,
@@ -24,11 +31,11 @@ type cognitoAction = [
   | `SignInRequest(string as 'username, string as 'password)
   | `SignInStarted(unit)
   | `SignInCompleted(Amplify.Auth.CognitoUser.t)
-  | `SignInError(error)
+  | `SignInError(Error.t)
   | `CompleteNewPasswordRequest(string as 'password)
   | `CompleteNewPasswordRequestStarted(unit)
   | `CompleteNewPasswordRequestCompleted(Amplify.Auth.CognitoUser.t)
-  | `CompleteNewPasswordRequestError(error)
+  | `CompleteNewPasswordRequestError(Error.t)
 ];
 
 let cognitoReducer = reducer => (state, action) =>
@@ -42,7 +49,7 @@ let cognitoReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }
   | `SignInError(error) => {
-    user: Error(error),
+    user: SignInError(error),
     state: reducer(state.state, action)
   }
   /* will pass a user but with same challenge name as it was */
@@ -65,7 +72,7 @@ module Epics {
         Amplify.Auth.signIn(~username, ~password)
         |> Rx.Observable.fromPromise
         |> map(user => `SignInCompleted(user))
-        |> catchError((error: error) => Rx.Observable.of1(`SignInError(error))))
+        |> catchError((error: Error.t) => Rx.Observable.of1(`SignInError(error))))
       )
   });
 
@@ -79,7 +86,7 @@ module Epics {
         Amplify.Auth.completeNewPassword(~user, ~password, ())
         |> Rx.Observable.fromPromise
         |> map(target => `CompleteNewPasswordRequestCompleted(target))
-        |> catchError((error: error) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
+        |> catchError((error: Error.t) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
       ))
   });
 

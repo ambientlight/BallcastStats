@@ -27,8 +27,12 @@ module Root = {
   let component = ReasonReact.statelessComponent(__MODULE__);
   let make = (~title: string, _children) => {
     ...ReasonReact.statelessComponent("Root"),
-    render: _self => 
-      <RouterProvider component=Shell.make(~title)/>
+    render: _self =>
+      <Fragment> 
+        <RouterProvider component=Shell.make(~title)/>
+        /* notification epics manages snackbars displayed based on actions dispatched */
+        <NotificationEpics.Context/>
+      </Fragment>
   };
 
   [@bs.deriving abstract]
