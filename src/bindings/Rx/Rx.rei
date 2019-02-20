@@ -42,7 +42,18 @@ module Observable: {
   let defer: (unit => t('a)) => t('a);
   let deferPromise: (unit => Js.Promise.t('a)) => t('a);
 
+  [@bs.module "rxjs"][@bs.variadic]
+  external merge: array(t('a)) => t('a) = "merge";
+
   let merge2: (t('a), t('b)) => t('c);
+  let merge3: (t('a), t('b), t('c)) => t('d);
+  let merge4: (t('a), t('b), t('c), t('d)) => t('e);
+  let merge5: (t('a), t('b), t('c), t('d), t('e)) => t('f);
+  let merge6: (t('a), t('b), t('c), t('d), t('e), t('f)) => t('g);
+  let merge7: (t('a), t('b), t('c), t('d), t('e), t('f), t('g)) => t('h);
+  let merge8: (t('a), t('b), t('c), t('d), t('e), t('f), t('g), t('h)) => t('i);
+  let merge9: (t('a), t('b), t('c), t('d), t('e), t('f), t('g), t('h), t('i)) => t('j);
+
   let interval: int => t(int);
   let intervalFromScheduler: Scheduler.t => t(int);
   /* subscribe */
@@ -84,7 +95,7 @@ module Observable: {
     /* let subscribeOn: (~delay: int=?, Scheduler.t, t('a)) => t('a); */
     
     let withLatestFrom: (t('b), t('a)) => t(('a, 'b));
-    let catchError: ('error => t('b), t('a)) => t('b);
+    let catchError: ('error => t('a), t('a)) => t('a);
 
     let take: (int, t('a)) => t('a);
     let takeWhile: ('a => bool, t('a)) => t('a);

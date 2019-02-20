@@ -76,7 +76,7 @@ let withLatestFrom = (other, source) =>
   (_withLatestFrom(other))(. source);
 
 [@bs.module "rxjs/operators"]
-external _catchErrror: ([@bs.uncurry] ('error => t('b))) => operatorFunction('a, 'b) = "catchError";
+external _catchErrror: ([@bs.uncurry] ('error => t('a))) => operatorFunction('a, 'a) = "catchError";
 let catchError = (error, source) =>
   (_catchErrror(error))(. source);
 

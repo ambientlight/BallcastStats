@@ -174,7 +174,7 @@ module Inner {
         className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
         _InputLabelProps=TextField.Styles.inputLabelProps
         _InputProps=TextField.Styles.inputProps
-
+        
         type_="password"
         autoComplete="nope"
         label=ReasonReact.string("confirm password")

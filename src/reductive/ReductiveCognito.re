@@ -67,13 +67,13 @@ module Epics {
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`SignInRequest(username, password), _) => Some((username, password)) | _ => None)
     |> mergeMap(((username, password)) => 
-      Rx.Observable.merge2(
+      Rx.Observable.merge([|
         Rx.Observable.of1(`SignInStarted(())),
         Amplify.Auth.signIn(~username, ~password)
         |> Rx.Observable.fromPromise
         |> map(user => `SignInCompleted(user))
-        |> catchError((error: Error.t) => Rx.Observable.of1(`SignInError(error))))
-      )
+        |> catchError((error: Error.t) => Rx.Observable.of1(`SignInError(error)))
+      |]))
   });
 
   let completeNewPassword = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
@@ -81,20 +81,20 @@ module Epics {
     |> Utils.Rx.optMap(fun | (`CompleteNewPasswordRequest(password), state) => Some((state.user, password)) | _ => None)
     |> Utils.Rx.optMap(fun | (SignedIn(user), password) => Some((user, password)) | _ => None)
     |> mergeMap(((user, password)) => 
-      Rx.Observable.merge2(
+      Rx.Observable.merge([|
         Rx.Observable.of1(`CompleteNewPasswordRequestStarted()),
         Amplify.Auth.completeNewPassword(~user, ~password, ())
         |> Rx.Observable.fromPromise
         |> map(target => `CompleteNewPasswordRequestCompleted(target))
         |> catchError((error: Error.t) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
-      ))
+      |]))
   });
 
   let root = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
-    Rx.Observable.merge2(
+    Rx.Observable.merge([|
       reductiveObservable|.signIn,
       reductiveObservable|.completeNewPassword
-    )
+    |])
   });
 };
 

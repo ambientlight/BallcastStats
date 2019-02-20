@@ -3,16 +3,14 @@ open Rx.Observable.Operators;
 open ReductiveObservable.Utils;
 open Utils.Rx;
 
-
-
 /* ASSUMED TO BE ATTACHED ONCE */
 module Context {
   type action = [
-    `SetSignInError(option(string))
+    `SetWarningMessage(option(string))
   ];
 
   type state = {
-    signInError: option(string)
+    warningMessage: option(string)
   };
 
   let dispatch = ref(None);
@@ -21,13 +19,13 @@ module Context {
     ...ReasonReact.reducerComponent(__MODULE__),
 
     initialState: () => {
-      signInError: None
+      warningMessage: None
     },
 
     reducer: (action: action, state: state) => 
       switch(action){
-      | `SetSignInError(signInError) => { 
-        ReasonReact.Update({ ...state, signInError }) 
+      | `SetWarningMessage(warningMessage) => { 
+        ReasonReact.Update({ ...state, warningMessage }) 
       }
       },
 
@@ -40,10 +38,11 @@ module Context {
 
     render: ({ state, send }) => 
       <Fragment> 
-        <Snackbar isOpen=(!?state.signInError) 
-          message="Incorrect credentials" 
+        <Snackbar key="warningMessage" 
+          isOpen=(!?state.warningMessage) 
+          message=?state.warningMessage 
           onExited=(_event => {
-            send(`SetSignInError(None));
+            send(`SetWarningMessage(None));
           })/>
       </Fragment>
   }
@@ -54,8 +53,21 @@ let signInError = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
   |> optMap(fun | (`SignInError(error), _) => Some((error, Context.dispatch^)) | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
   |> tap(~next=((error: ReductiveCognito.Error.t, dispatch)) => 
-    dispatch(`SetSignInError(Some(error|.ReductiveCognito.Error.messageGet))))
+    dispatch(`SetWarningMessage(Some(error|.ReductiveCognito.Error.messageGet))))
   |> empty;
 };
 
-let epic = reduxObservable => signInError(reduxObservable);
+let completeNewPasswordRequestError = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
+  reduxObservable
+  |> optMap(fun | (`CompleteNewPasswordRequestError(error), _) => Some((error, Context.dispatch^)) | _ => None)
+  |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
+  |> tap(~next=((error: ReductiveCognito.Error.t, dispatch)) => 
+    dispatch(`SetWarningMessage(Some(error|.ReductiveCognito.Error.messageGet))))
+  |> empty;
+};
+
+let epic = reduxObservable => 
+  Rx.Observable.merge([|
+    signInError(reduxObservable),
+    completeNewPasswordRequestError(reduxObservable)
+  |]);

@@ -28,7 +28,7 @@ type state = {
 
 type action = | SetOpen(bool);
 
-let make = (~isOpen, ~message="", ~onExited, _children) => {
+let make = (~key=?, ~isOpen, ~message="", ~onExited, _children) => {
   ...ReasonReact.reducerComponent(__MODULE__),
   
   initialState: () => {
@@ -41,11 +41,11 @@ let make = (~isOpen, ~message="", ~onExited, _children) => {
     },
 
   render: ({ state, send }) => 
-    <MaterialUi.Snackbar 
+    <MaterialUi.Snackbar
+      ?key 
       className=Styles.root
       anchorOrigin=MaterialUi.Snackbar.AnchorOrigin.t(~horizontal=`Center, ~vertical=`Bottom)
-      autoHideDuration=`Int(3000)
-      resumeHideDuration=`Int(2000)
+      autoHideDuration=`Int(5000)
       open_=state.open_
       onClose=((_event, _reason) => send(SetOpen(false)))
       onExited>

@@ -24,8 +24,25 @@ external fromEvent: ('element, string) => t('b) = "fromEvent";
 [@bs.module "rxjs"]
 external deferPromise : (unit => Js.Promise.t('a)) => t('a) = "defer";
 
+[@bs.module "rxjs"][@bs.variadic]
+external merge: array(t('a)) => t('a) = "merge";
+
 [@bs.module "rxjs"]
 external merge2: (t('a), t('b)) => t('c) = "merge";
+[@bs.module "rxjs"]
+external merge3: (t('a), t('b), t('c)) => t('d) = "merge";
+[@bs.module "rxjs"]
+external merge4: (t('a), t('b), t('c), t('d)) => t('e) = "merge";
+[@bs.module "rxjs"]
+external merge5: (t('a), t('b), t('c), t('d), t('e)) => t('f) = "merge";
+[@bs.module "rxjs"]
+external merge6: (t('a), t('b), t('c), t('d), t('e), t('f)) => t('g) = "merge";
+[@bs.module "rxjs"]
+external merge7: (t('a), t('b), t('c), t('d), t('e), t('f), t('g)) => t('h) = "merge";
+[@bs.module "rxjs"]
+external merge8: (t('a), t('b), t('c), t('d), t('e), t('f), t('g), t('h)) => t('i) = "merge";
+[@bs.module "rxjs"]
+external merge9: (t('a), t('b), t('c), t('d), t('e), t('f), t('g), t('h), t('i)) => t('j) = "merge";
 
 [@bs.module "rxjs"]
 external interval: (int) => t(int) = "interval";
