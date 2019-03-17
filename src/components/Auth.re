@@ -24,6 +24,7 @@ module Inner {
   /* actions to propagate to global store */
   type actionsToPropagate = [
     | `SignInRequest(unit)
+    | `SignUpRequest(unit)
     | `CompleteNewPasswordRequest(unit)
     | `RouterPushRoute(string)
   ];
@@ -113,19 +114,41 @@ module Inner {
   let signUpForm = (state, retained, dispatch: action => unit) =>
     <form className=Styles.form>
       <span className=Styles.welcomeTitle>{ReasonReact.string("Create your account")}</span>
-      <TextField
-        type_="email"
+      <MaterialUi.TextField
+        /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
+        className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
+        _InputLabelProps=TextField.Styles.inputLabelProps
+        _InputProps=TextField.Styles.inputProps
+
+        type_="username"
+        autoComplete="username"
         label=ReasonReact.string("email")
-        className=Styles.textField/>
-      <TextField
+        onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
+      <MaterialUi.TextField
+        /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
+        className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
+        _InputLabelProps=TextField.Styles.inputLabelProps
+        _InputProps=TextField.Styles.inputProps
+
         type_="password"
+        autoComplete="new-password"
         label=ReasonReact.string("password")
-        className=Styles.textField/>
-      <TextField
+        onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
+      <MaterialUi.TextField
+        /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
+        className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
+        _InputLabelProps=TextField.Styles.inputLabelProps
+        _InputProps=TextField.Styles.inputProps
+
         type_="password"
+        autoComplete="new-password"
         label=ReasonReact.string("confirm password")
-        className=Styles.textField/>
-      <Button.Blended className=Styles.button>"Sign Up"</Button.Blended>
+        onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))/>
+      <Button.Blended 
+        className=Styles.button
+        onClick=(_event => dispatch(`SignUpRequest(())))>
+          "Sign Up"
+      </Button.Blended>
       <div className=Styles.signUpContainer>
         <span className=Styles.accesoryLabel>{ReasonReact.string("Already have an account?")}</span>
         <span 
@@ -185,6 +208,14 @@ module Inner {
         onClick=(_event => dispatch(`CompleteNewPasswordRequest()))>
         "Confirm"
       </Button.Blended>
+    </form>;
+
+  let accountVerificationForm = (username: string, state, dispatch: action => unit) => 
+    <form className=Styles.form autoComplete="nope">
+      <span className=Styles.welcomeTitle>{ReasonReact.string("Verify your account")}</span>
+      <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("We have send a verification code to your email address")}</span>
+      <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("please enter here")}</span>
+      <ReactCodeInput type_="number" fields=6/>
     </form>;
 
   let didAutofillObservable = retained => Rx.Observable.Operators.(
@@ -251,7 +282,11 @@ module Inner {
       
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
       | `CompleteNewPasswordRequest() => ReasonReact.SideEffects(_self => dispatch(`CompleteNewPasswordRequest(state.password)))
-      | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password))) 
+      | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password)))
+      | `SignUpRequest() => ReasonReact.SideEffects(_self => 
+          state.password == state.passwordConfirmation 
+            ? dispatch(`SignUpRequest(state.email, state.password))
+            : dispatch(`SignUpRequestRejected(Amplify.Error.t(~code="PasswordAndConfirmationDoNotMatchException", ~name="PasswordAndConfirmationDoNotMatchException", ~message="Password and confirmation do not match")))) 
       },
 
     render: ({ state, retainedProps, send }) => 
@@ -264,8 +299,9 @@ module Inner {
         <MaterialUi.Card className=Styles.card>
           {switch((mode, signInState)){
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
-          | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == "NEW_PASSWORD_REQUIRED" => 
+          | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             newPasswordForm(state, send)
+          | (_, AccountVerificationRequired(username)) => accountVerificationForm(username, state, send)
           | (_, SignedIn(_user)) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
           | (SignIn, _) => signInForm(state, retainedProps, send)

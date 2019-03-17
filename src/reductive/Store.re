@@ -37,8 +37,8 @@ let store = storeCreator(
 
 /* hot module reloading support for reductive */
 if(HMR.isAvailable(HMR.module_)){
-  HMR.accept(HMR.module_, "./lib/js/src/reductive/Epics.bs.js", () => {
-    let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action)) = [%bs.raw "require('reason/reductive/Epics.bs.js').epic"];
+  HMR.accept(HMR.module_, "./lib/js/src/reductive/epics/Epics.bs.js", () => {
+    let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action)) = [%bs.raw "require('reason/reductive/epics/Epics.bs.js').epic"];
     
     /**
      * this is safe ONLY WHEN epics are stateless

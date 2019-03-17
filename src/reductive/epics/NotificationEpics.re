@@ -3,6 +3,11 @@ open Rx.Observable.Operators;
 open ReductiveObservable.Utils;
 open Utils.Rx;
 
+/**
+ * designated for displaying user snackbar notifications 
+ * captured from dispatched actions
+ */
+
 /* ASSUMED TO BE ATTACHED ONCE */
 module Context {
   type action = [
@@ -31,7 +36,7 @@ module Context {
 
     /**
      * we expose dispatch to epics which are external to this component
-     * this also assumes there is only a single instance of this component attached
+     * this also assumes there is only a single instance of this component attached at any given time
      */
     didMount: self => dispatch := Some(self.send),
     willUnmount: _self => dispatch := None,
@@ -48,26 +53,21 @@ module Context {
   }
 }
 
-let signInError = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
+let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
   reduxObservable
-  |> optMap(fun | (`SignInError(error), _) => Some((error, Context.dispatch^)) | _ => None)
+  |> optMap(fun 
+    | (`SignInError(error, _), _)
+    | (`CompleteNewPasswordRequestError(error), _)
+    | (`SignUpError(error), _)
+    | (`SignUpRequestRejected(error), _) => Some((error, Context.dispatch^)) 
+    | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
-  |> tap(~next=((error: ReductiveCognito.Error.t, dispatch)) => 
-    dispatch(`SetWarningMessage(Some(error|.ReductiveCognito.Error.messageGet))))
-  |> empty;
-};
-
-let completeNewPasswordRequestError = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
-  reduxObservable
-  |> optMap(fun | (`CompleteNewPasswordRequestError(error), _) => Some((error, Context.dispatch^)) | _ => None)
-  |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
-  |> tap(~next=((error: ReductiveCognito.Error.t, dispatch)) => 
-    dispatch(`SetWarningMessage(Some(error|.ReductiveCognito.Error.messageGet))))
+  |> tap(~next=((error: Amplify.Error.t, dispatch)) => 
+    dispatch(`SetWarningMessage(Some(error|.Amplify.Error.messageGet))))
   |> empty;
 };
 
 let epic = reduxObservable => 
   Rx.Observable.merge([|
-    signInError(reduxObservable),
-    completeNewPasswordRequestError(reduxObservable)
+    reduxObservable |. cognitoErrors
   |]);

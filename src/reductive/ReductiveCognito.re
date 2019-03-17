@@ -7,20 +7,13 @@ type _reductiveState('action, 'state) = {
     option((_reductiveState('action, 'state), 'action => unit, 'action) => unit),
 };
 
-module Error {
-  [@bs.deriving abstract]
-  type t = {
-    code: string,
-    name: string,
-    message: string
-  };  
-}
-
 type signInState = 
   | SignedOut(unit)
   | SigningIn(unit)
+  | AccountVerificationRequired(string as 'username)
   | SignedIn(Amplify.Auth.CognitoUser.t)
-  | SignInError(Error.t);
+  | SignInError(Amplify.Error.t)
+  | SignUpError(Amplify.Error.t);
 
 type withAuth('state) = {
   user: signInState,
@@ -31,16 +24,22 @@ type cognitoAction = [
   | `SignInRequest(string as 'username, string as 'password)
   | `SignInStarted(unit)
   | `SignInCompleted(Amplify.Auth.CognitoUser.t)
-  | `SignInError(Error.t)
+  | `SignInError(Amplify.Error.t, string as 'username)
   | `CompleteNewPasswordRequest(string as 'password)
   | `CompleteNewPasswordRequestStarted(unit)
   | `CompleteNewPasswordRequestCompleted(Amplify.Auth.CognitoUser.t)
-  | `CompleteNewPasswordRequestError(Error.t)
+  | `CompleteNewPasswordRequestError(Amplify.Error.t)
+  | `SignUpRequest(string as 'username, string as 'password)
+  | `SignUpRequestRejected(Amplify.Error.t)
+  | `SignUpStarted(unit)
+  | `SignUpCompleted(Amplify.Auth.SignUpResult.t)
+  | `SignUpError(Amplify.Error.t)
 ];
 
 let cognitoReducer = reducer => (state, action) =>
   switch(action){
-  | `SignInStarted() => {
+  | `SignInStarted()
+  | `SignUpStarted() => {
     user: SigningIn(),
     state: reducer(state.state, action)
   }
@@ -48,8 +47,24 @@ let cognitoReducer = reducer => (state, action) =>
     user: SignedIn(user),
     state: reducer(state.state, action)
   }
-  | `SignInError(error) => {
-    user: SignInError(error),
+  | `SignInError(error, username) => {
+    user: error |. Amplify.Error.codeGet == "UserNotConfirmedException" 
+      ? AccountVerificationRequired(username)
+      : SignInError(error),
+    state: reducer(state.state, action)
+  }
+  | `SignUpCompleted(signUpResult) => {
+    user: signUpResult |. Amplify.Auth.SignUpResult.userConfirmedGet 
+      ? SignedIn(signUpResult |. Amplify.Auth.SignUpResult.userGet)
+      : AccountVerificationRequired(
+        signUpResult
+        |. Amplify.Auth.SignUpResult.userGet
+        |. Amplify.Auth.CognitoUser.usernameGet
+      ),
+    state: reducer(state.state, action)
+  }
+  | `SignUpError(error) => {
+    user: SignUpError(error),
     state: reducer(state.state, action)
   }
   /* will pass a user but with same challenge name as it was */
@@ -72,7 +87,7 @@ module Epics {
         Amplify.Auth.signIn(~username, ~password)
         |> Rx.Observable.fromPromise
         |> map(user => `SignInCompleted(user))
-        |> catchError((error: Error.t) => Rx.Observable.of1(`SignInError(error)))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignInError(error, username)))
       |]))
   });
 
@@ -86,14 +101,34 @@ module Epics {
         Amplify.Auth.completeNewPassword(~user, ~password, ())
         |> Rx.Observable.fromPromise
         |> map(target => `CompleteNewPasswordRequestCompleted(target))
-        |> catchError((error: Error.t) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
       |]))
   });
 
-  let root = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let signUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`SignUpRequest(username, password), _state) => Some((username, password)) | _ => None)
+    |> mergeMap(((username, password)) => 
+      Rx.Observable.merge([|
+        Rx.Observable.of1(`SignUpStarted(())),
+        Amplify.Auth.signUp(
+          ~params=Amplify.Auth.SignUpParams.t(
+            ~username, 
+            ~password,
+            /* next attribute is not needed when userPool allows emails as usernames */
+            /* ~attributes=Js.Dict.fromList([("email", username)]),  */
+            ()))
+        |> Rx.Observable.fromPromise
+        |> map(signUpResult => `SignUpCompleted(signUpResult))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignUpError(error)))
+      |]))
+  });
+
+  let root = reductiveObservable => Rx.Observable.Operators.({
     Rx.Observable.merge([|
       reductiveObservable|.signIn,
-      reductiveObservable|.completeNewPassword
+      reductiveObservable|.completeNewPassword,
+      reductiveObservable|.signUp
     |])
   });
 };
