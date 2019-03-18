@@ -198,16 +198,31 @@ let codeInput = style([
   selector("&>input", [
     fontFamily(Fonts.gobold),
     borderRadius(px(4)),
-    border(px(1), `solid, hsl(133, 39, 45)),
+
+    /* make sure these are not override by ReactCodeInput disabled element inline style */
+    !#border(px(1), `solid, hsl(133, 39, 45)),
+    !#color(transparent),
+    !#backgroundColor(`hex("308141")),
+    
+    /* border(px(1), `solid, `hex("dc4909")), */
     margin(px(4)),
     paddingLeft(px(9)),
     width(px(36)),
     height(px(42)),
     fontSize(px(32)),
     boxSizing(`borderBox),
-    color(transparent),
     textShadow(white),
-    backgroundColor(`hex("308141")),
+    /* backgroundColor(`hex("8c6322")), */
     outlineColor(hsl(133, 39, 60))
+  ])
+])
+
+let disabledCodeInput = style([
+  opacity(0.7),
+  selector("&>input", [
+    outlineStyle(`none),
+    selector("::selection", [
+      backgroundColor(transparent)
+    ])
   ])
 ])

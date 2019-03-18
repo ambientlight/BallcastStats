@@ -11,6 +11,7 @@ type signInState =
   | SignedOut(unit)
   | SigningIn(unit)
   | AccountVerificationRequired(string as 'username)
+  | Verifying(string as 'code, string as 'username)
   | SignedIn(Amplify.Auth.CognitoUser.t)
   | SignInError(Amplify.Error.t)
   | SignUpError(Amplify.Error.t);
@@ -33,6 +34,7 @@ type cognitoAction = [
   | `SignUpRequestRejected(Amplify.Error.t)
   | `SignUpStarted(unit)
   | `SignUpCompleted(Amplify.Auth.SignUpResult.t)
+  | `ConfirmSignUp(string as 'code, string as 'username)
   | `SignUpError(Amplify.Error.t)
 ];
 
@@ -61,6 +63,10 @@ let cognitoReducer = reducer => (state, action) =>
         |. Amplify.Auth.SignUpResult.userGet
         |. Amplify.Auth.CognitoUser.usernameGet
       ),
+    state: reducer(state.state, action)
+  }
+  | `ConfirmSignUp(code, username) => {
+    user: Verifying(code, username),
     state: reducer(state.state, action)
   }
   | `SignUpError(error) => {
