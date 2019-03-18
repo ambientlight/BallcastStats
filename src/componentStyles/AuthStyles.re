@@ -172,3 +172,42 @@ let smallTopMargin = style([
 let progressSpinner = style([
   !# color(white)
 ]);
+
+/* input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+  input[type="number"] {
+      -moz-appearance: textfield;
+  } */
+
+
+let codeInput = style([
+  marginTop(px(8)),
+
+  selector("input[type=\"number\"]::-webkit-outer-spin-button, input[type=\"number\"]::-webkit-inner-spin-button", [
+    unsafe("-webkit-appearance", "none"),
+    margin(zero)
+  ]),
+
+  selector("input[type=\"number\"]", [
+    unsafe("-moz-appearance", "textfield")
+  ]),
+
+  selector("&>input", [
+    fontFamily(Fonts.gobold),
+    borderRadius(px(4)),
+    border(px(1), `solid, hsl(133, 39, 45)),
+    margin(px(4)),
+    paddingLeft(px(9)),
+    width(px(36)),
+    height(px(42)),
+    fontSize(px(32)),
+    boxSizing(`borderBox),
+    color(transparent),
+    textShadow(white),
+    backgroundColor(`hex("308141")),
+    outlineColor(hsl(133, 39, 60))
+  ])
+])

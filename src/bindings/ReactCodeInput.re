@@ -3,8 +3,9 @@
 [@bs.deriving abstract]
 type jsProps = {
   [@bs.as "type"] type_: string,
-  fields: int
+  [@bs.optional] fields: int,
+  [@bs.optional] className: string
 };
 
-let make = (~type_, ~fields, children) =>
-  ReasonReact.wrapJsForReason(~reactClass, ~props=jsProps(~type_, ~fields), children);
+let make = (~type_, ~fields, ~className: option(string)=?, children) =>
+  ReasonReact.wrapJsForReason(~reactClass, ~props=jsProps(~type_, ~fields, ~className?, ()), children);

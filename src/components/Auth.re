@@ -213,9 +213,9 @@ module Inner {
   let accountVerificationForm = (username: string, state, dispatch: action => unit) => 
     <form className=Styles.form autoComplete="nope">
       <span className=Styles.welcomeTitle>{ReasonReact.string("Verify your account")}</span>
-      <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("We have send a verification code to your email address")}</span>
+      <span className=Styles.accesoryLabel>{ReasonReact.string("We have send a verification code to your email address")}</span>
       <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("please enter here")}</span>
-      <ReactCodeInput type_="number" fields=6/>
+      <ReactCodeInput className=Styles.codeInput type_="number" fields=6/>
     </form>;
 
   let didAutofillObservable = retained => Rx.Observable.Operators.(
