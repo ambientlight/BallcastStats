@@ -214,7 +214,7 @@ module Inner {
         </Button.Blended>
       </form>;
 
-    let accountVerification = (username: string, verifying: bool, state, dispatch: action => unit) => 
+    let accountVerification = (~username: string, ~error: bool, ~verifying: bool, ~state, ~dispatch: action => unit) => 
       <form className=Styles.form autoComplete="nope">
         <span className=Styles.welcomeTitle>{ReasonReact.string("Verify your account")}</span>
         <span className=Styles.accesoryLabel>{ReasonReact.string("We have send a verification code to your email address")}</span>
@@ -222,7 +222,7 @@ module Inner {
         <ReactCodeInput
           disabled=verifying
           value=state.verificationCode
-          className=([Styles.codeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
+          className=([Styles.codeInputBase, error ? Styles.errorCodeInput : Styles.normalCodeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
           type_="number"
           fields=6
           onChange=(event => 
@@ -231,7 +231,7 @@ module Inner {
           color(hsl(19, 100, 50)),
           fontFamily(Fonts.jost),
           height(px(24))
-        ])>{ReasonReact.string("")}</span>
+        ])>{ReasonReact.string(error ? "verification code incorrect" : "")}</span>
 
         {verifying 
           ? <Button.Blended 
@@ -291,7 +291,8 @@ module Inner {
        */
       verificationCode: 
         switch(signInState){
-        | Verifying(code, _) => code
+        | Verifying(code, _)
+        | AccountVerificationError(code, _) => code
         | _ => ""
         },
 
@@ -325,7 +326,7 @@ module Inner {
         String.length(verificationCode) == 6 
           ? ReasonReact.UpdateWithSideEffects(
             { ...state, verificationCode }, 
-            _self => dispatch(`ConfirmSignUp(verificationCode, username)))
+            _self => dispatch(`ConfirmSignUpRequest(verificationCode, username)))
           : ReasonReact.Update({ ...state, verificationCode })
 
       | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ReasonReact.Update({ ...state, showsAutofillInSignIn })
@@ -351,8 +352,9 @@ module Inner {
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
           | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             Forms.newPassword(state, send)
-          | (_, AccountVerificationRequired(username)) => Forms.accountVerification(username, false, state, send)
-          | (_, Verifying(code, username)) => Forms.accountVerification(username, true, state, send)
+          | (_, AccountVerificationRequired(username)) => Forms.accountVerification(~username, ~error=false, ~verifying=false, ~state, ~dispatch=send)
+          | (_, Verifying(_code, username)) => Forms.accountVerification(~username, ~error=false, ~verifying=true, ~state, ~dispatch=send)
+          | (_, AccountVerificationError(_code, username)) => Forms.accountVerification(~username, ~error=true, ~verifying=false, ~state, ~dispatch=send)
           | (_, SignedIn(_user)) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)

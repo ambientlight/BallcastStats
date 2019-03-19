@@ -183,7 +183,7 @@ let progressSpinner = style([
   } */
 
 
-let codeInput = style([
+let codeInputBase = style([
   marginTop(px(8)),
 
   selector("input[type=\"number\"]::-webkit-outer-spin-button, input[type=\"number\"]::-webkit-inner-spin-button", [
@@ -198,31 +198,43 @@ let codeInput = style([
   selector("&>input", [
     fontFamily(Fonts.gobold),
     borderRadius(px(4)),
-
-    /* make sure these are not override by ReactCodeInput disabled element inline style */
-    !#border(px(1), `solid, hsl(133, 39, 45)),
-    !#color(transparent),
-    !#backgroundColor(`hex("308141")),
-    
-    /* border(px(1), `solid, `hex("dc4909")), */
     margin(px(4)),
     paddingLeft(px(9)),
     width(px(36)),
     height(px(42)),
     fontSize(px(32)),
     boxSizing(`borderBox),
+    
+    selector("::selection", [
+      backgroundColor(transparent)
+    ])
+  ])
+])
+
+let normalCodeInput = style([
+  /* make sure these are not override by ReactCodeInput disabled element inline style */
+  selector("&>input", [
+    !#border(px(1), `solid, hsl(133, 39, 45)),
+    !#color(transparent),
+    !#backgroundColor(`hex("308141")),
     textShadow(white),
-    /* backgroundColor(`hex("8c6322")), */
     outlineColor(hsl(133, 39, 60))
+  ])
+])
+
+let errorCodeInput = style([
+  selector("&>input", [
+    !#border(px(1), `solid, `hex("dc4909")),
+    !#color(transparent),
+    !#backgroundColor(`hex("8c6322")),
+    textShadow(`hex("dc4909")),
+    outlineColor(`hex("f7733b"))
   ])
 ])
 
 let disabledCodeInput = style([
   opacity(0.7),
   selector("&>input", [
-    outlineStyle(`none),
-    selector("::selection", [
-      backgroundColor(transparent)
-    ])
+    outlineStyle(`none)
   ])
 ])

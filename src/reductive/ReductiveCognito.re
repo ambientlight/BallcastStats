@@ -14,7 +14,8 @@ type signInState =
   | Verifying(string as 'code, string as 'username)
   | SignedIn(Amplify.Auth.CognitoUser.t)
   | SignInError(Amplify.Error.t)
-  | SignUpError(Amplify.Error.t);
+  | SignUpError(Amplify.Error.t)
+  | AccountVerificationError(string as 'code, string as 'username);
 
 type withAuth('state) = {
   user: signInState,
@@ -34,7 +35,9 @@ type cognitoAction = [
   | `SignUpRequestRejected(Amplify.Error.t)
   | `SignUpStarted(unit)
   | `SignUpCompleted(Amplify.Auth.SignUpResult.t)
-  | `ConfirmSignUp(string as 'code, string as 'username)
+  | `ConfirmSignUpRequest(string as 'code, string as 'username)
+  | `ConfirmSignUpStarted(string as 'code, string as 'username)
+  | `ConfirmSignUpError(Amplify.Error.t, string as 'code, string as 'username)
   | `SignUpError(Amplify.Error.t)
 ];
 
@@ -65,8 +68,12 @@ let cognitoReducer = reducer => (state, action) =>
       ),
     state: reducer(state.state, action)
   }
-  | `ConfirmSignUp(code, username) => {
+  | `ConfirmSignUpStarted(code, username) => {
     user: Verifying(code, username),
+    state: reducer(state.state, action)
+  }
+  | `ConfirmSignUpError(error, code, username) => {
+    user: AccountVerificationError(code, username),
     state: reducer(state.state, action)
   }
   | `SignUpError(error) => {
@@ -130,11 +137,29 @@ module Epics {
       |]))
   });
 
+  let confirmSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`ConfirmSignUpRequest(code, username), _state) => Some((code, username)) | _ => None)
+    |> mergeMap(((code, username)) => 
+      Rx.Observable.merge([|
+        Rx.Observable.of1(`ConfirmSignUpStarted(code, username)),
+        Rx.Observable.interval(1000)
+        |> map(_value => 
+          `ConfirmSignUpError(
+            Amplify.Error.t(~code="VerificationCodeIncorrect", ~name="VerificationCodeIncorrect", ~message="Verification code incorrect"),
+            code,
+            username
+          ))
+        |> take(1)
+      |]))
+  })
+
   let root = reductiveObservable => Rx.Observable.Operators.({
     Rx.Observable.merge([|
       reductiveObservable|.signIn,
       reductiveObservable|.completeNewPassword,
-      reductiveObservable|.signUp
+      reductiveObservable|.signUp,
+      reductiveObservable|.confirmSignUp
     |])
   });
 };
