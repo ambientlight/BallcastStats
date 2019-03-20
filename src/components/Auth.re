@@ -29,6 +29,7 @@ module Inner {
     | `SignUpRequest(unit)
     | `CompleteNewPasswordRequest(unit)
     | `RouterPushRoute(string)
+    | `ForceVerificationRequired(string as 'code, string as 'username)
   ];
 
   type action = [ 
@@ -225,8 +226,30 @@ module Inner {
           className=([Styles.codeInputBase, error ? Styles.errorCodeInput : Styles.normalCodeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
           type_="number"
           fields=6
-          onChange=(event => 
-            dispatch(`VerificationCodeChanged(event, username)))/>
+          onChange=(event => String.({
+            /*
+             * a bit hacky
+             * since ReactCodeInput doesn't have a callback with each letter
+             * on error we calculate a diff to find a changed letter and technically reset the input to it
+             * but since FIXME: ReactCodeInput doesn't YET support two way binding (only initial value), we trigger the reductive action
+             * which on signIn state change will result in full reinit of this component
+             */
+            if(error && (event|.length) != (state.verificationCode|.length)){
+              dispatch(`ForceVerificationRequired("", username))
+            } else if(error){
+              let idxs = Array.init(min(event|.length, state.verificationCode|.length), x => x) |> Array.to_list;
+              switch(
+                idxs 
+                |> List.find(idx => (event|.get(idx)) != (state.verificationCode|.get(idx)))){
+              /* do nothing if the input value hasn't changed */
+              | exception Not_found => ()
+              /* FIXME: next thing commented out until focus is supported properly on second element in ReactCodeInput */
+              | _result => dispatch(`ForceVerificationRequired(/* make(1, event|.get(result)) ++ "2" */ "", username))
+              }        
+            } else {
+              dispatch(`VerificationCodeChanged(event, username))
+            }
+          }))/>
         <span className=style([
           color(hsl(19, 100, 50)),
           fontFamily(Fonts.jost),
@@ -291,6 +314,7 @@ module Inner {
        */
       verificationCode: 
         switch(signInState){
+        | AccountVerificationRequired(code, _)
         | Verifying(code, _)
         | AccountVerificationError(code, _) => code
         | _ => ""
@@ -331,6 +355,7 @@ module Inner {
 
       | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ReasonReact.Update({ ...state, showsAutofillInSignIn })
       
+      | `ForceVerificationRequired(code, username) => ReasonReact.SideEffects(_self => dispatch(`ForceVerificationRequired(code, username))) 
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
       | `CompleteNewPasswordRequest() => ReasonReact.SideEffects(_self => dispatch(`CompleteNewPasswordRequest(state.password)))
       | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password)))
@@ -352,7 +377,7 @@ module Inner {
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
           | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             Forms.newPassword(state, send)
-          | (_, AccountVerificationRequired(username)) => Forms.accountVerification(~username, ~error=false, ~verifying=false, ~state, ~dispatch=send)
+          | (_, AccountVerificationRequired(_code, username)) => Forms.accountVerification(~username, ~error=false, ~verifying=false, ~state, ~dispatch=send)
           | (_, Verifying(_code, username)) => Forms.accountVerification(~username, ~error=false, ~verifying=true, ~state, ~dispatch=send)
           | (_, AccountVerificationError(_code, username)) => Forms.accountVerification(~username, ~error=true, ~verifying=false, ~state, ~dispatch=send)
           | (_, SignedIn(_user)) => 

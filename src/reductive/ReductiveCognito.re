@@ -10,7 +10,7 @@ type _reductiveState('action, 'state) = {
 type signInState = 
   | SignedOut(unit)
   | SigningIn(unit)
-  | AccountVerificationRequired(string as 'username)
+  | AccountVerificationRequired(string as 'code, string as 'username)
   | Verifying(string as 'code, string as 'username)
   | SignedIn(Amplify.Auth.CognitoUser.t)
   | SignInError(Amplify.Error.t)
@@ -39,6 +39,7 @@ type cognitoAction = [
   | `ConfirmSignUpStarted(string as 'code, string as 'username)
   | `ConfirmSignUpError(Amplify.Error.t, string as 'code, string as 'username)
   | `SignUpError(Amplify.Error.t)
+  | `ForceVerificationRequired(string as 'code, string as 'username)
 ];
 
 let cognitoReducer = reducer => (state, action) =>
@@ -54,14 +55,14 @@ let cognitoReducer = reducer => (state, action) =>
   }
   | `SignInError(error, username) => {
     user: error |. Amplify.Error.codeGet == "UserNotConfirmedException" 
-      ? AccountVerificationRequired(username)
+      ? AccountVerificationRequired("", username)
       : SignInError(error),
     state: reducer(state.state, action)
   }
   | `SignUpCompleted(signUpResult) => {
     user: signUpResult |. Amplify.Auth.SignUpResult.userConfirmedGet 
       ? SignedIn(signUpResult |. Amplify.Auth.SignUpResult.userGet)
-      : AccountVerificationRequired(
+      : AccountVerificationRequired("",
         signUpResult
         |. Amplify.Auth.SignUpResult.userGet
         |. Amplify.Auth.CognitoUser.usernameGet
@@ -83,6 +84,10 @@ let cognitoReducer = reducer => (state, action) =>
   /* will pass a user but with same challenge name as it was */
   | `CompleteNewPasswordRequestCompleted(_user) => {
     user: SignedOut(),
+    state: reducer(state.state, action)
+  }
+  | `ForceVerificationRequired(code, username) => {
+    user: AccountVerificationRequired(code, username),
     state: reducer(state.state, action)
   }
   | _ => { 
