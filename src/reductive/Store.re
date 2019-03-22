@@ -12,7 +12,9 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="reductive",
-      ~actionCreators=Js.Dict.fromList([]),
+      ~actionCreators=Js.Dict.fromList([
+        ("forceVerification", (username) => `ForceVerificationRequired("", username)),
+      ]),
       ())
   );
 

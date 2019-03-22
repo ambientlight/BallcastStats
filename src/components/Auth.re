@@ -216,7 +216,28 @@ module Inner {
       </form>;
 
     let accountVerification = (~username: string, ~error: bool, ~verifying: bool, ~state, ~dispatch: action => unit) => 
-      <form className=Styles.form autoComplete="nope">
+      <form 
+        className=Styles.form autoComplete="nope"
+        ref=(element => {
+          let _didFocus = (element|.Js.Nullable.toOption)
+          /* 
+            (for verification code reset) apply only when verification code is 1 digit
+            FIXME: this is still hacky since user cannot errase by backspace completely
+          */
+          |. Belt.Option.flatMap(element => String.length(state.verificationCode) == 1 ? Some(element) : None)
+          |. Belt.Option.map(element => {
+            let focusIdx = String.length(state.verificationCode);
+            let inputs = !!element
+            |> ElementRe.querySelectorAll("input")
+            |. NodeListRe.toArray;
+            if(focusIdx < Array.length(inputs)){
+              Dom.HtmlElement.focus(!!(inputs[focusIdx]));
+              true
+            } else {
+              false
+            }
+          });
+        })>
         <span className=Styles.welcomeTitle>{ReasonReact.string("Verify your account")}</span>
         <span className=Styles.accesoryLabel>{ReasonReact.string("We have send a verification code to your email address")}</span>
         <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("please enter it here")}</span>
@@ -234,17 +255,13 @@ module Inner {
              * but since FIXME: ReactCodeInput doesn't YET support two way binding (only initial value), we trigger the reductive action
              * which on signIn state change will result in full reinit of this component
              */
-            if(error && (event|.length) != (state.verificationCode|.length)){
-              dispatch(`ForceVerificationRequired("", username))
-            } else if(error){
+            if(error && state.verificationCode|.length == 6){
               let idxs = Array.init(min(event|.length, state.verificationCode|.length), x => x) |> Array.to_list;
               switch(
                 idxs 
                 |> List.find(idx => (event|.get(idx)) != (state.verificationCode|.get(idx)))){
-              /* do nothing if the input value hasn't changed */
-              | exception Not_found => ()
-              /* FIXME: next thing commented out until focus is supported properly on second element in ReactCodeInput */
-              | _result => dispatch(`ForceVerificationRequired(/* make(1, event|.get(result)) ++ "2" */ "", username))
+              | exception Not_found => dispatch(`ForceVerificationRequired(make(1, event|.get(0)), username))
+              | result => dispatch(`ForceVerificationRequired(make(1, event|.get(result)), username))
               }        
             } else {
               dispatch(`VerificationCodeChanged(event, username))
@@ -352,7 +369,6 @@ module Inner {
             { ...state, verificationCode }, 
             _self => dispatch(`ConfirmSignUpRequest(verificationCode, username)))
           : ReasonReact.Update({ ...state, verificationCode })
-
       | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ReasonReact.Update({ ...state, showsAutofillInSignIn })
       
       | `ForceVerificationRequired(code, username) => ReasonReact.SideEffects(_self => dispatch(`ForceVerificationRequired(code, username))) 
