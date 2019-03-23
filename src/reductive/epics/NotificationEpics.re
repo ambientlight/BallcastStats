@@ -10,12 +10,13 @@ open Utils.Rx;
 
 /* ASSUMED TO BE ATTACHED ONCE */
 module Context {
-  type action = [
-    `SetWarningMessage(option(string))
-  ];
+  type action =
+    | SetWarningMessage(option(string))
+    | SetErrorMessage(option(string))
+    | SetSuccessMessage(option(string));
 
   type state = {
-    warningMessage: option(string)
+    message: option((string, Snackbar.notificationType)),
   };
 
   let dispatch = ref(None);
@@ -24,15 +25,25 @@ module Context {
     ...ReasonReact.reducerComponent(__MODULE__),
 
     initialState: () => {
-      warningMessage: None
+      message: None
     },
 
-    reducer: (action: action, state: state) => 
+    reducer: (action, _state: state) => 
       switch(action){
-      | `SetWarningMessage(warningMessage) => { 
-        ReasonReact.Update({ ...state, warningMessage }) 
+      | SetWarningMessage(warningMessage) => { 
+        ReasonReact.Update({ 
+          message: warningMessage |. Belt.Option.map(message => (message, Snackbar.Warning)) 
+        })}
+      | SetErrorMessage(errorMessage) => {
+        ReasonReact.Update({
+          message: errorMessage |. Belt.Option.map(message => (message, Snackbar.Error))
+        })}
+      | SetSuccessMessage(successMessage) => {
+        ReasonReact.Update({
+          message: successMessage |. Belt.Option.map(message => (message, Snackbar.Success))
+        })
       }
-      },
+    },
 
     /**
      * we expose dispatch to epics which are external to this component
@@ -41,15 +52,21 @@ module Context {
     didMount: self => dispatch := Some(self.send),
     willUnmount: _self => dispatch := None,
 
-    render: ({ state, send }) => 
+    render: ({ state, send }) => {
+      let message = state.message |. Belt.Option.map(((message, _messageType)) => message);
+      let type_ = state.message |. Belt.Option.map(((_message, messageType)) => messageType);
+
       <Fragment> 
-        <Snackbar key="warningMessage" 
-          isOpen=(!?state.warningMessage) 
-          message=?state.warningMessage 
+        <Snackbar 
+          ?type_
+          key=(message |? "message") 
+          isOpen=(!?state.message)
+          ?message
           onExited=(_event => {
-            send(`SetWarningMessage(None));
+            send(SetSuccessMessage(None));
           })/>
       </Fragment>
+    }
   }
 }
 
@@ -59,15 +76,34 @@ let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
     | (`SignInError(error, _), _)
     | (`CompleteNewPasswordRequestError(error), _)
     | (`SignUpError(error), _)
-    | (`SignUpRequestRejected(error), _) => Some((error, Context.dispatch^)) 
+    | (`SignUpRequestRejected(error), _)
+    | (`ResendVerificationError(error), _) => Some((error, Context.dispatch^)) 
+    /* don't show notifications for code missmatch and code expired as they are handled in Auth */
+    | (`ConfirmSignUpError(error, _, _), _) 
+      when 
+         (error |. Amplify.Error.codeGet != "CodeMismatchException")
+      && (error |. Amplify.Error.codeGet != "ExpiredCodeException") => Some((error, Context.dispatch^)) 
     | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
   |> tap(~next=((error: Amplify.Error.t, dispatch)) => 
-    dispatch(`SetWarningMessage(Some(error|.Amplify.Error.messageGet))))
+    dispatch(Context.SetWarningMessage(Some(error|.Amplify.Error.messageGet))))
+  |> empty;
+};
+
+let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
+  reduxObservable
+  |> optMap(fun
+    | (`ResendVerificationCompleted(_), _) => Some(("Verification code has been send. Please check your mailbox.", Context.dispatch^))
+    | (`ConfirmSignUpCompleted(_), _) => Some(("Account verification completed. Continue by signing in.", Context.dispatch^))
+    | _ => None)
+  |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
+  |> tap(~next=((message, dispatch)) => 
+    dispatch(Context.SetSuccessMessage(Some(message))))
   |> empty;
 };
 
 let epic = reduxObservable => 
   Rx.Observable.merge([|
-    reduxObservable |. cognitoErrors
+    reduxObservable |. cognitoErrors,
+    reduxObservable |. cognitoSuccesses
   |]);

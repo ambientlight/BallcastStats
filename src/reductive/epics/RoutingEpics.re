@@ -3,7 +3,7 @@ open Rx.Observable.Operators;
 open ReductiveObservable.Utils;
 open Utils.Rx;
 
-let goToDashboardOnSuccessfulLogin = (reduxObservable: Rx.Observable.t(('action, 'state))) =>
+let goToDashboardAfterSuccessfulLogin = (reduxObservable: Rx.Observable.t(('action, 'state))) =>
   reduxObservable
   |> optMap(fun | (`SignInCompleted(user), _) => Some(user) | _ => None)
   |> mergeMap((user: Amplify.Auth.CognitoUser.t) => {
@@ -12,7 +12,13 @@ let goToDashboardOnSuccessfulLogin = (reduxObservable: Rx.Observable.t(('action,
       : Rx.Observable.empty
   });
 
+let goToSignInAfterAccountConfirmation = (reduxObservable: Rx.Observable.t(('action, 'state))) =>
+  reduxObservable
+  |> optMap(fun | (`ConfirmSignUpCompleted(user), _) => Some(user) | _ => None)
+  |> map(_result => `RouterPushRoute(Routes.signIn));
+
 let epic = reduxObservable => 
   Rx.Observable.merge([|
-    reduxObservable |. goToDashboardOnSuccessfulLogin
+    reduxObservable |. goToDashboardAfterSuccessfulLogin,
+    reduxObservable |. goToSignInAfterAccountConfirmation
   |]);

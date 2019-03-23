@@ -55,6 +55,10 @@ let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) 
       `RouterLocationChanged({ ...url, path: url.path |. tagList } |. tagRecord([|"path", "hash", "search"|])
   )));
 
+  /* Webapi.Dom.window |> WindowRe.addEventListener("popstate", event => {
+    Js.log(event);
+  }); */
+  
   Reductive.Store.replaceReducer(store, routerReducer(Obj.magic(store).reducer));
   store
 };

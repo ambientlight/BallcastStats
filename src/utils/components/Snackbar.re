@@ -8,9 +8,17 @@ module Styles {
     ])
   ]);
 
-  let content = style([
+  let warning = style([
     !#backgroundColor(hex("BD891A"))
   ]);
+
+  let success = style([
+    !#backgroundColor(hex("226831"))
+  ])
+
+  let error = style([
+    !#backgroundColor(hex("9c1c1c"))
+  ])
 
   let message = style([
     display(`flex), 
@@ -22,13 +30,18 @@ module Styles {
   ]);
 };
 
+type notificationType = 
+  | Success
+  | Warning 
+  | Error;
+
 type state = {
   open_: bool
 };
 
 type action = | SetOpen(bool);
 
-let make = (~key=?, ~isOpen, ~message="", ~onExited, _children) => {
+let make = (~key=?, ~isOpen, ~message="", ~type_=Success, ~onExited, _children) => {
   ...ReasonReact.reducerComponent(__MODULE__),
   
   initialState: () => {
@@ -51,7 +64,11 @@ let make = (~key=?, ~isOpen, ~message="", ~onExited, _children) => {
       onExited>
 
       <MaterialUi.SnackbarContent 
-        className=Styles.content
+        className=(switch(type_){
+        | Success => Styles.success
+        | Warning => Styles.warning
+        | Error => Styles.error
+        })
         message=(
           <div className=Styles.message>
             <MaterialUiIcons.Warning/>

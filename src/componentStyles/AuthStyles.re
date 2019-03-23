@@ -233,7 +233,7 @@ let errorCodeInput = style([
 ])
 
 let disabledCodeInput = style([
-  opacity(0.7),
+  opacity(0.5),
   selector("&>input", [
     outlineStyle(`none)
   ])

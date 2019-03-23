@@ -12,10 +12,11 @@ type signInState =
   | SigningIn(unit)
   | AccountVerificationRequired(string as 'code, string as 'username)
   | Verifying(string as 'code, string as 'username)
+  | ResendingVerification(string as 'username)
   | SignedIn(Amplify.Auth.CognitoUser.t)
   | SignInError(Amplify.Error.t)
   | SignUpError(Amplify.Error.t)
-  | AccountVerificationError(string as 'code, string as 'username);
+  | AccountVerificationError(Amplify.Error.t, string as 'code, string as 'username);
 
 type withAuth('state) = {
   user: signInState,
@@ -27,18 +28,28 @@ type cognitoAction = [
   | `SignInStarted(unit)
   | `SignInCompleted(Amplify.Auth.CognitoUser.t)
   | `SignInError(Amplify.Error.t, string as 'username)
+
   | `CompleteNewPasswordRequest(string as 'password)
   | `CompleteNewPasswordRequestStarted(unit)
   | `CompleteNewPasswordRequestCompleted(Amplify.Auth.CognitoUser.t)
   | `CompleteNewPasswordRequestError(Amplify.Error.t)
+
   | `SignUpRequest(string as 'username, string as 'password)
   | `SignUpRequestRejected(Amplify.Error.t)
   | `SignUpStarted(unit)
   | `SignUpCompleted(Amplify.Auth.SignUpResult.t)
+  | `SignUpError(Amplify.Error.t)
+  
   | `ConfirmSignUpRequest(string as 'code, string as 'username)
   | `ConfirmSignUpStarted(string as 'code, string as 'username)
+  | `ConfirmSignUpCompleted(Js.t({.}))
   | `ConfirmSignUpError(Amplify.Error.t, string as 'code, string as 'username)
-  | `SignUpError(Amplify.Error.t)
+
+  | `ResendVerificationRequest(string as 'username)
+  | `ResendVerificationStarted(string as 'username)
+  | `ResendVerificationCompleted(Js.t({.}), string as 'username)
+  | `ResendVerificationError(Amplify.Error.t) 
+  
   | `ForceVerificationRequired(string as 'code, string as 'username)
 ];
 
@@ -74,7 +85,7 @@ let cognitoReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }
   | `ConfirmSignUpError(error, code, username) => {
-    user: AccountVerificationError(code, username),
+    user: AccountVerificationError(error, code, username),
     state: reducer(state.state, action)
   }
   | `SignUpError(error) => {
@@ -88,6 +99,18 @@ let cognitoReducer = reducer => (state, action) =>
   }
   | `ForceVerificationRequired(code, username) => {
     user: AccountVerificationRequired(code, username),
+    state: reducer(state.state, action)
+  }
+  | `ResendVerificationStarted(username) => {
+    user: ResendingVerification(username),
+    state: reducer(state.state, action)
+  }
+  | `ResendVerificationCompleted(_result, username) => {
+    user: AccountVerificationRequired("", username),
+    state: reducer(state.state, action)
+  }
+  | `ConfirmSignUpCompleted(_result) => {
+    user: SignedOut(),
     state: reducer(state.state, action)
   }
   | _ => { 
@@ -157,6 +180,34 @@ module Epics {
           ))
         |> take(1)
       |]))
+  });
+
+  let confirmSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`ConfirmSignUpRequest(code, username), _state) => Some((code, username)) | _ => None)
+    |> mergeMap(((code, username)) => 
+      Rx.Observable.merge([|
+        Rx.Observable.of1(`ConfirmSignUpStarted(code, username)),
+        Amplify.Auth.confirmSignUp(~username, ~code, ())
+        |> Rx.Observable.fromPromise
+        |> tap(~next=value => Js.log(value))
+        |> map(result => `ConfirmSignUpCompleted(result))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`ConfirmSignUpError(error, code, username)))
+      |]))
+  });
+
+  let resendSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`ResendVerificationRequest(username), _state) => Some(username) | _ => None)
+    |> mergeMap(username =>
+      Rx.Observable.merge([|
+        Rx.Observable.of1(`ResendVerificationStarted(username)),
+        Amplify.Auth.resendSignUp(~username)
+        |> Rx.Observable.fromPromise
+        |> map(result => `ResendVerificationCompleted(result, username))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`ResendVerificationError(error)))
+      |])
+    )
   })
 
   let root = reductiveObservable => Rx.Observable.Operators.({
@@ -164,7 +215,8 @@ module Epics {
       reductiveObservable|.signIn,
       reductiveObservable|.completeNewPassword,
       reductiveObservable|.signUp,
-      reductiveObservable|.confirmSignUp
+      reductiveObservable|.confirmSignUp,
+      reductiveObservable|.resendSignUp
     |])
   });
 };

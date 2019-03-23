@@ -30,12 +30,15 @@ module Inner {
     | `CompleteNewPasswordRequest(unit)
     | `RouterPushRoute(string)
     | `ForceVerificationRequired(string as 'code, string as 'username)
+    | `ResendVerificationRequest(string as 'username)
   ];
 
   type action = [ 
     | `EmailChanged(string)
     | `PasswordChanged(string)
     | `PasswordConfirmationChanged(string)
+    /* used on return key to send */
+    | `SubmitVerificationCode(string as 'username)
     | `VerificationCodeChanged(string as 'code, string as 'username)
     | `StaySignedInChanged(bool)
     | `DevToolStateUpdate(state)
@@ -70,6 +73,7 @@ module Inner {
 
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
             Rx.Observable.fromEvent(element, "keydown")
+            |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
             |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
             |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignInRequest())))
           }))
@@ -145,6 +149,13 @@ module Inner {
           _InputLabelProps=TextField.Styles.inputLabelProps
           _InputProps=TextField.Styles.inputProps
 
+          inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
+            Rx.Observable.fromEvent(element, "keydown")
+            |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
+            |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
+            |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignUpRequest())))
+          }))
+          
           type_="password"
           autoComplete="new-password"
           label=ReasonReact.string("confirm password")
@@ -215,26 +226,36 @@ module Inner {
         </Button.Blended>
       </form>;
 
-    let accountVerification = (~username: string, ~error: bool, ~verifying: bool, ~state, ~dispatch: action => unit) => 
+    let accountVerification = (~username, ~signInState: ReductiveCognito.signInState, ~state, ~retained, ~dispatch: action => unit) => {
+      let verifying = switch(signInState){ | Verifying(_code, _username) => true | _ => false };
+      let codeIncorrect = switch(signInState){ | AccountVerificationError(error, _code, _username) => error|.Amplify.Error.codeGet == "CodeMismatchException" | _ => false };
+      let codeExpired = switch(signInState){ | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "ExpiredCodeException" | _ => false };
+      let resendingCode = switch(signInState){ | ResendingVerification(_) => true | _ => false };
+
       <form 
         className=Styles.form autoComplete="nope"
         ref=(element => {
-          let _didFocus = (element|.Js.Nullable.toOption)
-          /* 
-            (for verification code reset) apply only when verification code is 1 digit
-            FIXME: this is still hacky since user cannot errase by backspace completely
-          */
-          |. Belt.Option.flatMap(element => String.length(state.verificationCode) == 1 ? Some(element) : None)
+          let _ = (element|.Js.Nullable.toOption)
           |. Belt.Option.map(element => {
             let focusIdx = String.length(state.verificationCode);
             let inputs = !!element
-            |> ElementRe.querySelectorAll("input")
-            |. NodeListRe.toArray;
-            if(focusIdx < Array.length(inputs)){
+              |> ElementRe.querySelectorAll("input")
+              |. NodeListRe.toArray;
+            /* support return key to send */
+            inputs |. Belt.Array.forEach(input => Rx.Observable.Operators.({
+              let _ = Rx.Observable.fromEvent(input, "keydown")
+                |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
+                |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
+                |> Rx.Observable.subscribe(~next=_event => {
+                  dispatch(`SubmitVerificationCode(username))
+                });
+            }));
+            /* 
+              (for verification code reset) apply only when verification code is 1 digit
+              FIXME: this is still hacky since user cannot errase by backspace completely
+            */
+            if(String.length(state.verificationCode) == 1 && focusIdx < Array.length(inputs)){
               Dom.HtmlElement.focus(!!(inputs[focusIdx]));
-              true
-            } else {
-              false
             }
           });
         })>
@@ -242,9 +263,9 @@ module Inner {
         <span className=Styles.accesoryLabel>{ReasonReact.string("We have send a verification code to your email address")}</span>
         <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("please enter it here")}</span>
         <ReactCodeInput
-          disabled=verifying
+          disabled=(verifying || codeExpired)
           value=state.verificationCode
-          className=([Styles.codeInputBase, error ? Styles.errorCodeInput : Styles.normalCodeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
+          className=([Styles.codeInputBase, codeIncorrect || codeExpired ? Styles.errorCodeInput : Styles.normalCodeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
           type_="number"
           fields=6
           onChange=(event => String.({
@@ -255,7 +276,7 @@ module Inner {
              * but since FIXME: ReactCodeInput doesn't YET support two way binding (only initial value), we trigger the reductive action
              * which on signIn state change will result in full reinit of this component
              */
-            if(error && state.verificationCode|.length == 6){
+            if(codeIncorrect || codeExpired && state.verificationCode|.length == 6){
               let idxs = Array.init(min(event|.length, state.verificationCode|.length), x => x) |> Array.to_list;
               switch(
                 idxs 
@@ -270,23 +291,28 @@ module Inner {
         <span className=style([
           color(hsl(19, 100, 50)),
           fontFamily(Fonts.jost),
-          height(px(24))
-        ])>{ReasonReact.string(error ? "verification code incorrect" : "")}</span>
+          height(px(24))])>
+          {ReasonReact.string(
+            codeExpired ? "code expired, please resend" :
+            codeIncorrect ? "verification code incorrect" : "")
+          }
+        </span>
 
-        {verifying 
+        {verifying || resendingCode
           ? <Button.Blended 
               disabled=true
               className=merge([Styles.button, style([opacity(0.7)])])
               onClick=(_event => ())>
-              {"verifying..."}
+              {resendingCode ? "resending..." : "verifying..."}
             </Button.Blended>
           : <Button.Blended 
               className=Styles.button
-              onClick=(_event => ())>
+              onClick=(_event => dispatch(`ResendVerificationRequest(username)))>
               {"Resend verification code"}
             </Button.Blended>
         }
-      </form>;
+      </form>
+    };
   }
 
   let didAutofillObservable = retained => Rx.Observable.Operators.(
@@ -333,7 +359,7 @@ module Inner {
         switch(signInState){
         | AccountVerificationRequired(code, _)
         | Verifying(code, _)
-        | AccountVerificationError(code, _) => code
+        | AccountVerificationError(_, code, _) => code
         | _ => ""
         },
 
@@ -363,6 +389,12 @@ module Inner {
       | `PasswordConfirmationChanged(passwordConfirmation) => ReasonReact.Update({ ...state, passwordConfirmation })
       | `DevToolStateUpdate(devToolsState) => ReasonReact.Update(devToolsState)
       | `StaySignedInChanged(staySignedIn) => ReasonReact.Update({ ...state, staySignedIn })
+      | `SubmitVerificationCode(username) => 
+        ReasonReact.SideEffects(_self => {
+          String.length(state.verificationCode) == 6 
+          ? dispatch(`ConfirmSignUpRequest(state.verificationCode, username))
+          : ()
+        })
       | `VerificationCodeChanged(verificationCode, username) => 
         String.length(verificationCode) == 6 
           ? ReasonReact.UpdateWithSideEffects(
@@ -374,6 +406,7 @@ module Inner {
       | `ForceVerificationRequired(code, username) => ReasonReact.SideEffects(_self => dispatch(`ForceVerificationRequired(code, username))) 
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
       | `CompleteNewPasswordRequest() => ReasonReact.SideEffects(_self => dispatch(`CompleteNewPasswordRequest(state.password)))
+      | `ResendVerificationRequest(username) => ReasonReact.SideEffects(_self => dispatch(`ResendVerificationRequest(username)))
       | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password)))
       | `SignUpRequest() => ReasonReact.SideEffects(_self => 
           state.password == state.passwordConfirmation 
@@ -393,9 +426,10 @@ module Inner {
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
           | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             Forms.newPassword(state, send)
-          | (_, AccountVerificationRequired(_code, username)) => Forms.accountVerification(~username, ~error=false, ~verifying=false, ~state, ~dispatch=send)
-          | (_, Verifying(_code, username)) => Forms.accountVerification(~username, ~error=false, ~verifying=true, ~state, ~dispatch=send)
-          | (_, AccountVerificationError(_code, username)) => Forms.accountVerification(~username, ~error=true, ~verifying=false, ~state, ~dispatch=send)
+          | (_, AccountVerificationRequired(_, username))
+          | (_, Verifying(_, username))
+          | (_, ResendingVerification(username))
+          | (_, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
           | (_, SignedIn(_user)) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)

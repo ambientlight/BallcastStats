@@ -46,6 +46,13 @@ module Auth {
     }
   };
 
+  module ConfirmSignUpOptions {
+    [@bs.deriving abstract]
+    type t = {
+      [@bs.optional] forceAliasCreation: bool
+    }
+  };
+
   module SignUpResult {
     [@bs.deriving abstract]
     type t = {
@@ -63,4 +70,10 @@ module Auth {
 
   [@bs.module "aws-amplify"][@bs.scope "Auth"]
   external signUp: (~params: SignUpParams.t) => Js.Promise.t(SignUpResult.t) = "signUp";
+
+  [@bs.module "aws-amplify"][@bs.scope "Auth"]
+  external confirmSignUp: (~username: string, ~code: string, ~options: option(ConfirmSignUpOptions.t)=?, unit) => Js.Promise.t(Js.t({.})) = "confirmSignUp";
+
+  [@bs.module "aws-amplify"][@bs.scope "Auth"]
+  external resendSignUp: (~username: string) => Js.Promise.t(string) = "resendSignUp";
 };
