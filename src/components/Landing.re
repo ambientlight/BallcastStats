@@ -6,17 +6,17 @@ module TopCTA {
     ...ReasonReact.statelessComponent(__MODULE__),
     render: _self => 
       <div className=([Styles.root, className |? ""] >|< " ")>
-        <span className=Styles.title>
+        <MaterialUi.Typography variant=`H3 className=Styles.title>
           {ReasonReact.string("Enhance your")}
           <br/>
           {ReasonReact.string("football publications.")}
-        </span>
-        <span className=Styles.subtitle>
+        </MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.subtitle>
           {ReasonReact.string("Quickly build stats and assemble formations.")}
           <br/>
           {ReasonReact.string("Embed it directly into your publication.")}
-        </span>
-        <Button.Blended className=([AuthStyles.button, Styles.ctaBlendedButton] >|< " ")>{"Try now for free"}</Button.Blended>
+        </MaterialUi.Typography>
+        <MaterialUi.Button className=([AuthStyles.button, Styles.ctaBlendedButton] >|< " ")>{"Try now for free"}</MaterialUi.Button>
       </div>
   }
 };

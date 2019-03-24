@@ -4,3 +4,4 @@ let verifySignUp = "verify-sign-up";
 let forgot = "forgot";
 let root = "/";
 let dashboard = "dashboard";
+let typographyTest = "typography-test";

@@ -15,10 +15,6 @@ module TopCTA {
 
   let title = style([
     marginBottom(px(36)),
-
-    fontFamily(Fonts.jost),
-    color(white),
-
     ...Media.property2SplitOn(Media.Breakpoint.Phone, ~rule=(fontSize, lineHeight), 
       ~lower=(px(28), px(36)),
       ~upper=(px(42), px(58))
@@ -27,16 +23,6 @@ module TopCTA {
 
   let subtitle = style([
     marginBottom(px(54)),
-
-    fontFamily(Fonts.jost),
-    fontSize(px(16)),
-    Media.atLeast(Media.Breakpoint.Tablet, [
-      fontSize(px(20))
-    ]),
-
-    opacity(0.73),
-    color(white),
-
     ...Media.propertySplitOn(Media.Breakpoint.Phone, ~rule=display,
       ~lower=`none,
       ~upper=`initial

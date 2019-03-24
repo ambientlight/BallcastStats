@@ -1,4 +1,5 @@
 open Operators;
+
 GlobalCss.inject();
 
 module RouterProvider = {
@@ -17,6 +18,7 @@ module Shell = {
       | ["sign-up", ..._] => <Auth title mode=SignUp/>
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
       | ["verify-sign-up", ..._] => <Auth title mode=VerifySignUp/>
+      | ["typography-test", ..._] => <TypographyTest/>
       | _ => <Landing dispatch title/>
       }
     })
@@ -29,11 +31,11 @@ module Root = {
   let make = (~title: string, _children) => {
     ...ReasonReact.statelessComponent("Root"),
     render: _self =>
-      <Fragment> 
+      <MaterialUi.ThemeProvider theme=Theme.theme> 
         <RouterProvider component=Shell.make(~title)/>
         /* notification epics manages snackbars displayed based on actions dispatched */
         <NotificationEpics.Context/>
-      </Fragment>
+      </MaterialUi.ThemeProvider>
   };
 
   [@bs.deriving abstract]

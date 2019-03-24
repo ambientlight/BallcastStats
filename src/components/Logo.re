@@ -59,13 +59,7 @@ module WithCaption {
     ]);
 
     let caption = style([
-      marginLeft(px(16)),
-
-      color(white),
-      fontSize(em(1.2)),
-      fontFamily(Fonts.jost),
-      fontWeight(`normal),
-      letterSpacing(pxFloat(0.5))
+      !#marginLeft(px(16))
     ]);
   }
 
@@ -76,9 +70,9 @@ module WithCaption {
         className=([Styles.root, className |? ""] >|< " ")
         onClick=(_event => dispatch(`RouterPushRoute(Routes.root)))>
         <Core/>
-        <span className=([Styles.caption, hideCaptionOnSmall ? Media.Classes.atLeastTablet : ""] >|< " ")>
+        <MaterialUi.Typography variant=`Body1 className=([Styles.caption, hideCaptionOnSmall ? Media.Classes.atLeastTablet : ""] >|< " ")>
           {ReasonReact.string(caption)}
-        </span>
+        </MaterialUi.Typography>
       </div>
   }
 };
