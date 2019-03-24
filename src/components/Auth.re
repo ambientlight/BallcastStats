@@ -121,7 +121,7 @@ module Inner {
         </div>
       </form>;
     
-    let signUp = (state, retained, dispatch: action => unit) =>
+    let signUp = (_state, retained, dispatch: action => unit) =>
       <form className=Styles.form>
         <span className=Styles.welcomeTitle>{ReasonReact.string("Create your account")}</span>
         <MaterialUi.TextField
@@ -182,7 +182,7 @@ module Inner {
         </div>
       </form>;
 
-    let forgotPassword = (state, dispatch: action => unit) =>
+    let forgotPassword = (_state, _dispatch: action => unit) =>
       <form className=Styles.form>
         <span className=Styles.welcomeTitle>{ReasonReact.string("Forgot your password?")}</span>
         <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly.")}</span>
