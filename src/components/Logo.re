@@ -54,7 +54,8 @@ module WithCaption {
     let root = style([
       display(`flex), 
       alignItems(center),
-      justifyContent(center)
+      justifyContent(center),
+      cursor(`pointer)
     ]);
 
     let caption = style([
@@ -68,10 +69,12 @@ module WithCaption {
     ]);
   }
 
-  let make = (~caption, ~hideCaptionOnSmall=true, ~className=?, _children) => {
+  let make = (~dispatch: Store.Action.t => unit, ~caption, ~hideCaptionOnSmall=true, ~className=?, _children) => {
     ...ReasonReact.statelessComponent("Logo.WithCaption"),
     render: _self => 
-      <div className=([Styles.root, className |? ""] >|< " ")>
+      <div 
+        className=([Styles.root, className |? ""] >|< " ")
+        onClick=(_event => dispatch(`RouterPushRoute(Routes.root)))>
         <Core/>
         <span className=([Styles.caption, hideCaptionOnSmall ? Media.Classes.atLeastTablet : ""] >|< " ")>
           {ReasonReact.string(caption)}

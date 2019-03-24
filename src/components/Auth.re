@@ -419,6 +419,7 @@ module Inner {
     render: ({ state, retainedProps, send }) => 
       <div className=Styles.root>
         <Logo.WithCaption 
+          dispatch
           className=([Styles.logo, mode == SignUp ? Styles.hideLogoHackOnNarrowLayout : ""] >|< " ") 
           caption=title
           hideCaptionOnSmall=false/>

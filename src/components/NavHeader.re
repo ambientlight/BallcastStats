@@ -17,7 +17,7 @@ let make = (~title, ~dispatch: 'action => unit, ~className=?, _children) => {
   ...ReasonReact.statelessComponent(__MODULE__),
   render: _self =>
     <div className=([rootStyle, className |? ""] >|< " ")>
-      <Logo.WithCaption caption=title/>
+      <Logo.WithCaption dispatch caption=title/>
       <FlexOne/>
       <Button.Blended className=Media.Classes.atLeastTablet>
         {"About Us"}
