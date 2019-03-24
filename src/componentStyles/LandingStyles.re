@@ -41,7 +41,7 @@ module TopCTA {
       ~lower=`none,
       ~upper=`initial
     )
-  ])
+  ]);
 
   let ctaButton = style([
     color(hex("277939")),
@@ -50,7 +50,11 @@ module TopCTA {
     fontSize(px(18)),
     borderRadius(px(2)),
     fontWeight(`num(500)),
-  ] |> List.map(rule => !# rule))
+  ] |> List.map(rule => !# rule));
+
+  let ctaBlendedButton = style([
+    !#fontSize(px(18))
+  ])
 };
 
 module TopPreview {

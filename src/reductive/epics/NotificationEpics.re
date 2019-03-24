@@ -77,6 +77,7 @@ let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
     | (`CompleteNewPasswordRequestError(error), _)
     | (`SignUpError(error), _)
     | (`SignUpRequestRejected(error), _)
+    | (`SignOutError(error), _)
     | (`ResendVerificationError(error), _) => Some((error, Context.dispatch^)) 
     /* don't show notifications for code missmatch and code expired as they are handled in Auth */
     | (`ConfirmSignUpError(error, _, _), _) 

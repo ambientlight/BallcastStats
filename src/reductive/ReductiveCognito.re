@@ -50,6 +50,11 @@ type cognitoAction = [
   | `ResendVerificationCompleted(Js.t({.}), string as 'username)
   | `ResendVerificationError(Amplify.Error.t) 
   
+  | `SignOutRequest(unit)
+  | `SignOutStarted(unit)
+  | `SignOutCompleted(unit)
+  | `SignOutError(Amplify.Error.t)
+  
   | `ForceVerificationRequired(string as 'code, string as 'username)
 ];
 
@@ -110,6 +115,10 @@ let cognitoReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }
   | `ConfirmSignUpCompleted(_result) => {
+    user: SignedOut(),
+    state: reducer(state.state, action)
+  }
+  | `SignOutCompleted() => {
     user: SignedOut(),
     state: reducer(state.state, action)
   }
@@ -210,13 +219,28 @@ module Epics {
     )
   })
 
+  let signOut = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+    reductiveObservable
+    |> Utils.Rx.optMap(fun | (`SignOutRequest(()), _state) => Some(()) | _ => None)
+    |> mergeMap(_ => 
+      Rx.Observable.merge([|
+        Rx.Observable.of1(`SignOutStarted(())),
+        Amplify.Auth.signOut(())
+        |> Rx.Observable.fromPromise
+        |> map(_result => `SignOutCompleted(()))
+        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignOutError(error)))
+      |])
+    )
+  })
+
   let root = reductiveObservable => Rx.Observable.Operators.({
     Rx.Observable.merge([|
       reductiveObservable|.signIn,
       reductiveObservable|.completeNewPassword,
       reductiveObservable|.signUp,
       reductiveObservable|.confirmSignUp,
-      reductiveObservable|.resendSignUp
+      reductiveObservable|.resendSignUp,
+      reductiveObservable|.signOut
     |])
   });
 };

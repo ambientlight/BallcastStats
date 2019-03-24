@@ -31,6 +31,7 @@ module Inner {
     | `RouterPushRoute(string)
     | `ForceVerificationRequired(string as 'code, string as 'username)
     | `ResendVerificationRequest(string as 'username)
+    | `SignOutRequest(unit)
   ];
 
   type action = [ 
@@ -407,6 +408,7 @@ module Inner {
       | `RouterPushRoute(route) => ReasonReact.SideEffects(_self => dispatch(`RouterPushRoute(route)))
       | `CompleteNewPasswordRequest() => ReasonReact.SideEffects(_self => dispatch(`CompleteNewPasswordRequest(state.password)))
       | `ResendVerificationRequest(username) => ReasonReact.SideEffects(_self => dispatch(`ResendVerificationRequest(username)))
+      | `SignOutRequest() => ReasonReact.SideEffects(_self => dispatch(`SignOutRequest(())))
       | `SignInRequest() => ReasonReact.SideEffects(_self => dispatch(`SignInRequest(state.email, state.password)))
       | `SignUpRequest() => ReasonReact.SideEffects(_self => 
           state.password == state.passwordConfirmation 
@@ -424,7 +426,7 @@ module Inner {
         <MaterialUi.Card className=Styles.card>
           {switch((mode, signInState)){
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
-          | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
+          | (SignIn, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             Forms.newPassword(state, send)
           | (VerifySignUp, AccountVerificationRequired(_, username))
           | (VerifySignUp, Verifying(_, username))
@@ -432,8 +434,15 @@ module Inner {
           | (VerifySignUp, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
           | (VerifySignUp, _) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("Verification is not needed.")}</span>
-          | (_, SignedIn(_user)) => 
-            <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
+          | (SignIn, SignedIn(_user)) => 
+            <Fragment>
+              <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
+              <Button.Blended 
+                className=Styles.button
+                onClick=(_event => send(`SignOutRequest(())))>
+                {"Logout"}
+              </Button.Blended>
+            </Fragment>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)
           | (SignUp, _) => Forms.signUp(state, retainedProps, send)
           | (ForgotPassword, _) => Forms.forgotPassword(state, send)

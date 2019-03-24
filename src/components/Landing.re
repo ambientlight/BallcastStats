@@ -16,9 +16,7 @@ module TopCTA {
           <br/>
           {ReasonReact.string("Embed it directly into your publication.")}
         </span>
-        <div>
-          <Button.Raised className=Styles.ctaButton>{"Try now for free"}</Button.Raised>
-        </div>
+        <Button.Blended className=([AuthStyles.button, Styles.ctaBlendedButton] >|< " ")>{"Try now for free"}</Button.Blended>
       </div>
   }
 };

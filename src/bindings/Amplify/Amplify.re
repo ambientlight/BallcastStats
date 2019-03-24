@@ -62,6 +62,13 @@ module Auth {
     }
   };
 
+  module SignOutOpts {
+    [@bs.deriving abstract]
+    type t = {
+      [@bs.optional] global: bool
+    };
+  }
+
   [@bs.module "aws-amplify"][@bs.scope "Auth"]
   external signIn: (~username: string, ~password: string) => Js.Promise.t(CognitoUser.t) = "signIn";
 
@@ -76,4 +83,7 @@ module Auth {
 
   [@bs.module "aws-amplify"][@bs.scope "Auth"]
   external resendSignUp: (~username: string) => Js.Promise.t(string) = "resendSignUp";
+
+  [@bs.module "aws-amplify"][@bs.scope "Auth"]
+  external signOut: (~opts: option(SignOutOpts.t)=?, unit) => Js.Promise.t(Js.t({.})) = "signOut";
 };
