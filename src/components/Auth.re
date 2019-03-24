@@ -2,7 +2,7 @@ open Operators;
 open Css;
 open Webapi;
 
-type mode = SignIn | SignUp | ForgotPassword;
+type mode = SignIn | SignUp | ForgotPassword | VerifySignUp;
 module Styles = AuthStyles;
 
 module Inner {
@@ -426,10 +426,12 @@ module Inner {
           | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
           | (_, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
             Forms.newPassword(state, send)
-          | (_, AccountVerificationRequired(_, username))
-          | (_, Verifying(_, username))
-          | (_, ResendingVerification(username))
-          | (_, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
+          | (VerifySignUp, AccountVerificationRequired(_, username))
+          | (VerifySignUp, Verifying(_, username))
+          | (VerifySignUp, ResendingVerification(username))
+          | (VerifySignUp, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
+          | (VerifySignUp, _) => 
+            <span className=Styles.welcomeTitle>{ReasonReact.string("Verification is not needed.")}</span>
           | (_, SignedIn(_user)) => 
             <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)

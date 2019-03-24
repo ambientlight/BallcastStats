@@ -17,8 +17,19 @@ let goToSignInAfterAccountConfirmation = (reduxObservable: Rx.Observable.t(('act
   |> optMap(fun | (`ConfirmSignUpCompleted(user), _) => Some(user) | _ => None)
   |> map(_result => `RouterPushRoute(Routes.signIn));
 
+let goToSignInVerification = (reduxObservable: Rx.Observable.t(('action, 'state))) => Amplify.Auth.SignUpResult.(
+  reduxObservable
+  |> optMap(fun 
+    | (`SignUpCompleted(signUpResult), _) when !(signUpResult |. userConfirmedGet) => Some(signUpResult |. userGet |. Amplify.Auth.CognitoUser.usernameGet)
+    | (`SignInError(error, username), _) when (error |. Amplify.Error.codeGet == "UserNotConfirmedException") => Some(username)
+    | _ => None)
+  |> map(_username => `RouterPushRoute(Routes.verifySignUp))
+);
+
+
 let epic = reduxObservable => 
   Rx.Observable.merge([|
     reduxObservable |. goToDashboardAfterSuccessfulLogin,
-    reduxObservable |. goToSignInAfterAccountConfirmation
+    reduxObservable |. goToSignInAfterAccountConfirmation,
+    reduxObservable |. goToSignInVerification
   |]);

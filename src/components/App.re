@@ -16,6 +16,7 @@ module Shell = {
       | ["sign-in", ..._] => <Auth title mode=SignIn/>
       | ["sign-up", ..._] => <Auth title mode=SignUp/>
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
+      | ["verify-sign-up", ..._] => <Auth title mode=VerifySignUp/>
       | _ => <Landing dispatch title/>
       }
     })
