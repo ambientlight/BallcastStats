@@ -31,7 +31,7 @@ module Root = {
   let make = (~title: string, _children) => {
     ...ReasonReact.statelessComponent("Root"),
     render: _self =>
-      <MaterialUi.ThemeProvider theme=Theme.theme> 
+      <MaterialUi.ThemeProvider theme=AppTheme.theme> 
         <RouterProvider component=Shell.make(~title)/>
         /* notification epics manages snackbars displayed based on actions dispatched */
         <NotificationEpics.Context/>

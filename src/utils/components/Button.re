@@ -75,12 +75,7 @@ module BlendedBase_ {
       color(white),
       fontFamily(Fonts.gobold), 
       fontWeight(`num(300)),
-      letterSpacing(pxFloat(0.64)),
-
-      Media.atMost(Media.Breakpoint.Tablet, [
-        fontSize(`px(16)),
-        padding2(~v=px(24), ~h=px(20))
-      ] |> map(rule => !# rule))
+      letterSpacing(pxFloat(0.64))
     ]|> map(rule => !# rule))
   );
 

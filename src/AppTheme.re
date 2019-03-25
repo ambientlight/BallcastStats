@@ -58,6 +58,18 @@ let whiteText = TypeText.make(
 
 let text = whiteText;
 
+/* 
+let actionPalette = TypeAction.make(
+  ~active="rgba(0, 0, 0, 0.54)",
+  ~hover="rgba(0, 0, 0, 0.08)",
+  ~hoverOpacity=0.08,
+  ~selected="rgba(0, 0, 0, 0.14)",
+  ~disabled="rgba(0, 0, 0, 0.26)",
+  ~disabledBackground="rgba(0, 0, 0, 0.12)",
+  ()
+)
+*/
+
 let typography = Typography.make(
 	~h1=TypographyStyleOptions.make(
 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
@@ -188,7 +200,7 @@ let theme = MaterialUi.Theme.create(
 			~type_="dark",
 			~primary=pitchGreen,
 			~secondary=burntGrass,
-			~text,
+      ~text,
 			()),
 		~typography,
 		~shape=Shape.make(~borderRadius=4.0, ()),

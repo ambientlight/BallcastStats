@@ -107,11 +107,6 @@ let button = style([
   marginBottom(px(12)),
   border(px(1), `solid, rgba(255, 255, 255, 0.3)),
   width(`percent(80.0)),
-
-  ...Media.rulesSplitOn(Media.Breakpoint.Phone,
-    ~lower=[!# padding2(~v=px(12), ~h=px(0))],
-    ~upper=[!# padding2(~v=px(20), ~h=px(0))]
-  )
 ] |> List.map(rule => !# rule));
 
 let actionPanel = style([

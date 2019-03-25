@@ -8,17 +8,32 @@ module Styles {
     ])
   ]);
 
-  let warning = style([
-    !#backgroundColor(hex("BD891A"))
-  ]);
+  let warning = MaterialUi.Theme.(style([
+    !#backgroundColor(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.secondaryGet|.PaletteColor.lightGet),
+    ),
+    !#color(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.secondaryGet|.PaletteColor.contrastTextGet)
+    )
+  ]));
 
-  let success = style([
-    !#backgroundColor(hex("226831"))
-  ])
+  let success = MaterialUi.Theme.(style([
+    !#backgroundColor(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.lightGet)
+    ),
+    !#color(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.contrastTextGet)
+    )
+  ]));
 
-  let error = style([
-    !#backgroundColor(hex("9c1c1c"))
-  ])
+  let error = MaterialUi.Theme.(style([
+    !#backgroundColor(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet|.PaletteColor.mainGet)
+    ),
+    !#color(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet|.PaletteColor.contrastTextGet)
+    )
+  ]));
 
   let message = style([
     display(`flex), 
@@ -26,7 +41,7 @@ module Styles {
   ]);
 
   let messageText = style([
-    marginLeft(px(16))
+    !#marginLeft(px(16))
   ]);
 };
 
@@ -72,11 +87,11 @@ let make = (~key=?, ~isOpen, ~message="", ~type_=Success, ~onExited, _children) 
         message=(
           <div className=Styles.message>
             <MaterialUiIcons.Warning/>
-            <span className=Styles.messageText>{ReasonReact.string(message)}</span>
+            <MaterialUi.Typography color=`Inherit className=Styles.messageText>{ReasonReact.string(message)}</MaterialUi.Typography>
           </div>)
         
         action=(
-          <MaterialUi.IconButton key="close" color=`Inherit onClick=(_event => send(SetOpen(false)))>
+          <MaterialUi.IconButton color=`Inherit key="close" onClick=(_event => send(SetOpen(false)))>
             <MaterialUiIcons.Close/>
           </MaterialUi.IconButton>
         )>

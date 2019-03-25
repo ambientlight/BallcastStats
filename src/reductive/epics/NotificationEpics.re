@@ -96,6 +96,7 @@ let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => 
   |> optMap(fun
     | (`ResendVerificationCompleted(_), _) => Some(("Verification code has been send. Please check your mailbox.", Context.dispatch^))
     | (`ConfirmSignUpCompleted(_), _) => Some(("Account verification completed. Continue by signing in.", Context.dispatch^))
+    | (`SignInCompleted(_), _) => Some(("Sign in completed.", Context.dispatch^))
     | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
   |> tap(~next=((message, dispatch)) => 

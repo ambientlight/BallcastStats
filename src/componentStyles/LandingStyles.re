@@ -14,15 +14,19 @@ module TopCTA {
   ]);
 
   let title = style([
-    marginBottom(px(36)),
-    ...Media.property2SplitOn(Media.Breakpoint.Phone, ~rule=(fontSize, lineHeight), 
-      ~lower=(px(28), px(36)),
-      ~upper=(px(42), px(58))
-    )
+    !#marginBottom(px(36)),
+    Media.below(Media.Breakpoint.Phone, [
+      !#fontSize(px(28)),
+      !#lineHeight(px(36))
+    ]),
+    Media.atLeast(Media.Breakpoint.Phone, [
+      !#fontSize(px(42)),
+      !#lineHeight(px(58))
+    ])
   ]);
 
   let subtitle = style([
-    marginBottom(px(54)),
+    !#marginBottom(px(54)),
     ...Media.propertySplitOn(Media.Breakpoint.Phone, ~rule=display,
       ~lower=`none,
       ~upper=`initial
@@ -31,7 +35,12 @@ module TopCTA {
 
   let ctaBlendedButton = style([
     !#fontSize(px(18)),
-    !#backgroundColor(rgba(255, 255, 255, 0.25))
+    !#backgroundColor(rgba(255, 255, 255, 0.25)),
+
+    ...Media.rulesSplitOn(Media.Breakpoint.Phone,
+      ~lower=[!# padding2(~v=px(12), ~h=px(0))],
+      ~upper=[!# padding2(~v=px(20), ~h=px(0))]
+    )
   ])
 };
 
