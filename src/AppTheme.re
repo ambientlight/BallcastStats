@@ -4,8 +4,9 @@ open MaterialUi.ThemeOptions;
 let pitchGreen = Primary.make(
 	~main="#226831",
 	~light="#52975c",
-	~dark="#003c08",
-	~contrastText="#ffffff",
+  ~dark="#003c08",
+  /* IMPORTANT: has to be rgb so we can add the opacity below */
+	~contrastText="rgb(255, 255, 255)",
 
 	~_50="#e9f7ec",
 	~_100="#caead0",
@@ -28,8 +29,10 @@ let pitchGreen = Primary.make(
 let burntGrass = Secondary.make(
 	~main="#c19f25",
 	~light="#f3b94d",
-	~dark="#885c00",
-	~contrastText="#000000",
+  ~dark="#885c00",
+  
+  /* IMPORTANT: has to be rgb so we can add the opacity below */
+	~contrastText="rgb(0, 0, 0)",
 
 	~_50="#f7f8e5",
 	~_100="#ebecbe",
@@ -49,15 +52,24 @@ let burntGrass = Secondary.make(
 	()
 );
 
-let whiteText = TypeText.make(
-	~primary="rgba(255, 255, 255, 1)",
-	~secondary="rgba(255, 255, 255, 0.75)",
-	~disabled="rgba(255, 255, 255, 0.38)",
-	~hint="rgba(255, 255, 255, 0.38)",
+let primary = pitchGreen;
+let secondary = burntGrass;
+
+/* ...yeah, but it works */
+let rgbAddAlpha = (rgb, alpha) => 
+  rgb 
+  |> Js.String.replace("rgb", "rgba")
+  |> Js.String.replace(")", ", " ++ string_of_float(alpha) ++ ")");
+
+let text = TypeText.make(
+	/* binds to contrast colors of our palettes since layouts mostly contain palette colors on bg */
+	~primary=primary|.Primary.contrastTextGet|.Belt.Option.getExn,
+	~secondary=secondary|.Secondary.contrastTextGet|.Belt.Option.getExn,
+	~disabled=primary|.Primary.contrastTextGet|.Belt.Option.getExn|.rgbAddAlpha(0.38),
+	~hint=primary|.Primary.contrastTextGet|.Belt.Option.getExn|.rgbAddAlpha(0.65),
 	());
 
-let text = whiteText;
-
+/* TODO: probably also need to bind this to colors, but for now haven't seen where it is used */
 /* 
 let actionPalette = TypeAction.make(
   ~active="rgba(0, 0, 0, 0.54)",
@@ -92,7 +104,7 @@ let typography = Typography.make(
 	~h3=TypographyStyleOptions.make(
 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
-		~fontWeight="400",
+		~fontWeight="300",
 		~fontSize="3rem",
 		~letterSpacing="0em",
 		~lineHeight="1.04",
@@ -101,7 +113,7 @@ let typography = Typography.make(
 	~h4=TypographyStyleOptions.make(
 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
-		~fontWeight="400",
+		~fontWeight="300",
 		~fontSize="2.125rem",
 		~letterSpacing="0.00735em",
 		~lineHeight="1.17",
@@ -126,7 +138,7 @@ let typography = Typography.make(
 		()
 	),
 	~subtitle1=TypographyStyleOptions.make(
-		~color=text|.TypeText.secondaryGet|.Belt.Option.getExn,
+		~color=text|.TypeText.hintGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
 		~fontWeight="400",
 		~fontSize="1rem",
@@ -135,7 +147,7 @@ let typography = Typography.make(
 		()
 	),
 	~subtitle2=TypographyStyleOptions.make(
-		~color=text|.TypeText.secondaryGet|.Belt.Option.getExn,
+		~color=text|.TypeText.hintGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
 		~fontWeight="500",
 		~fontSize="0.875rem",
@@ -162,7 +174,7 @@ let typography = Typography.make(
 		()
 	),
 	~caption=TypographyStyleOptions.make(
-		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
+		~color=text|.TypeText.hintGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
 		~fontWeight="400",
 		~fontSize="0.75rem",
@@ -193,17 +205,67 @@ let typography = Typography.make(
 	()
 );
 
+let overrides = Overrides.make(
+	~muiInput=InputClassKey.make(
+    ~underline=ReactDOMRe.Style.make(
+      /* TODO: bind to the palette color (override is a bit more complex here)
+      style([
+        !# borderBottom(px(1), `solid, rgba(255, 255, 255, 0.6)),
+        selector("&:before", [
+          !# borderBottom(px(0), `solid, white)
+        ]),
+        selector("&:hover::before", [
+          !# borderBottom(px(1), `solid, white)
+        ]),
+        selector("&:after", [
+          !# borderBottom(px(1), `solid, white)
+        ])
+      ])
+      */
+      ()
+    ),
+    ()),
+    
+  ~muiInputLabel=InputLabelClassKey.make(
+    ~root=ReactDOMRe.Style.make(
+      ~color=text|.TypeText.hintGet|.Belt.Option.getExn,
+      ~fontFamily=typography|.Typography.subtitle1Get|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn,
+      ~textTransform="uppercase",
+      ()
+    ),
+    ()),
+
+  ~muiCheckbox=CheckboxClassKey.make(
+    ~root=ReactDOMRe.Style.make(
+      ~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
+      ()
+    ),
+    ~colorPrimary=ReactDOMRe.Style.make(
+      ~color=primary|.Primary.mainGet,
+      ()
+    ),
+    ~colorSecondary=ReactDOMRe.Style.make(
+      ~color=secondary|.Secondary.mainGet,
+      ()
+    ),
+    ()
+  ),
+
+  ()
+);
+
 let theme = MaterialUi.Theme.create(
   make(
 		/* TODO: synchronize breakpoints */
 		~palette=PaletteOptions.make(
 			~type_="dark",
-			~primary=pitchGreen,
-			~secondary=burntGrass,
+			~primary,
+			~secondary,
       ~text,
 			()),
-		~typography,
-		~shape=Shape.make(~borderRadius=4.0, ()),
+    ~typography,
+    ~overrides,
+    ~shape=Shape.make(~borderRadius=4.0, ()),
 		()
 	)
 );

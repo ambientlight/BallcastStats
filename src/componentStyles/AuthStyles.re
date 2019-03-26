@@ -1,7 +1,7 @@
 open Operators;
 open Css;
 
-let root = style([
+let root = MaterialUi.Theme.(style([
   display(`flex),
   alignItems(`center),
   justifyContent(`center),
@@ -14,13 +14,15 @@ let root = style([
   bottom(`zero),
   
   Media.atMost(Media.Breakpoint.Phone, [
-    backgroundColor(hsla(133, 51, 27, 1.0))
+    backgroundColor(
+      raw(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet)
+    )
   ]),
   Media.atLeast(Media.Breakpoint.Tablet, [
     backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"])),
     backgroundSize(`cover)
   ])
-]);
+]));
 
 let logo = style([
   top(px(20)),
@@ -47,13 +49,15 @@ let hideLogoHackOnNarrowLayout = style([
   ])
 ]);
 
-let card = style([
+let card = MaterialUi.Theme.(style([
   display(`flex),
   flexDirection(`column),
   alignItems(`center),
   justifyContent(`center),
 
-  !#backgroundColor(hsla(133, 51, 27, 1.0)),
+  !#backgroundColor(
+    raw(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet)
+  ),
   Media.atLeast(Media.Breakpoint.Tablet, [
     /* TODO: fix important fo box shadow on bs-css */
     /* !#boxShadow(`transparent), */
@@ -64,7 +68,7 @@ let card = style([
     ~lower=(`percent(100.0), `percent(100.0)), 
     ~upper=(`px(500), `px(450))
   )
-]);
+]));
 
 let form = style([
   display(`flex),
@@ -80,32 +84,25 @@ let form = style([
     input:-webkit-autofill:focus, 
     input:-webkit-autofill:active
   ", [
-    unsafe("-webkit-box-shadow", "0 0 0 30px #226731 inset !important"),
-    unsafe("-webkit-text-fill-color", "white !important")
+    unsafe("-webkit-box-shadow", "0 0 0 30px " ++ MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet) ++ " inset !important"),
+    unsafe("-webkit-text-fill-color", MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.contrastTextGet) ++ " !important")
   ])
 ]);
 
 let welcomeTitle = style([
-  fontFamily(Fonts.jost),
-  fontWeight(`num(300)),
-
-  color(white),
-  fontSize(px(32)),
-
-  ...Media.propertySplitOn(Media.Breakpoint.Phone, ~rule=display,
-    ~lower=`none,
-    ~upper=`initial
-  )
+  Media.below(Media.Breakpoint.Phone, [!#display(`none)]),
+  Media.atLeast(Media.Breakpoint.Phone, [!#display(`initial)])
 ]);
 
 let textField = style([
   width(`percent(100.0)),
+  /* default margin is a bit too small so the label easily hits above objects */
+  !# marginTop(`px(8))
 ]);
 
 let button = style([
   marginTop(px(24)),
   marginBottom(px(12)),
-  border(px(1), `solid, rgba(255, 255, 255, 0.3)),
   width(`percent(80.0)),
 ] |> List.map(rule => !# rule));
 
@@ -118,11 +115,6 @@ let actionPanel = style([
 
 let checkbox = style([
   !# color(white)
-]);
-
-let label = style([
-  color(white),
-  fontFamily(Fonts.jost)
 ]);
 
 let accesoryLabel = style([

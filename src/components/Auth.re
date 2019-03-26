@@ -50,135 +50,112 @@ module Inner {
   module Forms {
     let signIn = (state, retained, dispatch: action => unit) =>
       <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) })>
-        <span className=Styles.welcomeTitle>{ReasonReact.string("Glad to see you back!")}</span>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Glad to see you back!"</MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.email)
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
-          inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => {
-            retained.emailRef = Js.Nullable.toOption(element);
-          })
-
+          className=Styles.textField
           autoComplete="username"
           type_="email"
           label=ReasonReact.string("email")
+          inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => {
+            retained.emailRef = Js.Nullable.toOption(element);
+          })
           onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
 
         <MaterialUi.TextField value=`String(state.password)
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
+          className=Styles.textField
+          autoComplete="current-password"
+          type_="password"
+          label=ReasonReact.string("password")
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
             Rx.Observable.fromEvent(element, "keydown")
             |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
             |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
             |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignInRequest())))
           }))
-          autoComplete="current-password"
-          type_="password"
-          label=ReasonReact.string("password")
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
 
         <div className=Styles.actionPanel>
           <MaterialUi.FormControl>
             <MaterialUi.FormControlLabel 
-              label=<span className=Styles.label>{ReasonReact.string("Stay signed in")}</span>
-              control=<MaterialUi.Checkbox
+              label=ReasonReact.string("Stay signed in")
+              control=<MaterialUi.Checkbox color=`Default
                 value="remember"
                 checked=`Bool(state.staySignedIn)
-                onChange=((_event, value) => dispatch(`StaySignedInChanged(value)))
-                classes=[
-                  MaterialUi.Checkbox.Classes.Root(Styles.checkbox),
-                  MaterialUi.Checkbox.Classes.Checked(Styles.checkbox)
-                ]/>
+                onChange=((_event, value) => dispatch(`StaySignedInChanged(value)))/>
             />
           </MaterialUi.FormControl>
-          <span
-            className=([Styles.accesoryLabel, Styles.actionLabel] >|< " ")
-            onClick=(_event => dispatch(`RouterPushRoute(Routes.forgot)))>
-            {ReasonReact.string("Forgot password?")}
-            </span>
+          <LabelButton color=`TextPrimary onClick=(_event => dispatch(`RouterPushRoute(Routes.forgot)))>
+            <MaterialUi.Typography variant=`Body2 color=`Inherit>"Forgot password?"</MaterialUi.Typography>
+          </LabelButton>
         </div>
-        <Button.Blended 
+        <MaterialUi.Button variant=`Outlined
           className=Styles.button 
           onClick=(_event => { 
             dispatch(`SignInRequest());
           })>
           {state.showsAutofillInSignIn ? "Use Autofilled Credentials" : "Sign In"}
-        </Button.Blended>
+        </MaterialUi.Button>
         
         <div className=Styles.signUpContainer>
-          <span className=Styles.accesoryLabel>{ReasonReact.string("Don't have an account?")}</span>
-          <span 
-            className=([Styles.label, Styles.actionLabel] >|< " ")
+          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>"Don't have an account?"</MaterialUi.Typography>
+          <LabelButton color=`TextPrimary 
+            emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signUp)))>
-            {ReasonReact.string("Sign up")}
-          </span>
+            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>"Sign up"</MaterialUi.Typography>
+          </LabelButton>
         </div>
       </form>;
     
     let signUp = (_state, retained, dispatch: action => unit) =>
       <form className=Styles.form>
-        <span className=Styles.welcomeTitle>{ReasonReact.string("Create your account")}</span>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Create your account"</MaterialUi.Typography>
         <MaterialUi.TextField
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
+          className=Styles.textField
           type_="username"
           autoComplete="username"
           label=ReasonReact.string("email")
           onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
+          className=Styles.textField
           type_="password"
           autoComplete="new-password"
           label=ReasonReact.string("password")
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
+          className=Styles.textField    
+          type_="password"
+          autoComplete="new-password"
+          label=ReasonReact.string("confirm password")
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
             Rx.Observable.fromEvent(element, "keydown")
             |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
             |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
             |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignUpRequest())))
           }))
-          
-          type_="password"
-          autoComplete="new-password"
-          label=ReasonReact.string("confirm password")
           onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))/>
-        <Button.Blended 
+
+        <MaterialUi.Button variant=`Outlined
           className=Styles.button
           onClick=(_event => dispatch(`SignUpRequest(())))>
             "Sign Up"
-        </Button.Blended>
+        </MaterialUi.Button>
         <div className=Styles.signUpContainer>
-          <span className=Styles.accesoryLabel>{ReasonReact.string("Already have an account?")}</span>
-          <span 
-            className=([Styles.label, Styles.actionLabel] >|< " ")
+          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>"Already have an account?"</MaterialUi.Typography>
+          <LabelButton color=`TextPrimary 
+            emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signIn)))>
-            {ReasonReact.string("Sign in")}
-          </span>
+            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>"Sign in"</MaterialUi.Typography>
+          </LabelButton>
         </div>
         <div className=Styles.additionalInfoContainer>
-          <span className=Styles.additionalInfoLabel>{ReasonReact.string("By registering, you agree to Ballcast Stat's")}</span>
-          <span className=([Styles.additionalInfoLabel, Styles.actionLabel] >|< " ")>{ReasonReact.string("Terms of Service")}</span>
-          <span className=Styles.additionalInfoLabel>{ReasonReact.string("and")}</span>
-          <span className=([Styles.additionalInfoLabel, Styles.actionLabel] >|< " ")>{ReasonReact.string("Privacy Policy.")}</span>
+          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>{"By registering, you agree to Ballcast Stat's"}</MaterialUi.Typography>
+          <LabelButton color=`TextPrimary emphasized=true>
+            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>"Terms of Service"</MaterialUi.Typography>
+          </LabelButton>
+          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>{"and"}</MaterialUi.Typography>
+          <LabelButton color=`TextPrimary emphasized=true>
+            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>"Privacy Policy."</MaterialUi.Typography>
+          </LabelButton>
         </div>
       </form>;
 
@@ -190,7 +167,7 @@ module Inner {
           type_="email"
           label=ReasonReact.string("email")
           className=Styles.textField/>
-        <Button.Blended className=Styles.button>"Send"</Button.Blended>
+        <MaterialUi.Button variant=`Outlined className=Styles.button>"Send"</MaterialUi.Button>
       </form>;
 
     let newPassword = (state, dispatch: action => unit) =>
@@ -220,11 +197,11 @@ module Inner {
           label=ReasonReact.string("confirm password")
           onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))
           />
-        <Button.Blended 
+        <MaterialUi.Button variant=`Outlined
           className=Styles.button 
           onClick=(_event => dispatch(`CompleteNewPasswordRequest()))>
           "Confirm"
-        </Button.Blended>
+        </MaterialUi.Button>
       </form>;
 
     let accountVerification = (~username, ~signInState: ReductiveCognito.signInState, ~state, ~retained, ~dispatch: action => unit) => {
@@ -300,17 +277,17 @@ module Inner {
         </span>
 
         {verifying || resendingCode
-          ? <Button.Blended 
+          ? <MaterialUi.Button variant=`Outlined
               disabled=true
               className=merge([Styles.button, style([opacity(0.7)])])
               onClick=(_event => ())>
               {resendingCode ? "resending..." : "verifying..."}
-            </Button.Blended>
-          : <Button.Blended 
+            </MaterialUi.Button>
+          : <MaterialUi.Button variant=`Outlined 
               className=Styles.button
               onClick=(_event => dispatch(`ResendVerificationRequest(username)))>
               {"Resend verification code"}
-            </Button.Blended>
+            </MaterialUi.Button>
         }
       </form>
     };
@@ -438,11 +415,11 @@ module Inner {
           | (SignIn, SignedIn(_user)) => 
             <Fragment>
               <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
-              <Button.Blended 
+              <MaterialUi.Button variant=`Outlined 
                 className=Styles.button
                 onClick=(_event => send(`SignOutRequest(())))>
                 {"Logout"}
-              </Button.Blended>
+              </MaterialUi.Button>
             </Fragment>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)
           | (SignUp, _) => Forms.signUp(state, retainedProps, send)
