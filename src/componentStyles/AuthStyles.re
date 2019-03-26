@@ -153,7 +153,7 @@ let additionalInfoContainer = style([
 ]);
 
 let smallTopMargin = style([
-  marginTop(px(32))
+  !#marginTop(px(32))
 ]);
 
 let progressSpinner = style([
@@ -170,7 +170,7 @@ let progressSpinner = style([
   } */
 
 
-let codeInputBase = style([
+let codeInputBase = MaterialUi.ThemeOptions.(style([
   marginTop(px(8)),
 
   selector("input[type=\"number\"]::-webkit-outer-spin-button, input[type=\"number\"]::-webkit-inner-spin-button", [
@@ -183,7 +183,8 @@ let codeInputBase = style([
   ]),
 
   selector("&>input", [
-    fontFamily(Fonts.gobold),
+    /* fontFamily(AppTheme.typography|.Typography.subtitle1Get|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn), */
+    fontFamily(AppTheme.typography|.Typography.buttonGet|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn),
     borderRadius(px(4)),
     margin(px(4)),
     paddingLeft(px(9)),
@@ -196,14 +197,14 @@ let codeInputBase = style([
       backgroundColor(transparent)
     ])
   ])
-])
+]));
 
 let normalCodeInput = style([
   /* make sure these are not override by ReactCodeInput disabled element inline style */
   selector("&>input", [
-    !#border(px(1), `solid, hsl(133, 39, 45)),
+    !#border(px(1), `solid, raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.lightGet))),
     !#color(transparent),
-    !#backgroundColor(`hex("308141")),
+    !#backgroundColor(raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet))),
     textShadow(white),
     outlineColor(hsl(133, 39, 60))
   ])

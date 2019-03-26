@@ -161,8 +161,8 @@ module Inner {
 
     let forgotPassword = (_state, _dispatch: action => unit) =>
       <form className=Styles.form>
-        <span className=Styles.welcomeTitle>{ReasonReact.string("Forgot your password?")}</span>
-        <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly.")}</span>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Forgot your password?"</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly."}</MaterialUi.Typography>
         <TextField
           type_="email"
           label=ReasonReact.string("email")
@@ -172,14 +172,10 @@ module Inner {
 
     let newPassword = (state, dispatch: action => unit) =>
       <form className=Styles.form autoComplete="nope">
-        <span className=Styles.welcomeTitle>{ReasonReact.string("New password required")}</span>
-        <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("You have logged in with a temporary password, you new to create a new password for your account.")}</span>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{"New password required"}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"You have logged in with a temporary password, you new to create a new password for your account."}</MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.password)
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-
+          className=Styles.textField
           name="password"
           type_="password"
           autoComplete="nope"
@@ -187,11 +183,7 @@ module Inner {
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))
           />
         <MaterialUi.TextField value=`String(state.passwordConfirmation)
-          /* FIXME: when using wrapped TextField focus gets messed up, in the meantime use the wrapped styles here directly */
-          className=([TextField.Styles.baseMargin, Styles.textField] >|< " ")
-          _InputLabelProps=TextField.Styles.inputLabelProps
-          _InputProps=TextField.Styles.inputProps
-          
+          className=Styles.textField
           type_="password"
           autoComplete="nope"
           label=ReasonReact.string("confirm password")
@@ -237,9 +229,9 @@ module Inner {
             }
           });
         })>
-        <span className=Styles.welcomeTitle>{ReasonReact.string("Verify your account")}</span>
-        <span className=Styles.accesoryLabel>{ReasonReact.string("We have send a verification code to your email address")}</span>
-        <span className=merge([Styles.accesoryLabel, Styles.smallTopMargin])>{ReasonReact.string("please enter it here")}</span>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{"Verify your account"}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1>{"We have send a verification code to your email address"}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"please enter it here"}</MaterialUi.Typography>
         <ReactCodeInput
           disabled=(verifying || codeExpired)
           value=state.verificationCode
@@ -266,15 +258,12 @@ module Inner {
               dispatch(`VerificationCodeChanged(event, username))
             }
           }))/>
-        <span className=style([
-          color(hsl(19, 100, 50)),
-          fontFamily(Fonts.jost),
-          height(px(24))])>
-          {ReasonReact.string(
+        <MaterialUi.Typography color=`Error variant=`Subtitle1 style=ReactDOMRe.Style.make(~height="24px", ())>
+          {
             codeExpired ? "code expired, please resend" :
-            codeIncorrect ? "verification code incorrect" : "")
+            codeIncorrect ? "verification code incorrect" : ""
           }
-        </span>
+        </MaterialUi.Typography>
 
         {verifying || resendingCode
           ? <MaterialUi.Button variant=`Outlined
