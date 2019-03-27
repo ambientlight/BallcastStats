@@ -18,7 +18,8 @@
     "reductive",
     "reductive-dev-tools",
     "bs-webapi",
-    "@jsiebern/bs-material-ui"
+    "@jsiebern/bs-material-ui",
+    "bs-react-intl"
   ],
   "warnings": {
     

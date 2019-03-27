@@ -1,4 +1,5 @@
 open Operators;
+open LandingLocale;
 
 module TopCTA {
   module Styles = LandingStyles.TopCTA;
@@ -7,9 +8,9 @@ module TopCTA {
     render: _self => 
       <div className=([Styles.root, className |? ""] >|< " ")>
         <MaterialUi.Typography variant=`H3 className=Styles.title>
-          {ReasonReact.string("Enhance your")}
+          <ReactIntl.DefinedMessage message=locale##ctaMessageP1/>
           <br/>
-          {ReasonReact.string("football publications.")}
+          <ReactIntl.DefinedMessage message=locale##ctaMessageP2/>
         </MaterialUi.Typography>
         <MaterialUi.Typography variant=`Subtitle1 className=Styles.subtitle>
           {ReasonReact.string("Quickly build stats and assemble formations.")}

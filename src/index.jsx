@@ -1,5 +1,12 @@
 import * as React from 'react'
 import { render } from 'react-dom'
+import { addLocaleData } from 'react-intl'
+import enLocaleData from 'react-intl/locale-data/en'
+import ruLocaleData from 'react-intl/locale-data/ru'
+
+addLocaleData(enLocaleData);
+addLocaleData(ruLocaleData);
+
 import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Root from './Root'

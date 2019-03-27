@@ -8,6 +8,8 @@ module RouterProvider = {
     Store.store);
 };
 
+let locale = Locale.En;
+
 /** Base routing login goes here */
 module Shell = {
   let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, _children) => {
@@ -31,11 +33,15 @@ module Root = {
   let make = (~title: string, _children) => {
     ...ReasonReact.statelessComponent("Root"),
     render: _self =>
-      <MaterialUi.ThemeProvider theme=AppTheme.theme> 
-        <RouterProvider component=Shell.make(~title)/>
-        /* notification epics manages snackbars displayed based on actions dispatched */
-        <NotificationEpics.Context/>
-      </MaterialUi.ThemeProvider>
+      <ReactIntl.IntlProvider 
+        locale=(locale|.Locale.toString)
+        messages=(locale|.Locale.toMessages|.ReactIntl.messagesArrayToDict)>
+        <MaterialUi.ThemeProvider theme=AppTheme.theme> 
+          <RouterProvider component=Shell.make(~title)/>
+          /* notification epics manages snackbars displayed based on actions dispatched */
+          <NotificationEpics.Context/>
+        </MaterialUi.ThemeProvider>
+      </ReactIntl.IntlProvider>
   };
 
   [@bs.deriving abstract]

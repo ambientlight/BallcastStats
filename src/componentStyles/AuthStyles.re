@@ -113,10 +113,6 @@ let actionPanel = style([
   alignItems(`center)
 ]);
 
-let checkbox = style([
-  !# color(white)
-]);
-
 let actionLabel = style([
   selector("&:hover", [
     textDecoration(`underline),
@@ -143,9 +139,9 @@ let smallTopMargin = style([
   !#marginTop(px(32))
 ]);
 
-let progressSpinner = style([
-  !# color(white)
-]);
+let progressSpinner = MaterialUi.ThemeOptions.(style([
+  !# color(raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.contrastTextGet)))
+]));
 
 let codeInputBase = MaterialUi.ThemeOptions.(style([
   marginTop(px(8)),
