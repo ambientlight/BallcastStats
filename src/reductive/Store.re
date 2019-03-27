@@ -5,10 +5,11 @@ module Action = {
     | `DummySetSession(string) 
     | ReductiveRouter.routerActions
     | ReductiveCognito.cognitoAction
+    | ReductiveLocale.localeActions
   ];
 }
 
-let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) = 
+let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) = 
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="reductive",
@@ -18,18 +19,21 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
       ())
   );
 
-let initial: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)) = {
-  user: SignedOut(),
+let initial: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) = {
+  locale: Locale.En,
   state: {
-    route: ReductiveRouter.initialRoute,
+    user: SignedOut(),
     state: {
-      session: ""
+      route: ReductiveRouter.initialRoute,
+      state: {
+        session: ""
+      }
     }
   }
 };
 
 /*TODO: fix the type system back around storeCreator('action, 'origin, 'state) */
-let storeCreator = devToolsEnhancer @@ !!ReductiveCognito.enhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
+let storeCreator = devToolsEnhancer @@ ReductiveLocale.enhancer @@ !!ReductiveCognito.enhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
   ~reducer=Reducers.root, 
@@ -58,7 +62,7 @@ if(HMR.isAvailable(HMR.module_)){
 
     /** MAKE SURE TO APPLY ALL HIGHER-ORDER REDUCERS introduced in storeCreator constructions */
     Reductive.Store.replaceReducer(store, 
-      ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
+      ReductiveLocale.localeReducer @@ ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
     );
     Console.info("[HMR] (Store) Reducers hot reloaded");
   });

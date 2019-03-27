@@ -421,7 +421,7 @@ module Inner {
 
 module UserProvider = {
   let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) => state.user, 
+    ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => state.state.user, 
     Store.store);
 };
 

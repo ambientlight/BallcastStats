@@ -1,5 +1,6 @@
 open Operators;
 open Css;
+open NavHeaderLocale;
 
 module Styles {
   let root = style([
@@ -22,25 +23,31 @@ module Styles {
   ]);
 }
 
-let make = (~title, ~dispatch: 'action => unit, ~className=?, _children) => {
+let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children) => {
   ...ReasonReact.statelessComponent(__MODULE__),
   render: _self =>
     <div className=([Styles.root, className |? ""] >|< " ")>
       <Logo.WithCaption dispatch caption=title/>
       <FlexOne/>
-      <MaterialUi.Button className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")>
-        {"About Us"}
+      <MaterialUi.Button 
+        className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
+        onClick=(_event => dispatch(`SetLocale(locale == Locale.En ? Locale.Ru : Locale.En)))
+        >
+        {locale == Locale.En 
+          ? <ReactIntl.DefinedMessage message=strings##inRussian/>
+          : <ReactIntl.DefinedMessage message=strings##inEnglish/>
+        }
       </MaterialUi.Button>
       <MaterialUi.Button className=Styles.button>
-        {"Pricing"}
+        <ReactIntl.DefinedMessage message=strings##pricing/>
       </MaterialUi.Button>
       <MaterialUi.Button
         className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
         onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))>
-        {"Sign Up"}
+        <ReactIntl.DefinedMessage message=strings##signUp/>
       </MaterialUi.Button>
       <MaterialUi.Button className=Styles.button onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
-        {"Sign In"}
+        <ReactIntl.DefinedMessage message=strings##signIn/>
       </MaterialUi.Button>
     </div>
 };

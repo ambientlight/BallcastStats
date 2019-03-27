@@ -8,16 +8,18 @@ module TopCTA {
     render: _self => 
       <div className=([Styles.root, className |? ""] >|< " ")>
         <MaterialUi.Typography variant=`H3 className=Styles.title>
-          <ReactIntl.DefinedMessage message=locale##ctaMessageP1/>
+          <ReactIntl.DefinedMessage message=strings##ctaMessageP1/>
           <br/>
-          <ReactIntl.DefinedMessage message=locale##ctaMessageP2/>
+          <ReactIntl.DefinedMessage message=strings##ctaMessageP2/>
         </MaterialUi.Typography>
         <MaterialUi.Typography variant=`Subtitle1 className=Styles.subtitle>
-          {ReasonReact.string("Quickly build stats and assemble formations.")}
+          <ReactIntl.DefinedMessage message=strings##ctaDescription1/>
           <br/>
-          {ReasonReact.string("Embed it directly into your publication.")}
+          <ReactIntl.DefinedMessage message=strings##ctaDescription2/>
         </MaterialUi.Typography>
-        <MaterialUi.Button className=([AuthStyles.button, Styles.ctaBlendedButton] >|< " ")>{"Try now for free"}</MaterialUi.Button>
+        <MaterialUi.Button className=([AuthStyles.button, Styles.ctaBlendedButton] >|< " ")>
+          <ReactIntl.DefinedMessage message=strings##ctaButton/>
+        </MaterialUi.Button>
       </div>
   }
 };
@@ -33,11 +35,11 @@ module TopPreview {
 };
 
 module Styles = LandingStyles.Root;
-let make = (~title, ~dispatch: 'action => unit, _children) => {
+let make = (~title, ~locale, ~dispatch: 'action => unit, _children) => {
   ...ReasonReact.statelessComponent(__MODULE__),
   render: _self => 
     <div className=Styles.root>
-      <NavHeader dispatch title className=Styles.navHeader/>
+      <NavHeader dispatch title locale className=Styles.navHeader/>
       <TopCTA className=Styles.topCTA/>
       <TopPreview className=Styles.topPreview/>
     </div>

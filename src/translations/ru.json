@@ -1,5 +1,125 @@
 [
   {
+    "id": "Auth.alreadyHaveAnAccount",
+    "defaultMessage": "Already have an account?",
+    "message": "Уже зарегистрированы?"
+  },
+  {
+    "id": "Auth.codeExpiredPleaseResend",
+    "defaultMessage": "code expired, please resend",
+    "message": "код истек, пожалуйста, отправьте повторно"
+  },
+  {
+    "id": "Auth.createYourAccount",
+    "defaultMessage": "Create your account",
+    "message": ""
+  },
+  {
+    "id": "Auth.dontHaveAnAccount",
+    "defaultMessage": "Don't have an account?",
+    "message": ""
+  },
+  {
+    "id": "Auth.forgotPasswordDescription",
+    "defaultMessage": "Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly.",
+    "message": ""
+  },
+  {
+    "id": "Auth.newPasswordRequired",
+    "defaultMessage": "New password required",
+    "message": ""
+  },
+  {
+    "id": "Auth.newPasswordRequiredDescription",
+    "defaultMessage": "You have logged in with a temporary password, you new to create a new password for your account.",
+    "message": ""
+  },
+  {
+    "id": "Auth.pleaseEnterItHere",
+    "defaultMessage": "please enter it here",
+    "message": ""
+  },
+  {
+    "id": "Auth.resendVerificationCode",
+    "defaultMessage": "Resend verification code",
+    "message": ""
+  },
+  {
+    "id": "Auth.resendingThreeDots",
+    "defaultMessage": "resending...",
+    "message": ""
+  },
+  {
+    "id": "Auth.termsOfUseP1",
+    "defaultMessage": "By registering, you agree to Ballcast Stat's",
+    "message": ""
+  },
+  {
+    "id": "Auth.termsOfUseP2",
+    "defaultMessage": "Terms of Service",
+    "message": ""
+  },
+  {
+    "id": "Auth.termsOfUseP3",
+    "defaultMessage": "and",
+    "message": ""
+  },
+  {
+    "id": "Auth.termsOfUseP4",
+    "defaultMessage": "Privacy Policy.",
+    "message": ""
+  },
+  {
+    "id": "Auth.useAutofilledCredentials",
+    "defaultMessage": "Use Autofilled Credentials",
+    "message": ""
+  },
+  {
+    "id": "Auth.verificationCodeIncorrect",
+    "defaultMessage": "verification code incorrect",
+    "message": ""
+  },
+  {
+    "id": "Auth.verificationIsNotNeeded",
+    "defaultMessage": "Verification is not needed.",
+    "message": ""
+  },
+  {
+    "id": "Auth.verifyYourAccount",
+    "defaultMessage": "Verify your account",
+    "message": ""
+  },
+  {
+    "id": "Auth.verifyYourAccountDetail",
+    "defaultMessage": "We have send a verification code to your email address",
+    "message": ""
+  },
+  {
+    "id": "Auth.verifyingThreeDots",
+    "defaultMessage": "verifying...",
+    "message": ""
+  },
+  {
+    "id": "Auth.youAreSignedIn",
+    "defaultMessage": "You are signed in.",
+    "message": ""
+  },
+  {
+    "id": "Landing.ctaButton",
+    "defaultMessage": "Try now for free",
+    "message": "Начать бесплатно"
+  },
+  {
+    "id": "Landing.ctaDescription1",
+    "defaultMessage": "Quickly build stats and assemble formations.",
+    "message": "Создайте состав на игру и скомбинируйте графики."
+  },
+  {
+    "id": "Landing.ctaDescription2",
+    "defaultMessage": "Embed it directly into your publication.",
+    "message": "Вставьте напрямую в вашу публикацию."
+  },
+  {
     "id": "Landing.ctaMessageP1",
     "defaultMessage": "Enhance your",
     "message": "Новый уровень визуализации"
@@ -7,11 +127,71 @@
   {
     "id": "Landing.ctaMessageP2",
     "defaultMessage": "football publications.",
+    "message": "для ваших футбольных публикаций."
+  },
+  {
+    "id": "NavHeader.inEnglish",
+    "defaultMessage": "In English",
+    "message": "На английском"
+  },
+  {
+    "id": "NavHeader.inRussian",
+    "defaultMessage": "In Russian",
+    "message": "На русском"
+  },
+  {
+    "id": "Pricing",
+    "defaultMessage": "Pricing",
+    "message": "Цены"
+  },
+  {
+    "id": "SignIn",
+    "defaultMessage": "Sign In",
+    "message": "Войти в систему"
+  },
+  {
+    "id": "SignUp",
+    "defaultMessage": "Sign Up",
+    "message": "Зарегистрироваться"
+  },
+  {
+    "id": "confirm",
+    "defaultMessage": "Confirm",
     "message": ""
   },
   {
-    "id": "Landing.magicTest3",
-    "defaultMessage": "magic test",
+    "id": "confirmPassword",
+    "defaultMessage": "confirm password",
+    "message": ""
+  },
+  {
+    "id": "email",
+    "defaultMessage": "email",
+    "message": ""
+  },
+  {
+    "id": "forgotPassword",
+    "defaultMessage": "Forgot password?",
+    "message": ""
+  },
+  {
+    "id": "forgotYourPassword",
+    "defaultMessage": "Forgot your password?",
+    "message": ""
+  },
+  {
+    "id": "password",
+    "defaultMessage": "password",
+    "message": ""
+  },
+  {
+    "id": "send",
+    "defaultMessage": "Send",
+    "message": ""
+  },
+  {
+    "id": "staySignedIn",
+    "defaultMessage": "Stay signed in",
     "message": ""
   }
 ]
