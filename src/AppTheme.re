@@ -1,6 +1,14 @@
 open Operators;
 open MaterialUi.ThemeOptions;
 
+external styleToString: ReactDOMRe.Style.t => string = "%identity";
+
+/* ...yeah, but it works */
+let rgbAddAlpha = (rgb, alpha) => 
+  rgb 
+  |> Js.String.replace("rgb", "rgba")
+  |> Js.String.replace(")", ", " ++ string_of_float(alpha) ++ ")");
+
 let pitchGreen = Primary.make(
 	~main="#226831",
 	~light="#52975c",
@@ -54,12 +62,6 @@ let burntGrass = Secondary.make(
 
 let primary = pitchGreen;
 let secondary = burntGrass;
-
-/* ...yeah, but it works */
-let rgbAddAlpha = (rgb, alpha) => 
-  rgb 
-  |> Js.String.replace("rgb", "rgba")
-  |> Js.String.replace(")", ", " ++ string_of_float(alpha) ++ ")");
 
 let text = TypeText.make(
 	/* binds to contrast colors of our palettes since layouts mostly contain palette colors on bg */
@@ -207,24 +209,22 @@ let typography = Typography.make(
 
 let overrides = Overrides.make(
 	~muiInput=InputClassKey.make(
-    ~underline=ReactDOMRe.Style.make(
-      /* TODO: bind to the palette color (override is a bit more complex here)
-      style([
-        !# borderBottom(px(1), `solid, rgba(255, 255, 255, 0.6)),
-        selector("&:before", [
-          !# borderBottom(px(0), `solid, white)
-        ]),
-        selector("&:hover::before", [
-          !# borderBottom(px(1), `solid, white)
-        ]),
-        selector("&:after", [
-          !# borderBottom(px(1), `solid, white)
-        ])
-      ])
-      */
-      ()
-    ),
-    ()),
+		/* TODO: below overrides don't match in terms of transparency */
+		/* ~underline=
+			ReactDOMRe.Style.make(
+				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
+				()
+			) |. ReactDOMRe.Style.unsafeAddProp("&:before", ReactDOMRe.Style.make(
+				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
+				()) |. styleToString)
+				|. ReactDOMRe.Style.unsafeAddProp("&:hover::before", ReactDOMRe.Style.make(
+				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
+				()) |. styleToString)
+				|. ReactDOMRe.Style.unsafeAddProp("&:after", ReactDOMRe.Style.make(
+				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
+				()) |. styleToString),
+			() */
+		),
     
   ~muiInputLabel=InputLabelClassKey.make(
     ~root=ReactDOMRe.Style.make(

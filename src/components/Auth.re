@@ -163,7 +163,7 @@ module Inner {
       <form className=Styles.form>
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Forgot your password?"</MaterialUi.Typography>
         <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly."}</MaterialUi.Typography>
-        <TextField
+        <MaterialUi.TextField
           type_="email"
           label=ReasonReact.string("email")
           className=Styles.textField/>
@@ -400,10 +400,10 @@ module Inner {
           | (VerifySignUp, ResendingVerification(username))
           | (VerifySignUp, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
           | (VerifySignUp, _) => 
-            <span className=Styles.welcomeTitle>{ReasonReact.string("Verification is not needed.")}</span>
+            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{ReasonReact.string("Verification is not needed.")}</MaterialUi.Typography>
           | (SignIn, SignedIn(_user)) => 
             <Fragment>
-              <span className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</span>
+              <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</MaterialUi.Typography>
               <MaterialUi.Button variant=`Outlined 
                 className=Styles.button
                 onClick=(_event => send(`SignOutRequest(())))>

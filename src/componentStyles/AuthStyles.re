@@ -117,19 +117,6 @@ let checkbox = style([
   !# color(white)
 ]);
 
-let accesoryLabel = style([
-  color(white),
-  fontFamily(Fonts.jost),
-  opacity(0.50)
-]);
-
-let additionalInfoLabel = style([
-  color(white),
-  fontFamily(Fonts.jost),
-  fontSize(px(12)),
-  opacity(0.50)
-]);
-
 let actionLabel = style([
   selector("&:hover", [
     textDecoration(`underline),
@@ -159,16 +146,6 @@ let smallTopMargin = style([
 let progressSpinner = style([
   !# color(white)
 ]);
-
-/* input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-  }
-  input[type="number"] {
-      -moz-appearance: textfield;
-  } */
-
 
 let codeInputBase = MaterialUi.ThemeOptions.(style([
   marginTop(px(8)),
@@ -202,21 +179,21 @@ let codeInputBase = MaterialUi.ThemeOptions.(style([
 let normalCodeInput = style([
   /* make sure these are not override by ReactCodeInput disabled element inline style */
   selector("&>input", [
+    !#color(transparent),  
     !#border(px(1), `solid, raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.lightGet))),
-    !#color(transparent),
-    !#backgroundColor(raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet))),
-    textShadow(white),
-    outlineColor(hsl(133, 39, 60))
+    !#backgroundColor(raw(MaterialUi.Theme.(!!(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet)|.Color._800Get))),
+    outlineColor(raw(MaterialUi.Theme.(!!(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet)|.Color._500Get))),
+    textShadow(raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.contrastTextGet))),
   ])
 ])
 
 let errorCodeInput = style([
   selector("&>input", [
-    !#border(px(1), `solid, `hex("dc4909")),
     !#color(transparent),
-    !#backgroundColor(`hex("8c6322")),
-    textShadow(`hex("dc4909")),
-    outlineColor(`hex("f7733b"))
+    !#border(px(1), `solid, raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet|.PaletteColor.lightGet))),
+    !#backgroundColor(raw(MaterialUi.Theme.(!!(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet)|.PaletteColor.darkGet))),
+    outlineColor(raw(MaterialUi.Theme.(!!(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet)|.PaletteColor.mainGet))),
+    textShadow(raw(MaterialUi.Theme.(AppTheme.theme|.Theme.paletteGet|.Palette.errorGet|.PaletteColor.contrastTextGet)))
   ])
 ])
 
