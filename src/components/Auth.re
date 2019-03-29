@@ -1,6 +1,7 @@
 open Operators;
 open Css;
 open Webapi;
+open AuthLocale;
 
 type mode = SignIn | SignUp | ForgotPassword | VerifySignUp;
 module Styles = AuthStyles;
@@ -50,12 +51,14 @@ module Inner {
   module Forms {
     let signIn = (state, retained, dispatch: action => unit) =>
       <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) })>
-        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Glad to see you back!"</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+          <ReactIntl.DefinedMessage message=strings##gladToSeeYouBack/>
+        </MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.email)
           className=Styles.textField
           autoComplete="username"
           type_="email"
-          label=ReasonReact.string("email")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => {
             retained.emailRef = Js.Nullable.toOption(element);
           })
@@ -65,7 +68,7 @@ module Inner {
           className=Styles.textField
           autoComplete="current-password"
           type_="password"
-          label=ReasonReact.string("password")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##password/>
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
             Rx.Observable.fromEvent(element, "keydown")
             |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
@@ -77,7 +80,7 @@ module Inner {
         <div className=Styles.actionPanel>
           <MaterialUi.FormControl>
             <MaterialUi.FormControlLabel 
-              label=ReasonReact.string("Stay signed in")
+              label=<ReactIntl.DefinedMessage message=CommonLocale.strings##staySignedIn/>
               control=<MaterialUi.Checkbox color=`Default
                 value="remember"
                 checked=`Bool(state.staySignedIn)
@@ -85,7 +88,9 @@ module Inner {
             />
           </MaterialUi.FormControl>
           <LabelButton color=`TextPrimary onClick=(_event => dispatch(`RouterPushRoute(Routes.forgot)))>
-            <MaterialUi.Typography variant=`Body2 color=`Inherit>"Forgot password?"</MaterialUi.Typography>
+            <MaterialUi.Typography variant=`Body2 color=`Inherit>
+              <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
+            </MaterialUi.Typography>
           </LabelButton>
         </div>
         <MaterialUi.Button variant=`Outlined
@@ -93,39 +98,48 @@ module Inner {
           onClick=(_event => { 
             dispatch(`SignInRequest());
           })>
-          {state.showsAutofillInSignIn ? "Use Autofilled Credentials" : "Sign In"}
+          {state.showsAutofillInSignIn 
+            ? <ReactIntl.DefinedMessage message=strings##useAutofilledCredentials/>
+            : <ReactIntl.DefinedMessage message=CommonLocale.strings##signIn/>
+          }
         </MaterialUi.Button>
         
         <div className=Styles.signUpContainer>
-          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>"Don't have an account?"</MaterialUi.Typography>
+          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>
+            <ReactIntl.DefinedMessage message=strings##dontHaveAnAccount/>
+          </MaterialUi.Typography>
           <LabelButton color=`TextPrimary 
             emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signUp)))>
-            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>"Sign up"</MaterialUi.Typography>
+            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
+              <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
+            </MaterialUi.Typography>
           </LabelButton>
         </div>
       </form>;
     
     let signUp = (_state, retained, dispatch: action => unit) =>
       <form className=Styles.form>
-        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Create your account"</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+          <ReactIntl.DefinedMessage message=strings##createYourAccount/>
+        </MaterialUi.Typography>
         <MaterialUi.TextField
           className=Styles.textField
           type_="username"
           autoComplete="username"
-          label=ReasonReact.string("email")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
           onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
           className=Styles.textField
           type_="password"
           autoComplete="new-password"
-          label=ReasonReact.string("password")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##password/>
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
           className=Styles.textField    
           type_="password"
           autoComplete="new-password"
-          label=ReasonReact.string("confirm password")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##confirmPassword/>
           inputRef=`Callback((element: Js.Nullable.t(Dom.HtmlElement.t)) => Rx.Observable.Operators.({
             Rx.Observable.fromEvent(element, "keydown")
             |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
@@ -137,62 +151,84 @@ module Inner {
         <MaterialUi.Button variant=`Outlined
           className=Styles.button
           onClick=(_event => dispatch(`SignUpRequest(())))>
-            "Sign Up"
+          <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
         </MaterialUi.Button>
         <div className=Styles.signUpContainer>
-          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>"Already have an account?"</MaterialUi.Typography>
+          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>
+            <ReactIntl.DefinedMessage message=strings##alreadyHaveAnAccount/>
+          </MaterialUi.Typography>
           <LabelButton color=`TextPrimary 
             emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signIn)))>
-            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>"Sign in"</MaterialUi.Typography>
+            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
+              <ReactIntl.DefinedMessage message=CommonLocale.strings##signIn/>
+            </MaterialUi.Typography>
           </LabelButton>
         </div>
         <div className=Styles.additionalInfoContainer>
-          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>{"By registering, you agree to Ballcast Stat's"}</MaterialUi.Typography>
+          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>
+            <ReactIntl.DefinedMessage message=strings##termsOfUseP1/>
+          </MaterialUi.Typography>
           <LabelButton color=`TextPrimary emphasized=true>
-            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>"Terms of Service"</MaterialUi.Typography>
+            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>
+              <ReactIntl.DefinedMessage message=strings##termsOfUseP2/>
+            </MaterialUi.Typography>
           </LabelButton>
-          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>{"and"}</MaterialUi.Typography>
+          <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>
+            <ReactIntl.DefinedMessage message=strings##termsOfUseP3/>
+          </MaterialUi.Typography>
           <LabelButton color=`TextPrimary emphasized=true>
-            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>"Privacy Policy."</MaterialUi.Typography>
+            <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>
+              <ReactIntl.DefinedMessage message=strings##termsOfUseP4/>
+            </MaterialUi.Typography>
           </LabelButton>
         </div>
       </form>;
 
     let forgotPassword = (_state, _dispatch: action => unit) =>
       <form className=Styles.form>
-        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>"Forgot your password?"</MaterialUi.Typography>
-        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly."}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+          <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
+        </MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>
+          <ReactIntl.DefinedMessage message=strings##forgotPasswordDescription/>
+        </MaterialUi.Typography>
         <MaterialUi.TextField
           type_="email"
-          label=ReasonReact.string("email")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
           className=Styles.textField/>
-        <MaterialUi.Button variant=`Outlined className=Styles.button>"Send"</MaterialUi.Button>
+        <MaterialUi.Button variant=`Outlined className=Styles.button>
+          <ReactIntl.DefinedMessage message=CommonLocale.strings##send/>
+        </MaterialUi.Button>
       </form>;
 
     let newPassword = (state, dispatch: action => unit) =>
       <form className=Styles.form autoComplete="nope">
-        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{"New password required"}</MaterialUi.Typography>
-        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"You have logged in with a temporary password, you new to create a new password for your account."}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+          <ReactIntl.DefinedMessage message=strings##newPasswordRequired/>
+        </MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>
+          <ReactIntl.DefinedMessage message=strings##newPasswordRequiredDescription/>
+        </MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.password)
           className=Styles.textField
           name="password"
           type_="password"
           autoComplete="nope"
-          label=ReasonReact.string("password")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##password/>
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))
           />
         <MaterialUi.TextField value=`String(state.passwordConfirmation)
           className=Styles.textField
           type_="password"
           autoComplete="nope"
-          label=ReasonReact.string("confirm password")
+          label=<ReactIntl.DefinedMessage message=CommonLocale.strings##confirmPassword/>
           onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))
           />
         <MaterialUi.Button variant=`Outlined
           className=Styles.button 
           onClick=(_event => dispatch(`CompleteNewPasswordRequest()))>
-          "Confirm"
+          <ReactIntl.DefinedMessage message=CommonLocale.strings##confirm/>
         </MaterialUi.Button>
       </form>;
 
@@ -229,9 +265,15 @@ module Inner {
             }
           });
         })>
-        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{"Verify your account"}</MaterialUi.Typography>
-        <MaterialUi.Typography variant=`Subtitle1>{"We have send a verification code to your email address"}</MaterialUi.Typography>
-        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>{"please enter it here"}</MaterialUi.Typography>
+        <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+          <ReactIntl.DefinedMessage message=strings##verifyYourAccount/>
+        </MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1>
+          <ReactIntl.DefinedMessage message=strings##verifyYourAccountDetail/>
+        </MaterialUi.Typography>
+        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>
+          <ReactIntl.DefinedMessage message=strings##pleaseEnterItHere/>
+        </MaterialUi.Typography>
         <ReactCodeInput
           disabled=(verifying || codeExpired)
           value=state.verificationCode
@@ -260,8 +302,8 @@ module Inner {
           }))/>
         <MaterialUi.Typography color=`Error variant=`Subtitle1 style=ReactDOMRe.Style.make(~height="24px", ())>
           {
-            codeExpired ? "code expired, please resend" :
-            codeIncorrect ? "verification code incorrect" : ""
+            codeExpired ? <ReactIntl.DefinedMessage message=strings##codeExpiredPleaseResend/> :
+            codeIncorrect ? <ReactIntl.DefinedMessage message=strings##verificationCodeIncorrect/> : ReasonReact.string("")
           }
         </MaterialUi.Typography>
 
@@ -270,12 +312,15 @@ module Inner {
               disabled=true
               className=merge([Styles.button, style([opacity(0.7)])])
               onClick=(_event => ())>
-              {resendingCode ? "resending..." : "verifying..."}
+              {resendingCode 
+                ? <ReactIntl.DefinedMessage message=strings##resendingThreeDots/>
+                : <ReactIntl.DefinedMessage message=strings##verifyingThreeDots/>
+              }
             </MaterialUi.Button>
           : <MaterialUi.Button variant=`Outlined 
               className=Styles.button
               onClick=(_event => dispatch(`ResendVerificationRequest(username)))>
-              {"Resend verification code"}
+              <ReactIntl.DefinedMessage message=strings##resendVerificationCode/>
             </MaterialUi.Button>
         }
       </form>
@@ -400,14 +445,18 @@ module Inner {
           | (VerifySignUp, ResendingVerification(username))
           | (VerifySignUp, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
           | (VerifySignUp, _) => 
-            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{ReasonReact.string("Verification is not needed.")}</MaterialUi.Typography>
+            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+              <ReactIntl.DefinedMessage message=strings##verificationIsNotNeeded/>
+            </MaterialUi.Typography>
           | (SignIn, SignedIn(_user)) => 
             <Fragment>
-              <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>{ReasonReact.string("You are signed in.")}</MaterialUi.Typography>
+              <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+                <ReactIntl.DefinedMessage message=strings##youAreSignedIn/>
+              </MaterialUi.Typography>
               <MaterialUi.Button variant=`Outlined 
                 className=Styles.button
                 onClick=(_event => send(`SignOutRequest(())))>
-                {"Logout"}
+                <ReactIntl.DefinedMessage message=CommonLocale.strings##logout/>
               </MaterialUi.Button>
             </Fragment>
           | (SignIn, _) => Forms.signIn(state, retainedProps, send)

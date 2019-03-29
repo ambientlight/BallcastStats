@@ -25,13 +25,18 @@
     "message": "Не волнуйтесь, введите свой адрес электронной почты, если есть учетная запись связанная с ним, мы отправим на него письмо для сброса пароля."
   },
   {
+    "id": "Auth.gladToSeeYouBack",
+    "defaultMessage": "Glad to see you back",
+    "message": "Рады вас видеть"
+  },
+  {
     "id": "Auth.newPasswordRequired",
     "defaultMessage": "New password required",
     "message": "Требуется новый пароль"
   },
   {
     "id": "Auth.newPasswordRequiredDescription",
-    "defaultMessage": "You have logged in with a temporary password, you need to create a new password for your account.",
+    "defaultMessage": "You have logged in with a temporary password, you new to create a new password for your account.",
     "message": "Вы вошли в систему с временным паролем, вам необходимо создать новый пароль для вашей учетной записи."
   },
   {
@@ -67,12 +72,12 @@
   {
     "id": "Auth.termsOfUseP4",
     "defaultMessage": "Privacy Policy.",
-    "message": "политики конфиденциальности"
+    "message": "политикой конфиденциальности"
   },
   {
     "id": "Auth.useAutofilledCredentials",
     "defaultMessage": "Use Autofilled Credentials",
-    "message": "Использовать автозаполненные учетные данные"
+    "message": "Войти в систему"
   },
   {
     "id": "Auth.verificationCodeIncorrect",
@@ -162,7 +167,7 @@
   {
     "id": "confirmPassword",
     "defaultMessage": "confirm password",
-    "message": "подтвердите пароль"
+    "message": "подтверждение пароль"
   },
   {
     "id": "email",
@@ -173,6 +178,11 @@
     "id": "forgotYourPassword",
     "defaultMessage": "Forgot your password?",
     "message": "Забыли ваш пароль?"
+  },
+  {
+    "id": "logout",
+    "defaultMessage": "Logout",
+    "message": "Выйти"
   },
   {
     "id": "password",

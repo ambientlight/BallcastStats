@@ -44,10 +44,10 @@ let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children
       <MaterialUi.Button
         className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
         onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))>
-        <ReactIntl.DefinedMessage message=strings##signUp/>
+        <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
       </MaterialUi.Button>
       <MaterialUi.Button className=Styles.button onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
-        <ReactIntl.DefinedMessage message=strings##signIn/>
+        <ReactIntl.DefinedMessage message=CommonLocale.strings##signIn/>
       </MaterialUi.Button>
     </div>
 };

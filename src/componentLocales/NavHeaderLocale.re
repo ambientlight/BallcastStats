@@ -12,13 +12,5 @@ let strings =
     "pricing": {
       "id": "Pricing",
       "defaultMessage": "Pricing"
-    },
-    "signUp": {
-      "id": "SignUp",
-      "defaultMessage": "Sign Up"
-    },
-    "signIn": {
-      "id": "SignIn",
-      "defaultMessage": "Sign In"
     }
   };

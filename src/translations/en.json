@@ -25,6 +25,11 @@
     "message": ""
   },
   {
+    "id": "Auth.gladToSeeYouBack",
+    "defaultMessage": "Glad to see you back",
+    "message": ""
+  },
+  {
     "id": "Auth.newPasswordRequired",
     "defaultMessage": "New password required",
     "message": ""
@@ -170,13 +175,13 @@
     "message": ""
   },
   {
-    "id": "forgotPassword",
-    "defaultMessage": "Forgot password?",
+    "id": "forgotYourPassword",
+    "defaultMessage": "Forgot your password?",
     "message": ""
   },
   {
-    "id": "forgotYourPassword",
-    "defaultMessage": "Forgot your password?",
+    "id": "logout",
+    "defaultMessage": "Logout",
     "message": ""
   },
   {

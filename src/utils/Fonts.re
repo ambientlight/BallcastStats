@@ -212,5 +212,5 @@ module Gobold {
   );
 };  
 
-let jost = Jost.medium;
-let gobold = Gobold.regular;
+let jost = Jost.medium ++ ", Roboto";
+let gobold = Gobold.regular ++ ", Roboto";

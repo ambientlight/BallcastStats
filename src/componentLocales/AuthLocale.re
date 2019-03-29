@@ -1,26 +1,6 @@
 let strings = 
   [@intl.messages]
   {
-    "email": {
-      "id": "email",
-      "defaultMessage": "email"
-    },
-    "password": {
-      "id": "password",
-      "defaultMessage": "password"
-    },
-    "confirmPassword": {
-      "id": "confirmPassword",
-      "defaultMessage": "confirm password"
-    },
-    "staySignedIn": {
-      "id": "staySignedIn",
-      "defaultMessage": "Stay signed in"
-    },
-    "forgotYourPassword": {
-      "id": "forgotYourPassword",
-      "defaultMessage": "Forgot your password?"
-    },
     "useAutofilledCredentials": {
       "id": "Auth.useAutofilledCredentials",
       "defaultMessage": "Use Autofilled Credentials"
@@ -57,10 +37,6 @@ let strings =
       "id": "Auth.forgotPasswordDescription",
       "defaultMessage": "Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly."
     },
-    "send": {
-      "id": "send",
-      "defaultMessage": "Send"
-    },
     "newPasswordRequired": {
       "id": "Auth.newPasswordRequired",
       "defaultMessage": "New password required"
@@ -68,10 +44,6 @@ let strings =
     "newPasswordRequiredDescription": {
       "id": "Auth.newPasswordRequiredDescription",
       "defaultMessage": "You have logged in with a temporary password, you new to create a new password for your account."
-    },
-    "confirm": {
-      "id": "confirm",
-      "defaultMessage": "Confirm"
     },
     "verifyYourAccount": {
       "id": "Auth.verifyYourAccount",
