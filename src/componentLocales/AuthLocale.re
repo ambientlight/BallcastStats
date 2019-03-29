@@ -17,10 +17,6 @@ let strings =
       "id": "staySignedIn",
       "defaultMessage": "Stay signed in"
     },
-    "forgotPassword": {
-      "id": "forgotPassword",
-      "defaultMessage": "Forgot password?"
-    },
     "forgotYourPassword": {
       "id": "forgotYourPassword",
       "defaultMessage": "Forgot your password?"
@@ -116,5 +112,9 @@ let strings =
     "youAreSignedIn": {
       "id": "Auth.youAreSignedIn",
       "defaultMessage": "You are signed in."
+    },
+    "gladToSeeYouBack": {
+      "id": "Auth.gladToSeeYouBack",
+      "defaultMessage": "Glad to see you back"
     }
   };

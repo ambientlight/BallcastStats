@@ -12,97 +12,97 @@
   {
     "id": "Auth.createYourAccount",
     "defaultMessage": "Create your account",
-    "message": ""
+    "message": "Создать учетную запись"
   },
   {
     "id": "Auth.dontHaveAnAccount",
     "defaultMessage": "Don't have an account?",
-    "message": ""
+    "message": "Не зарегистрированы?"
   },
   {
     "id": "Auth.forgotPasswordDescription",
     "defaultMessage": "Don't worry, please enter your email address, if there an account asssociated with it, we will send the reset password email to it shortly.",
-    "message": ""
+    "message": "Не волнуйтесь, введите свой адрес электронной почты, если есть учетная запись связанная с ним, мы отправим на него письмо для сброса пароля."
   },
   {
     "id": "Auth.newPasswordRequired",
     "defaultMessage": "New password required",
-    "message": ""
+    "message": "Требуется новый пароль"
   },
   {
     "id": "Auth.newPasswordRequiredDescription",
-    "defaultMessage": "You have logged in with a temporary password, you new to create a new password for your account.",
-    "message": ""
+    "defaultMessage": "You have logged in with a temporary password, you need to create a new password for your account.",
+    "message": "Вы вошли в систему с временным паролем, вам необходимо создать новый пароль для вашей учетной записи."
   },
   {
     "id": "Auth.pleaseEnterItHere",
     "defaultMessage": "please enter it here",
-    "message": ""
+    "message": "пожалуйста, введите это здесь"
   },
   {
     "id": "Auth.resendVerificationCode",
     "defaultMessage": "Resend verification code",
-    "message": ""
+    "message": "Отправить заново код подтверждения"
   },
   {
     "id": "Auth.resendingThreeDots",
     "defaultMessage": "resending...",
-    "message": ""
+    "message": "отправляем..."
   },
   {
     "id": "Auth.termsOfUseP1",
     "defaultMessage": "By registering, you agree to Ballcast Stat's",
-    "message": ""
+    "message": "Регистрируясь, вы соглашаетесь с"
   },
   {
     "id": "Auth.termsOfUseP2",
     "defaultMessage": "Terms of Service",
-    "message": ""
+    "message": "условиями использования"
   },
   {
     "id": "Auth.termsOfUseP3",
     "defaultMessage": "and",
-    "message": ""
+    "message": "и"
   },
   {
     "id": "Auth.termsOfUseP4",
     "defaultMessage": "Privacy Policy.",
-    "message": ""
+    "message": "политики конфиденциальности"
   },
   {
     "id": "Auth.useAutofilledCredentials",
     "defaultMessage": "Use Autofilled Credentials",
-    "message": ""
+    "message": "Использовать автозаполненные учетные данные"
   },
   {
     "id": "Auth.verificationCodeIncorrect",
     "defaultMessage": "verification code incorrect",
-    "message": ""
+    "message": "неверный код подтверждения"
   },
   {
     "id": "Auth.verificationIsNotNeeded",
     "defaultMessage": "Verification is not needed.",
-    "message": ""
+    "message": "Верификация не нужна"
   },
   {
     "id": "Auth.verifyYourAccount",
     "defaultMessage": "Verify your account",
-    "message": ""
+    "message": "Подтвердите ваш аккаунт"
   },
   {
     "id": "Auth.verifyYourAccountDetail",
     "defaultMessage": "We have send a verification code to your email address",
-    "message": ""
+    "message": "Мы отправили проверочный код на ваш адрес электронной почты"
   },
   {
     "id": "Auth.verifyingThreeDots",
     "defaultMessage": "verifying...",
-    "message": ""
+    "message": "проверяю..."
   },
   {
     "id": "Auth.youAreSignedIn",
     "defaultMessage": "You are signed in.",
-    "message": ""
+    "message": "Вы уже вошли в систему"
   },
   {
     "id": "Landing.ctaButton",
@@ -157,41 +157,36 @@
   {
     "id": "confirm",
     "defaultMessage": "Confirm",
-    "message": ""
+    "message": "Подтвердить"
   },
   {
     "id": "confirmPassword",
     "defaultMessage": "confirm password",
-    "message": ""
+    "message": "подтвердите пароль"
   },
   {
     "id": "email",
     "defaultMessage": "email",
-    "message": ""
-  },
-  {
-    "id": "forgotPassword",
-    "defaultMessage": "Forgot password?",
-    "message": ""
+    "message": "эл. почта"
   },
   {
     "id": "forgotYourPassword",
     "defaultMessage": "Forgot your password?",
-    "message": ""
+    "message": "Забыли ваш пароль?"
   },
   {
     "id": "password",
     "defaultMessage": "password",
-    "message": ""
+    "message": "пароль"
   },
   {
     "id": "send",
     "defaultMessage": "Send",
-    "message": ""
+    "message": "Отправить"
   },
   {
     "id": "staySignedIn",
     "defaultMessage": "Stay signed in",
-    "message": ""
+    "message": "Оставаться в системе"
   }
 ]
