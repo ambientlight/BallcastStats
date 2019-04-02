@@ -4,10 +4,13 @@
     "react-jsx": 2
   },
   "version": "0.1.0",
-  "sources": {
+  "sources": [{
     "dir" : "src",
     "subdirs" : true
-  },
+  }, {
+    "dir": "__tests__",
+    "type": "dev"
+  }],
   "package-specs": {
     "module": "commonjs"
   },
@@ -21,8 +24,10 @@
     "@jsiebern/bs-material-ui",
     "bs-react-intl"
   ],
+  "bs-dev-dependencies": [
+    "@glennsl/bs-jest"
+  ],
   "warnings": {
-    
   },
   "refmt": 3,
   "bsc-flags": ["-bs-g"],
