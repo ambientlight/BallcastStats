@@ -37,6 +37,7 @@ module Observable: {
 
   let fromArray: array('a) => t('a);
   let fromPromise: Js.Promise.t('a) => t('a);
+  let toPromise: t('a) => Js.Promise.t('a);
   let fromEvent: ('element, string) => t('b);
 
   let defer: (unit => t('a)) => t('a);
@@ -115,6 +116,15 @@ module Subject: {
 module BehaviorSubject: {
   type t('a);
   let make: 'a => t('a);
+  let asObservable: t('a) => Observable.t('a);
+  let asObserver: t('a) => Observer.t('a);
+
+  let next: (t('a), 'a) => unit;
+};
+
+module ReplaySubject: {
+  type t('a);
+  let make: int => t('a);
   let asObservable: t('a) => Observable.t('a);
   let asObserver: t('a) => Observer.t('a);
 

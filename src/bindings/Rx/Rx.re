@@ -7,4 +7,5 @@ module Subscription = Rx_Subscription;
 module Observer = Rx_Observer;
 module Subject = Rx_Subject;
 module BehaviorSubject = Rx_BehaviorSubject;
+module ReplaySubject = Rx_ReplaySubject;
 module Scheduler = Rx_Scheduler;

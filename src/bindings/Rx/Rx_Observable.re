@@ -17,6 +17,9 @@ external make : ((Rx_Observer.t('a), unit) => unit) => t('a) = "Observable";
 [@bs.module "rxjs"]
 external fromPromise : Js.Promise.t('a) => t('a) = "from";
 
+[@bs.send]
+external toPromise : t('a) => Js.Promise.t('a) = "toPromise";
+
 [@bs.module "rxjs"]
 external fromEvent: ('element, string) => t('b) = "fromEvent";
 
