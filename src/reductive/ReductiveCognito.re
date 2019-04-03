@@ -180,26 +180,8 @@ module Epics {
     |> mergeMap(((code, username)) => 
       Rx.Observable.merge([|
         Rx.Observable.of1(`ConfirmSignUpStarted(code, username)),
-        Rx.Observable.interval(1000)
-        |> map(_value => 
-          `ConfirmSignUpError(
-            Amplify.Error.t(~code="VerificationCodeIncorrect", ~name="VerificationCodeIncorrect", ~message="Verification code incorrect"),
-            code,
-            username
-          ))
-        |> take(1)
-      |]))
-  });
-
-  let confirmSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
-    reductiveObservable
-    |> Utils.Rx.optMap(fun | (`ConfirmSignUpRequest(code, username), _state) => Some((code, username)) | _ => None)
-    |> mergeMap(((code, username)) => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`ConfirmSignUpStarted(code, username)),
         Amplify.Auth.confirmSignUp(~username, ~code, ())
         |> Rx.Observable.fromPromise
-        |> tap(~next=value => Js.log(value))
         |> map(result => `ConfirmSignUpCompleted(result))
         |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`ConfirmSignUpError(error, code, username)))
       |]))

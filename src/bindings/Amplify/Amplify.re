@@ -58,7 +58,6 @@ module Auth {
     type t = {
       user: CognitoUser.t,
       userConfirmed: bool,
-      userSub: string
     }
   };
 
