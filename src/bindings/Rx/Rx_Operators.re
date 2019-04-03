@@ -99,3 +99,7 @@ external _takeUntil:
 let takeUntil = (observable, source) =>
   (_takeUntil(observable))(. source);
   
+[@bs.module "rxjs/operators"]
+external _bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
+let bufferCount = (bufferSize, source) =>
+  (_bufferCount(bufferSize))(. source);
