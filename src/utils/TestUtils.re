@@ -11,10 +11,23 @@ let testObservable = (name, observableCallback) =>
 
 let actionRecordingStore = middleware =>  
   Reductive.Store.create(
-    ~reducer=(state, action) => [action, ...state],
+    ~reducer=(state, action) => state @ [action],
     ~preloadedState=[],
     ~enhancer=ReductiveObservable.middleware(
-      Rx.BehaviorSubject.make(middleware)
-      |. Rx.BehaviorSubject.asObservable
+      Rx.Observable.of1(middleware)
     ),
     ());
+
+let observableActionRecordingStore = middleware => {
+  /* make sure we can hold enough actions prior to initial subscription */
+  let eval = Rx.ReplaySubject.make(1024);
+  let store = actionRecordingStore(
+    redObs => Rx.Observable.merge([|
+      redObs |. middleware,
+      redObs
+      |> Rx.Observable.Operators.tap(~next=actionAndState=>Rx.ReplaySubject.next(eval, actionAndState))
+      |> ReductiveObservable.Utils.empty
+    |])
+  );
+  (eval |> Rx.ReplaySubject.asObservable, store)
+};
