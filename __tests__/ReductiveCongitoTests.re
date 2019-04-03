@@ -222,7 +222,7 @@ describe("ReductiveCognito epics", () => {
 
     eval
     |> Rx.Observable.Operators.map(((action, _)) => action)
-    |> Rx.Observable.Operators.tap(~next=action => Js.log(Symbol.Debug.symbolValue(action, `BsPolyVar)))
+    /* |> Rx.Observable.Operators.tap(~next=action => Js.log(Symbol.Debug.symbolValue(action, `BsPolyVar))) */
     |> Rx.Observable.Operators.bufferCount(3 * 6)
     |> Rx.Observable.Operators.map(actions => {
       expect(
