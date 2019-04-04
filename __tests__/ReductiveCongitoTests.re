@@ -1,10 +1,11 @@
 open Jestio;
 open TestUtils;
+open Operators;
 
 /* modules to be mocked here */
 [@bs.module "aws-amplify"] external auth: JestJs.moduleType = "Auth";
 
-describe("ReductiveCognito epics", () => {
+describe("ReductiveCognito epics", () => ReductiveCognito.({
   open Expect;
   
   /* examples
@@ -56,7 +57,7 @@ describe("ReductiveCognito epics", () => {
       JestJs.fn(() => Js.Promise.resolve(user))
     ));
     
-    let (eval, store) = observableActionRecordingStore(ReductiveCognito.Epics.signIn);
+    let (eval, store) = observableActionRecordingStore(Epics.signIn);
     let expectedActions = [
       `SignInRequest("testbot",""),
       `SignInStarted(()),
@@ -78,8 +79,8 @@ describe("ReductiveCognito epics", () => {
 
     let (eval, store) = observableActionRecordingStore(
       redObs => redObs 
-      |> Rx.Observable.Operators.map(((action, state)) => (action, { ReductiveCognito.user: ReductiveCognito.SignedIn(user), state }))
-      |. ReductiveCognito.Epics.completeNewPassword
+      |> Rx.Observable.Operators.map(((action, state)) => (action, { user: SignedIn(user), state }))
+      |. Epics.completeNewPassword
     );
     let expectedActions = [
       `CompleteNewPasswordRequest("test_password_Magic"),
@@ -101,7 +102,7 @@ describe("ReductiveCognito epics", () => {
       JestJs.fn(() => Js.Promise.resolve(expectedSignUpResult))
     ));
     
-    let (eval, store) = observableActionRecordingStore(ReductiveCognito.Epics.signUp);
+    let (eval, store) = observableActionRecordingStore(Epics.signUp);
     let expectedActions = [
       `SignUpRequest("testbot",""),
       `SignUpStarted(()),
@@ -120,7 +121,7 @@ describe("ReductiveCognito epics", () => {
       JestJs.fn(() => Js.Promise.resolve(Js.Obj.empty()))
     ));
     
-    let (eval, store) = observableActionRecordingStore(ReductiveCognito.Epics.confirmSignUp);
+    let (eval, store) = observableActionRecordingStore(Epics.confirmSignUp);
     let expectedActions = [
       `ConfirmSignUpRequest("000000","testbot"),
       `ConfirmSignUpStarted("000000","testbot"),
@@ -139,7 +140,7 @@ describe("ReductiveCognito epics", () => {
       JestJs.fn(() => Js.Promise.resolve("resend-signup-test"))
     ));
 
-    let (eval, store) = observableActionRecordingStore(ReductiveCognito.Epics.resendSignUp);
+    let (eval, store) = observableActionRecordingStore(Epics.resendSignUp);
     let expectedActions = [
       `ResendVerificationRequest("testbot"),
       `ResendVerificationStarted("testbot"),
@@ -158,7 +159,7 @@ describe("ReductiveCognito epics", () => {
       JestJs.fn(() => Js.Promise.resolve(()))
     ));
 
-    let (eval, store) = observableActionRecordingStore(ReductiveCognito.Epics.signOut);
+    let (eval, store) = observableActionRecordingStore(Epics.signOut);
     let expectedActions = [
       `SignOutRequest(()),
       `SignOutStarted(()),
@@ -184,8 +185,8 @@ describe("ReductiveCognito epics", () => {
 
     let (eval, store) = observableActionRecordingStore(
       redObs => redObs 
-      |> Rx.Observable.Operators.map(((action, state)) => (action, { ReductiveCognito.user: ReductiveCognito.SignedIn(user), state }))
-      |> ReductiveCognito.Epics.root);   
+      |> Rx.Observable.Operators.map(((action, state)) => (action, { user: SignedIn(user), state }))
+      |> Epics.root);   
     
     let expectedActions = [
       `SignInRequest("testbot",""),
@@ -232,4 +233,224 @@ describe("ReductiveCognito epics", () => {
       ) |> toEqual(true)
     })
   })
-});
+}));
+
+describe("ReductiveCognito reducer", () => ReductiveCognito.({
+  open Expect;
+
+  /**
+   * reductive cognito state is independent of previous state 
+   * and depends only on action passed
+   */
+
+  test("signIn started results in user SigningIn state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+    
+    store |. Reductive.Store.dispatch(`SignInStarted());
+    expect(Reductive.Store.getState(store).user) |> toEqual(SigningIn(()))
+  });
+
+  test("signIn completed results in SignedIn state when user is confirmed", () => { 
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+    
+    store |. Reductive.Store.dispatch(`SignInCompleted(user));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedIn(user))
+  });
+
+  test("signIn error sets the error state when error is not UserNotConfirmed", () => {
+    let error = Amplify.Error.t(~code="SomeRandomError", ~name="SomeRandomError", ~message="");
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`SignInError(error, "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignInError(error))
+  });
+
+  test("signIn error sets the AccountVerificationRequired state when error is UserNotConfirmed", () => {
+    let error = Amplify.Error.t(~code="UserNotConfirmedException", ~name="UserNotConfirmedException", ~message="");
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`SignInError(error, "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(AccountVerificationRequired("", "testbot"))
+  });
+
+  test("signUp started results in user SigningIn state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+    
+    store |. Reductive.Store.dispatch(`SignUpStarted());
+    expect(Reductive.Store.getState(store).user) |> toEqual(SigningIn(()))
+  });
+
+  test("signUp completed results in SignedIn state when user is confirmed", () => {
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    let signUpResult = Amplify.Auth.SignUpResult.t(~user, ~userConfirmed=true);
+
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+        
+    store |. Reductive.Store.dispatch(`SignUpCompleted(signUpResult));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedIn(user))
+  });
+
+  test("signUp completed results in AccountVerificationRequired state when user is not confirmed", () => {
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    let signUpResult = Amplify.Auth.SignUpResult.t(~user, ~userConfirmed=false);
+
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+        
+    store |. Reductive.Store.dispatch(`SignUpCompleted(signUpResult));
+    expect(Reductive.Store.getState(store).user) |> toEqual(AccountVerificationRequired("", "testbot"))
+  });
+
+  test("signUp error sets the error state", () => {
+    let error = Amplify.Error.t(~code="SomeRandomError", ~name="SomeRandomError", ~message="");
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`SignUpError(error));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignUpError(error))
+  });  
+
+  test("confirmSignUp started sets Verifying state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ConfirmSignUpStarted("000000", "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(Verifying("000000", "testbot"))
+  });
+
+  test("confirmSignUp error sets error state", () => {
+    let error = Amplify.Error.t(~code="SomeRandomError", ~name="SomeRandomError", ~message="");
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ConfirmSignUpError(error, "000000", "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(AccountVerificationError(error, "000000", "testbot"))
+  });
+
+  test("completeNewPassword competion signs out", () => {
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedIn(user), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`CompleteNewPasswordRequestCompleted(user));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedOut(()))
+  });
+
+  test("forceVerificationRequired sets accounts verification state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ForceVerificationRequired("000000", "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(AccountVerificationRequired("000000", "testbot"))
+  });
+
+  test("resendVerification started sets in progress state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ResendVerificationStarted("testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(ResendingVerification("testbot"))
+  });
+
+  test("resendVerification completed sets AccountVerificationRequired state", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedOut(()), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ResendVerificationCompleted(Js.Obj.empty(), "testbot"));
+    expect(Reductive.Store.getState(store).user) |> toEqual(AccountVerificationRequired("", "testbot"))
+  });
+
+  test("confirmSignUp completed signs out", () => {
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: Verifying("000000", "testbot"), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`ConfirmSignUpCompleted(Js.Obj.empty()));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedOut(()))
+  });
+
+  test("signOut completed signs out", () => {
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    let store = Reductive.Store.create(
+      ~reducer=cognitoReducer((state, _action) => state),
+      ~preloadedState={ user: SignedIn(user), state: () },
+      ());
+
+    store |. Reductive.Store.dispatch(`SignOutCompleted(()));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedOut(()))
+  });
+}));
+
+describe("ReductiveCognito enhancer", () => ReductiveCognito.({
+  open Expect;
+
+  let storeCreator = ReductiveCognito.enhancer @@ Reductive.Store.create;
+  let reducer = ((state, action) => switch(action){
+    | `Increase => state + 1
+    | `Decrease => state - 1
+    | _ => state
+  });
+
+  test("reductive state with enhancer signsIn", () => {
+    let store = storeCreator(
+      ~reducer=reducer |> Obj.magic,
+      ~preloadedState={ user: SignedOut(()), state: 0 },
+      ~enhancer=None,
+      ()
+    );
+
+    let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
+    store |. Reductive.Store.dispatch(`SignInCompleted(user));
+    expect(Reductive.Store.getState(store).user) |> toEqual(SignedIn(user))
+  });
+
+  test("reductive state with enhancer propagates inner reducer action", () => {
+    let store = storeCreator(
+      ~reducer=reducer |> Obj.magic,
+      ~preloadedState={ user: SignedOut(()), state: 0 },
+      ~enhancer=None,
+      ()
+    );
+
+    store |. Reductive.Store.dispatch(`Increase);
+    expect(Reductive.Store.getState(store).state) |> toEqual(1)
+  });
+
+  ()
+}));
