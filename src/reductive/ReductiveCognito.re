@@ -228,17 +228,12 @@ module Epics {
 };
 
 let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer, ()) => {
-  let withCognitoEpics = (store, next, action) => {
-    switch(enhancer){
-    | Some(enhancer) => enhancer(store, next, action)
-    | None => next(action)
-    };
-
+  let withCognitoEpics = (store, next, action) =>
     ReductiveObservable.middleware(
       Rx.Observable.of1(Epics.root),
-      store, next, action);
-    ()
-  };
+      store, 
+      switch(enhancer){ | Some(enhancer) => enhancer(store, next) | None => next }, 
+      action);
   
   let store = storeCreator(~reducer, ~preloadedState, ~enhancer=withCognitoEpics, ());
   Reductive.Store.replaceReducer(store, cognitoReducer(Obj.magic(store).reducer));
