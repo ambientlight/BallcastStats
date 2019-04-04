@@ -31,3 +31,11 @@ let observableActionRecordingStore = middleware => {
   );
   (eval |> Rx.ReplaySubject.asObservable, store)
 };
+
+/**
+ * needed to avoid: 
+ * [React Intl] Could not find required `intl` object. 
+ * <IntlProvider> needs to exist in the component ancestry. 
+ */
+let withIntl = element => 
+  <ReactIntl.IntlProvider locale="en">element</ReactIntl.IntlProvider>

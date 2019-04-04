@@ -25,7 +25,10 @@
     "bs-react-intl"
   ],
   "bs-dev-dependencies": [
-    "@glennsl/bs-jest"
+    "@glennsl/bs-jest",
+    "bs-jest-dom",
+    "bs-react-testing-library",
+    "bs-dom-testing-library"
   ],
   "warnings": {
   },
