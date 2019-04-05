@@ -4,6 +4,7 @@ open JestDom;
 open ReactTestingLibrary;
 open TestUtils;
 open Webapi.Dom;
+open Reductive.Store;
 
 describe("NavHeader", () => {
   open Expect;
@@ -13,7 +14,7 @@ describe("NavHeader", () => {
     |> render
     |> getByText(~matcher=`Str("Ballcast Tests")) |> (??)
     |> expect
-    |> toBeInTheDocument
+    |> toBeVisible
   );
 
   test("Header contains signUp button", () => 
@@ -25,7 +26,7 @@ describe("NavHeader", () => {
       (!!node |> Node.textContent |> String.trim) == "Sign Up")) 
     |> (??)
     |> expect
-    |> toBeInTheDocument
+    |> toBeVisible
   );
 
   test("Header contains signIn button", () => 
@@ -37,8 +38,32 @@ describe("NavHeader", () => {
       (!!node |> Node.textContent |> String.trim) == "Sign In")) 
     |> (??)
     |> expect
-    |> toBeInTheDocument
+    |> toBeVisible
   );
+
+  test("clicking on signIn button triggers PushRoute action", () => {
+    let store = actionRecordingStore(redObs => redObs |> ReductiveObservable.Utils.empty);
+    <NavHeader dispatch=dispatch(store) title="Ballcast Tests" locale=Locale.En/>
+    |> withIntl
+    |> render
+    |> getByText(~matcher=`Func(( _text, node ) => 
+      (node |> Element.tagName) === "BUTTON" && 
+      (!!node |> Node.textContent |> String.trim) == "Sign In"))
+    |> FireEvent.click;
+    expect(store |. getState) |> toEqual([`RouterPushRoute(Routes.signIn)])
+  });
+
+  test("clicking on signUp button triggers PushRoute action", () => {
+    let store = actionRecordingStore(redObs => redObs |> ReductiveObservable.Utils.empty);
+    <NavHeader dispatch=dispatch(store) title="Ballcast Tests" locale=Locale.En/>
+    |> withIntl
+    |> render
+    |> getByText(~matcher=`Func(( _text, node ) => 
+      (node |> Element.tagName) === "BUTTON" && 
+      (!!node |> Node.textContent |> String.trim) == "Sign Up"))
+    |> FireEvent.click;
+    expect(store |. getState) |> toEqual([`RouterPushRoute(Routes.signUp)])
+  });
 
   ()
 })
