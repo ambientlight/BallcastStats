@@ -50,7 +50,7 @@ module Inner {
   
   module Forms {
     let signIn = (state, retained, dispatch: action => unit) =>
-      <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) })>
+      <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) }) id="AuthSignInForm">
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
           <ReactIntl.DefinedMessage message=strings##gladToSeeYouBack/>
         </MaterialUi.Typography>
@@ -119,7 +119,7 @@ module Inner {
       </form>;
     
     let signUp = (_state, retained, dispatch: action => unit) =>
-      <form className=Styles.form>
+      <form className=Styles.form id="AuthSignUpForm">
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
           <ReactIntl.DefinedMessage message=strings##createYourAccount/>
         </MaterialUi.Typography>
@@ -186,7 +186,7 @@ module Inner {
       </form>;
 
     let forgotPassword = (_state, _dispatch: action => unit) =>
-      <form className=Styles.form>
+      <form className=Styles.form id="AuthForgotPasswordForm">
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
           <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
         </MaterialUi.Typography>
@@ -240,6 +240,7 @@ module Inner {
 
       <form 
         className=Styles.form autoComplete="nope"
+        id="AuthVerifySignInForm"
         ref=(element => {
           let _ = (element|.Js.Nullable.toOption)
           |. Belt.Option.map(element => {
@@ -445,9 +446,11 @@ module Inner {
           | (VerifySignUp, ResendingVerification(username))
           | (VerifySignUp, AccountVerificationError(_, _, username)) => Forms.accountVerification(~username, ~signInState, ~state, ~retained=retainedProps, ~dispatch=send)
           | (VerifySignUp, _) => 
-            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
-              <ReactIntl.DefinedMessage message=strings##verificationIsNotNeeded/>
-            </MaterialUi.Typography>
+            <div id="AuthVerifySignInForm">
+              <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+                <ReactIntl.DefinedMessage message=strings##verificationIsNotNeeded/>
+              </MaterialUi.Typography>
+            </div>
           | (SignIn, SignedIn(_user)) => 
             <Fragment>
               <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>

@@ -16,7 +16,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Glad to see you back")) |> (??)
+    |> getById("AuthSignInForm") |> (??)
     |> expect
     |> toBeVisible
   );
@@ -29,7 +29,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Create your account")) |> (??)
+    |> getById("AuthSignUpForm") |> (??)
     |> expect
     |> toBeVisible
   );
@@ -42,7 +42,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Forgot your password?")) |> (??)
+    |> getById("AuthForgotPasswordForm") |> (??)
     |> expect
     |> toBeVisible
   );
@@ -55,7 +55,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Verification is not needed.")) |> (??)
+    |> getById("AuthVerifySignInForm") |> (??)
     |> expect
     |> toBeVisible
   );
@@ -68,7 +68,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Embed it directly into your publication.")) |> (??)
+    |> getById("Landing") |> (??)
     |> expect
     |> toBeVisible
   );

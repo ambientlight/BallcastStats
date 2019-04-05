@@ -38,7 +38,7 @@ module Styles = LandingStyles.Root;
 let make = (~title, ~locale, ~dispatch: 'action => unit, _children) => {
   ...ReasonReact.statelessComponent(__MODULE__),
   render: _self => 
-    <div className=Styles.root>
+    <div className=Styles.root id="Landing">
       <NavHeader dispatch title locale className=Styles.navHeader/>
       <TopCTA className=Styles.topCTA/>
       <TopPreview className=Styles.topPreview/>

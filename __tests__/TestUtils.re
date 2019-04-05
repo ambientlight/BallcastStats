@@ -39,3 +39,6 @@ let observableActionRecordingStore = middleware => {
  */
 let withIntl = element => 
   <ReactIntl.IntlProvider locale="en">element</ReactIntl.IntlProvider>
+
+let getById = (id, ~options=?, result) =>
+  ReactTestingLibrary.getByText(~matcher=`Func((_text, node) => (node |> Webapi.Dom.Element.id) == id), ~options?, result)
