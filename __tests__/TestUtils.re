@@ -41,4 +41,17 @@ let withIntl = element =>
   <ReactIntl.IntlProvider locale="en">element</ReactIntl.IntlProvider>
 
 let getById = (id, ~options=?, result) =>
-  ReactTestingLibrary.getByText(~matcher=`Func((_text, node) => (node |> Webapi.Dom.Element.id) == id), ~options?, result)
+  ReactTestingLibrary.getByText(~matcher=`Func((_text, node) => 
+    (node |> Webapi.Dom.Element.id) == id), ~options?, result);
+
+let getByClassName = (className: string, ~options=?, result) =>
+  ReactTestingLibrary.getByText(~matcher=`Func((_text, node) => {
+    switch(Js.Types.classify(node|.Webapi.Dom.Element.className)){
+    | JSString(value) => {
+      value
+      |> Js.String.split(" ")
+      |. Belt.Array.some(element => element == className)
+    }
+    | _ => false
+    }
+  }), ~options?, result);

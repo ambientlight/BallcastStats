@@ -1,5 +1,5 @@
-open Jest;
 open Operators;
+open Jest;
 open JestDom;
 open ReactTestingLibrary;
 open TestUtils;

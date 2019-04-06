@@ -43,7 +43,7 @@ module Styles {
   ]));
 }
 
-let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~color: option(color)=?, children) => {
+let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~color: option(color)=?, ~className: option(string)=?, children) => {
   ...ReasonReact.statelessComponent(__MODULE__),
   render: _self =>
     <span
@@ -58,7 +58,8 @@ let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~
       | `TextPrimary => Styles.textPrimary
       | `TextSecondary => Styles.textSecondary
       | _ => ""
-      })
+      }),
+      className |? "",
     ] >|< " ")
     ?onClick>
       ...children

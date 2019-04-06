@@ -10,4 +10,9 @@ module Rx {
     |> filter(entry => Belt.Option.isSome(entry))
     |> map(entry => Belt.Option.getExn(entry))
   });
-}
+};
+
+module Tests {
+  let withTestClass = (className, testClassName) =>
+    List.join(~seperator=" ", [className, testClassName]);
+};

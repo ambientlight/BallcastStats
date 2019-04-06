@@ -2,6 +2,7 @@ open Operators;
 open Css;
 open Webapi;
 open AuthLocale;
+open Utils.Tests;
 
 type mode = SignIn | SignUp | ForgotPassword | VerifySignUp;
 module Styles = AuthStyles;
@@ -55,7 +56,7 @@ module Inner {
           <ReactIntl.DefinedMessage message=strings##gladToSeeYouBack/>
         </MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.email)
-          className=Styles.textField
+          className=(Styles.textField|.withTestClass("test-sign-in-email-field"))
           autoComplete="username"
           type_="email"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
@@ -65,7 +66,7 @@ module Inner {
           onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
 
         <MaterialUi.TextField value=`String(state.password)
-          className=Styles.textField
+          className=(Styles.textField|.withTestClass("test-sign-in-password-field"))
           autoComplete="current-password"
           type_="password"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##password/>
@@ -94,7 +95,7 @@ module Inner {
           </LabelButton>
         </div>
         <MaterialUi.Button variant=`Outlined
-          className=Styles.button 
+          className=(Styles.button|.withTestClass("test-sign-in-button"))
           onClick=(_event => { 
             dispatch(`SignInRequest());
           })>
@@ -109,6 +110,7 @@ module Inner {
             <ReactIntl.DefinedMessage message=strings##dontHaveAnAccount/>
           </MaterialUi.Typography>
           <LabelButton color=`TextPrimary 
+            className="test-sign-in-alt-signup-button"
             emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signUp)))>
             <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
@@ -124,19 +126,20 @@ module Inner {
           <ReactIntl.DefinedMessage message=strings##createYourAccount/>
         </MaterialUi.Typography>
         <MaterialUi.TextField
-          className=Styles.textField
-          type_="username"
+          className=(Styles.textField|.withTestClass("test-sign-up-username-field"))
+          /* FIXME: using username for some reason results in inability to change input inside unit test */
+          /* type_="username" */
           autoComplete="username"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
           onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
-          className=Styles.textField
+          className=(Styles.textField|.withTestClass("test-sign-up-password-field"))
           type_="password"
           autoComplete="new-password"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##password/>
           onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
         <MaterialUi.TextField
-          className=Styles.textField    
+          className=(Styles.textField|.withTestClass("test-sign-up-confirmpassword-field"))
           type_="password"
           autoComplete="new-password"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##confirmPassword/>
@@ -149,7 +152,7 @@ module Inner {
           onChange=(event => dispatch(`PasswordConfirmationChanged(ReactEvent.Form.target(event)##value)))/>
 
         <MaterialUi.Button variant=`Outlined
-          className=Styles.button
+          className=(Styles.button|.withTestClass("test-sign-up-button"))
           onClick=(_event => dispatch(`SignUpRequest(())))>
           <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
         </MaterialUi.Button>
@@ -157,7 +160,8 @@ module Inner {
           <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>
             <ReactIntl.DefinedMessage message=strings##alreadyHaveAnAccount/>
           </MaterialUi.Typography>
-          <LabelButton color=`TextPrimary 
+          <LabelButton color=`TextPrimary
+            className="test-sign-up-alt-signin-button"
             emphasized=true 
             onClick=(_event => dispatch(`RouterPushRoute(Routes.signIn)))>
             <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
