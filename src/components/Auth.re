@@ -194,7 +194,7 @@ module Inner {
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
           <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
         </MaterialUi.Typography>
-        <MaterialUi.Typography variant=`Subtitle1 className=Styles.smallTopMargin>
+        <MaterialUi.Typography variant=`Subtitle1 className=([Styles.smallTopMargin, Styles.forgotPasswordDescription]>|<" ")>
           <ReactIntl.DefinedMessage message=strings##forgotPasswordDescription/>
         </MaterialUi.Typography>
         <MaterialUi.TextField

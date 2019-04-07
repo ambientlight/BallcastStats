@@ -141,6 +141,10 @@ let additionalInfoContainer = style([
   ])
 ]);
 
+let forgotPasswordDescription = style([
+  minHeight(px(72))
+]);
+
 let smallTopMargin = style([
   !#marginTop(px(32))
 ]);
