@@ -127,7 +127,10 @@ module Inner {
         </MaterialUi.Typography>
         <MaterialUi.TextField
           className=(Styles.textField|.withTestClass("test-sign-up-username-field"))
-          /* FIXME: using username for some reason results in inability to change input inside unit test */
+          /* 
+           * FIXME: https://github.com/ambientlight/BallcastStats/issues/6
+           * using username for some reason results in inability to change input inside unit test 
+           */
           /* type_="username" */
           autoComplete="username"
           label=<ReactIntl.DefinedMessage message=CommonLocale.strings##email/>
@@ -263,7 +266,8 @@ module Inner {
             }));
             /* 
               (for verification code reset) apply only when verification code is 1 digit
-              FIXME: this is still hacky since user cannot errase by backspace completely
+              FIXME: https://github.com/ambientlight/BallcastStats/issues/4 
+              this is still hacky since user cannot errase by backspace completely
             */
             if(String.length(state.verificationCode) == 1 && focusIdx < Array.length(inputs)){
               Dom.HtmlElement.focus(!!(inputs[focusIdx]));
@@ -290,7 +294,8 @@ module Inner {
              * a bit hacky
              * since ReactCodeInput doesn't have a callback with each letter
              * on error we calculate a diff to find a changed letter and technically reset the input to it
-             * but since FIXME: ReactCodeInput doesn't YET support two way binding (only initial value), we trigger the reductive action
+             * but since FIXME: https://github.com/ambientlight/BallcastStats/issues/4 ReactCodeInput doesn't YET support two way binding (only initial value)
+             * we trigger the reductive action
              * which on signIn state change will result in full reinit of this component
              */
             if(codeIncorrect || codeExpired && state.verificationCode|.length == 6){
@@ -368,7 +373,8 @@ module Inner {
       staySignedIn: false,
 
       /**
-       * FIXME: unfortunately each change to reductive state (signInState)
+       * FIXME: https://github.com/ambientlight/BallcastStats/issues/5
+       * unfortunately each change to reductive state (signInState)
        * will result in full component recreation, thus to keep the verificationCode
        * during the state change to verifying we need to preserve it reductive and pass here
        */
