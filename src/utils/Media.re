@@ -45,12 +45,20 @@ module Breakpoint {
   let rangeU = breakpoint => { let (_, upper) = range(breakpoint); upper };
 
   let matKey = fun
-    | SmallPhone
-    | Phone => "xs"
-    | Tablet => "sm"
+    | SmallPhone => "xs"
+    | Phone 
+    | Tablet => "sm" 
     | Laptop => "md"
-    | Desktop => "lg"
+    | Desktop => "lg" 
     | FullHD => "xl";
+  
+  let fromMatKey = fun
+    | "xs" => SmallPhone
+    | "sm" => Tablet
+    | "md" => Laptop
+    | "lg" => Desktop
+    | "xl" => FullHD
+    | _ => raise(Failure("Unrecognized mat key"));
 
   let current = () => switch(Window.innerWidth){
     | width when width < rangeU(SmallPhone) => SmallPhone

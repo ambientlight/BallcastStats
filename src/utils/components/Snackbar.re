@@ -3,7 +3,7 @@ open Operators;
 
 module Styles {
   let root = style([
-    media("(min-width: 960px)", [
+    Media.atLeast(Media.Breakpoint.Laptop, [
       marginBottom(px(24))
     ])
   ]);

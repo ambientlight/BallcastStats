@@ -256,7 +256,13 @@ let overrides = Overrides.make(
 
 let theme = MaterialUi.Theme.create(
   make(
-		/* TODO: synchronize breakpoints */
+	  ~breakpoints=Breakpoints.make(~values=Media.Breakpoint.(BreakpointValues.make(
+      ~xs="xs"|.fromMatKey|.rangeL|.float_of_int,
+      ~sm="sm"|.fromMatKey|.rangeL|.float_of_int,
+      ~md="md"|.fromMatKey|.rangeL|.float_of_int,
+      ~lg="lg"|.fromMatKey|.rangeL|.float_of_int,
+      ~xl="xl"|.fromMatKey|.rangeL|.float_of_int
+    )), ()),
 		~palette=PaletteOptions.make(
 			~type_="dark",
 			~primary,
