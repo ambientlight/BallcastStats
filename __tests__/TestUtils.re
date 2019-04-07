@@ -2,10 +2,11 @@ let fullfillIn = (callback, observable) =>
   observable 
   |> Rx.Observable.subscribe(
     ~next=fulfilled => callback(fulfilled),
-    ~error=failed => callback(failed));
+    ~error=failed => callback(failed))
+  |> ignore;
 
 let testObservable = (name, observableCallback) => 
-  Jestio.testAsync(name, callback => 
+  Jest.testAsync(name, callback => 
     observableCallback() 
     |> fullfillIn(callback));
 
@@ -55,3 +56,20 @@ let getByClassName = (className: string, ~options=?, result) =>
     | _ => false
     }
   }), ~options?, result);
+
+/* opaque type to be used in module bindings for mock functions assignments 
+  [@bs.module "aws-amplify"] external auth: moduleType = "Auth";
+*/
+type moduleType;
+let _assignMock: (. moduleType, string, Js.t({.})) => unit =
+[%raw "function (module, key, value) { module[key] = value; }"];
+
+let assignMock = (jsModule, key, mockfn) => _assignMock(. jsModule, key, mockfn |> Obj.magic);
+
+[@bs.send.pipe: Jest.MockJs.fn('a, 'b, 'ret) as 'self]
+external mockResolvedValue: 'ret => Jest.MockJs.fn(_ => Js.Promise.t('ret), 'b, Js.Promise.t('ret)) = "";
+[@bs.send.pipe: Jest.MockJs.fn('a, 'b, 'ret) as 'self]
+external mockResolvedValueOnce: 'ret => Jest.MockJs.fn(_ => Js.Promise.t('ret), 'b, Js.Promise.t('ret)) = "";
+
+[@bs.send] external call: ((. 'a) => 'b, 'c, 'a) => 'b = "";
+let call = (self, arg) => call(self |> Obj.magic, (), arg);

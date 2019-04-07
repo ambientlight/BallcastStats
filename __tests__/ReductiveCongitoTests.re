@@ -1,11 +1,11 @@
-open Jestio;
+open Jest;
 open TestUtils;
 open Operators;
 open Reductive.Store;
 open ReductiveCognito;
 
 /* modules to be mocked here */
-[@bs.module "aws-amplify"] external auth: JestJs.moduleType = "Auth";
+[@bs.module "aws-amplify"] external auth: moduleType = "Auth";
 
 describe("ReductiveCognito epics", () => {
   open Expect;
@@ -55,7 +55,7 @@ describe("ReductiveCognito epics", () => {
 
   testObservable("signIn request spawns started/complete actions", () => {
     let user = Amplify.Auth.CognitoUser.t(~username="testbot", ~challengeName="", ());
-    auth |. JestJs.assignMock("signIn", MockJs.fn(
+    auth |. assignMock("signIn", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve(user))
     ));
     
@@ -75,7 +75,7 @@ describe("ReductiveCognito epics", () => {
 
   testObservable("completeNewPassword spawns started/complete actions", () => {
     let user = Amplify.Auth.CognitoUser.t(~username="testbot", ~challengeName="", ());
-    auth |. JestJs.assignMock("completeNewPassword", MockJs.fn(
+    auth |. assignMock("completeNewPassword", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve(user))
     ));
 
@@ -100,7 +100,7 @@ describe("ReductiveCognito epics", () => {
   testObservable("signUp request spawns started/complete actions", () => {
     let user = Amplify.Auth.CognitoUser.t(~username="testbot", ());
     let expectedSignUpResult = Amplify.Auth.SignUpResult.t(~user, ~userConfirmed=false);
-    auth |. JestJs.assignMock("signUp", MockJs.fn(
+    auth |. assignMock("signUp", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve(expectedSignUpResult))
     ));
     
@@ -119,7 +119,7 @@ describe("ReductiveCognito epics", () => {
   });  
 
   testObservable("confirmSignUp request spawns started/complete actions", () => {
-    auth |. JestJs.assignMock("confirmSignUp", MockJs.fn(
+    auth |. assignMock("confirmSignUp", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve(Js.Obj.empty()))
     ));
     
@@ -138,7 +138,7 @@ describe("ReductiveCognito epics", () => {
   });
 
   testObservable("resendSignUp request spawns started/complete actions", () => {
-    auth |. JestJs.assignMock("resendSignUp", MockJs.fn(
+    auth |. assignMock("resendSignUp", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve("resend-signup-test"))
     ));
 
@@ -157,7 +157,7 @@ describe("ReductiveCognito epics", () => {
   });
 
   testObservable("signInOut request spawns started/complete actions", () => {
-    auth |. JestJs.assignMock("signOut", MockJs.fn(
+    auth |. assignMock("signOut", MockJs.fn(
       JestJs.fn(() => Js.Promise.resolve(()))
     ));
 
@@ -178,12 +178,12 @@ describe("ReductiveCognito epics", () => {
   testObservable("ReductiveCognito rootEpics merges each middleware", () => {
     let user = Amplify.Auth.CognitoUser.t(~username="testbot", ~challengeName="", ());
     let expectedSignUpResult = Amplify.Auth.SignUpResult.t(~user, ~userConfirmed=false);
-    auth |. JestJs.assignMock("signIn", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(user))));
-    auth |. JestJs.assignMock("completeNewPassword", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(user))));
-    auth |. JestJs.assignMock("signUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(expectedSignUpResult))));
-    auth |. JestJs.assignMock("confirmSignUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(Js.Obj.empty()))));
-    auth |. JestJs.assignMock("resendSignUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve("resend-signup-test"))));
-    auth |. JestJs.assignMock("signOut", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(()))));
+    auth |. assignMock("signIn", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(user))));
+    auth |. assignMock("completeNewPassword", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(user))));
+    auth |. assignMock("signUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(expectedSignUpResult))));
+    auth |. assignMock("confirmSignUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(Js.Obj.empty()))));
+    auth |. assignMock("resendSignUp", MockJs.fn(JestJs.fn(() => Js.Promise.resolve("resend-signup-test"))));
+    auth |. assignMock("signOut", MockJs.fn(JestJs.fn(() => Js.Promise.resolve(()))));
 
     let (eval, store) = observableActionRecordingStore(
       redObs => redObs 
