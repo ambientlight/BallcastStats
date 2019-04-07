@@ -27,9 +27,9 @@ module TopCTA {
 
   let subtitle = style([
     !#marginBottom(px(54)),
-    ...Media.propertySplitOn(Media.Breakpoint.Phone, ~rule=display,
-      ~lower=`none,
-      ~upper=`initial
+    ...Media.rulesSplitOn(Media.Breakpoint.Phone,
+      ~lower=[!# display(`none)],
+      ~upper=[!# display(`initial)]
     )
   ]);
 

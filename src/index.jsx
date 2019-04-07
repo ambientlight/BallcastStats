@@ -1,3 +1,8 @@
+// polyfills
+import 'babel-polyfill';
+import 'whatwg-fetch';
+import 'intl';
+
 import * as React from 'react'
 import { render } from 'react-dom'
 import { addLocaleData } from 'react-intl'
@@ -11,8 +16,6 @@ import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Root from './Root'
 
-import 'babel-polyfill';
-import 'whatwg-fetch';
 import { Auth } from 'aws-amplify'
 
 // configure Amplify

@@ -169,7 +169,7 @@ module Inner {
             </MaterialUi.Typography>
           </LabelButton>
         </div>
-        <div className=Styles.additionalInfoContainer>
+        /* <div className=Styles.additionalInfoContainer>
           <MaterialUi.Typography variant=`Caption style=ReactDOMRe.Style.make(~display="inline", ())>
             <ReactIntl.DefinedMessage message=strings##termsOfUseP1/>
           </MaterialUi.Typography>
@@ -186,7 +186,7 @@ module Inner {
               <ReactIntl.DefinedMessage message=strings##termsOfUseP4/>
             </MaterialUi.Typography>
           </LabelButton>
-        </div>
+        </div> */
       </form>;
 
     let forgotPassword = (_state, _dispatch: action => unit) =>
@@ -436,7 +436,7 @@ module Inner {
       <div className=Styles.root>
         <Logo.WithCaption 
           dispatch
-          className=([Styles.logo, mode == SignUp ? Styles.hideLogoHackOnNarrowLayout : ""] >|< " ") 
+          className=([Styles.logo, Styles.hideLogoHackOnNarrowLayout] >|< " ") 
           caption=title
           hideCaptionOnSmall=false/>
         

@@ -55,6 +55,7 @@ let card = MaterialUi.Theme.(style([
   alignItems(`center),
   justifyContent(`center),
 
+  !#overflow(`scroll),
   !#backgroundColor(
     raw(AppTheme.theme|.Theme.paletteGet|.Palette.primaryGet|.PaletteColor.mainGet)
   ),
@@ -77,7 +78,8 @@ let form = style([
 
   width(`percent(100.0)),
   padding2(~v=px(0), ~h=px(32)),
-
+  margin2(~v=px(16), ~h=px(0)),
+  
   selector("
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
@@ -91,26 +93,30 @@ let form = style([
 
 let welcomeTitle = style([
   Media.below(Media.Breakpoint.Phone, [!#display(`none)]),
-  Media.atLeast(Media.Breakpoint.Phone, [!#display(`initial)])
+  Media.atLeast(Media.Breakpoint.Phone, [!#display(`initial)]),
+  minHeight(px(36))
 ]);
 
 let textField = style([
   width(`percent(100.0)),
   /* default margin is a bit too small so the label easily hits above objects */
-  !# marginTop(`px(8))
+  !# marginTop(`px(8)),
+  minHeight(`px(50))
 ]);
 
 let button = style([
   marginTop(px(24)),
   marginBottom(px(12)),
   width(`percent(80.0)),
+  minHeight(px(54))
 ] |> List.map(rule => !# rule));
 
 let actionPanel = style([
   width(`percent(100.0)),
   display(`flex),
   justifyContent(`spaceBetween),
-  alignItems(`center)
+  alignItems(`center),
+  minHeight(px(32))
 ]);
 
 let actionLabel = style([

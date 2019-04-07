@@ -58,6 +58,7 @@
     "bs-css": "git+https://github.com/ambientlight/bs-css.git",
     "bs-react-intl": "^0.7.0",
     "bs-webapi": "^0.13.2",
+    "intl": "^1.2.5",
     "react": "^16.7.0",
     "react-code-input": "^3.8.1",
     "react-dom": "^16.7.0",
