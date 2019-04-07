@@ -210,22 +210,22 @@ let typography = Typography.make(
 let overrides = Overrides.make(
 	~muiInput=InputClassKey.make(
 		/* TODO: below overrides don't match in terms of transparency */
-		/* ~underline=
+		~underline=
 			ReactDOMRe.Style.make(
-				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
 				()
 			) |. ReactDOMRe.Style.unsafeAddProp("&:before", ReactDOMRe.Style.make(
 				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
-				()) |. styleToString)
-				|. ReactDOMRe.Style.unsafeAddProp("&:hover::before", ReactDOMRe.Style.make(
-				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
-				()) |. styleToString)
-				|. ReactDOMRe.Style.unsafeAddProp("&:after", ReactDOMRe.Style.make(
-				~borderBottom="1px solid " ++ (text|.TypeText.hintGet|.Belt.Option.getExn),
 				()) |. styleToString),
-			() */
-		),
+			()
+    ),
     
+  ~muiButton=ButtonClassKey.make(
+    ~outlined=ReactDOMRe.Style.make(
+      ~border="1px solid " ++ (primary|.Primary.contrastTextGet|.Belt.Option.getExn|.rgbAddAlpha(0.23)),
+      ()
+    ),
+    ()
+  ),
   ~muiInputLabel=InputLabelClassKey.make(
     ~root=ReactDOMRe.Style.make(
       ~color=text|.TypeText.hintGet|.Belt.Option.getExn,
