@@ -1,6 +1,7 @@
 open Operators;
 open Css;
 open NavHeaderLocale;
+open Utils.Tests;
 
 module Styles {
   let root = style([
@@ -42,11 +43,13 @@ let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children
         <ReactIntl.DefinedMessage message=strings##pricing/>
       </MaterialUi.Button>
       <MaterialUi.Button
-        className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
+        className=([Styles.button, Media.Classes.atLeastTablet, "test-navheader-signup-button"] >|< " ")
         onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))>
         <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
       </MaterialUi.Button>
-      <MaterialUi.Button className=Styles.button onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
+      <MaterialUi.Button 
+        className=(Styles.button |. withTestClass("test-navheader-signin-button"))
+        onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
         <ReactIntl.DefinedMessage message=CommonLocale.strings##signIn/>
       </MaterialUi.Button>
     </div>

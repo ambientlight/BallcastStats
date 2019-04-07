@@ -21,9 +21,7 @@ describe("NavHeader", () => {
     <NavHeader dispatch=((_action) => ()) title="Ballcast Tests" locale=Locale.En/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Func(( _text, node ) => 
-      (node |> Element.tagName) === "BUTTON" && 
-      (!!node |> Node.textContent |> String.trim) == "Sign Up")) 
+    |> getByClassName("test-navheader-signup-button") 
     |> (??)
     |> expect
     |> toBeVisible
@@ -33,9 +31,7 @@ describe("NavHeader", () => {
     <NavHeader dispatch=((_action) => ()) title="Ballcast Tests" locale=Locale.En/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Func(( _text, node ) => 
-      (node |> Element.tagName) === "BUTTON" && 
-      (!!node |> Node.textContent |> String.trim) == "Sign In")) 
+    |> getByClassName("test-navheader-signin-button") 
     |> (??)
     |> expect
     |> toBeVisible
@@ -46,9 +42,7 @@ describe("NavHeader", () => {
     <NavHeader dispatch=dispatch(store) title="Ballcast Tests" locale=Locale.En/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Func(( _text, node ) => 
-      (node |> Element.tagName) === "BUTTON" && 
-      (!!node |> Node.textContent |> String.trim) == "Sign In"))
+    |> getByClassName("test-navheader-signin-button") 
     |> FireEvent.click;
     expect(store |. getState) |> toEqual([`RouterPushRoute(Routes.signIn)])
   });
@@ -58,9 +52,7 @@ describe("NavHeader", () => {
     <NavHeader dispatch=dispatch(store) title="Ballcast Tests" locale=Locale.En/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Func(( _text, node ) => 
-      (node |> Element.tagName) === "BUTTON" && 
-      (!!node |> Node.textContent |> String.trim) == "Sign Up"))
+    |> getByClassName("test-navheader-signup-button") 
     |> FireEvent.click;
     expect(store |. getState) |> toEqual([`RouterPushRoute(Routes.signUp)])
   });
