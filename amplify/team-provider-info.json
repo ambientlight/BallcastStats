@@ -15,5 +15,22 @@
                 "cognitoe928770c": {}
             }
         }
+    },
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "ballcaststats-20190409014828-authRole",
+            "UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190409014828-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190409014828-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "ballcaststats-20190409014828-deployment",
+            "UnauthRoleName": "ballcaststats-20190409014828-unauthRole",
+            "StackName": "ballcaststats-20190409014828",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:229321913319:stack/ballcaststats-20190409014828/84e1fa10-5a26-11e9-9ed6-0a97a1834e8a"
+        },
+        "categories": {
+            "auth": {
+                "cognitoe928770c": {}
+            }
+        }
     }
 }
