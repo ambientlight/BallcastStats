@@ -24,8 +24,9 @@ module Styles {
   ]);
 }
 
+let component = ReasonReact.statelessComponent(__MODULE__);
 let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children) => {
-  ...ReasonReact.statelessComponent(__MODULE__),
+  ...component,
   render: _self =>
     <div className=([Styles.root, className |? ""] >|< " ")>
       <Logo.WithCaption dispatch caption=title/>

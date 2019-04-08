@@ -2,8 +2,9 @@ open Css;
 open Operators;
 
 module Core {
+  let component = ReasonReact.statelessComponent("Logo");
   let make = _children => {
-    ...ReasonReact.statelessComponent("Logo"),
+    ...component,
     render: _self => 
       <svg width="41px" height="42px" viewBox="0 0 41 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
         <title>{ReasonReact.string("Ballcast Logo")}</title>
@@ -63,8 +64,9 @@ module WithCaption {
     ]);
   }
 
+  let component = ReasonReact.statelessComponent("Logo.WithCaption");
   let make = (~dispatch: Store.Action.t => unit, ~caption, ~hideCaptionOnSmall=true, ~className=?, _children) => {
-    ...ReasonReact.statelessComponent("Logo.WithCaption"),
+    ...component,
     render: _self => 
       <div 
         className=([Styles.root, className |? ""] >|< " ")

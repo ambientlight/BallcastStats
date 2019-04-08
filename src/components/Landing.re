@@ -3,8 +3,9 @@ open LandingLocale;
 
 module TopCTA {
   module Styles = LandingStyles.TopCTA;
+  let component =ReasonReact.statelessComponent(__MODULE__)
   let make = (~className=?, _children) => {
-    ...ReasonReact.statelessComponent(__MODULE__),
+    ...component,
     render: _self => 
       <div className=([Styles.root, className |? ""] >|< " ")>
         <MaterialUi.Typography variant=`H3 className=Styles.title>
@@ -26,8 +27,9 @@ module TopCTA {
 
 module TopPreview {
   module Styles = LandingStyles.TopPreview;
+  let component = ReasonReact.statelessComponent(__MODULE__)
   let make = (~className=?, _children) => {
-    ...ReasonReact.statelessComponent(__MODULE__),
+    ...component,
     render: _self =>
       <div className=([Styles.root, className |? ""] >|< " ")>
       </div>
@@ -35,8 +37,9 @@ module TopPreview {
 };
 
 module Styles = LandingStyles.Root;
+let component = ReasonReact.statelessComponent(__MODULE__);
 let make = (~title, ~locale, ~dispatch: 'action => unit, _children) => {
-  ...ReasonReact.statelessComponent(__MODULE__),
+  ...component,
   render: _self => 
     <div className=Styles.root id="Landing">
       <NavHeader dispatch title locale className=Styles.navHeader/>

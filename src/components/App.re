@@ -16,8 +16,9 @@ module LocaleProvider = {
 
 /** Base routing login goes here */
 module Shell = {
+  let component = ReasonReact.statelessComponent(__MODULE__);
   let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, ~locale, _children) => {
-    ...ReasonReact.statelessComponent(__MODULE__),
+    ...component,
     render: _self => Routes.({
       switch(state.path){
       | ["sign-in", ..._] => <Auth title mode=SignIn/>
@@ -32,8 +33,9 @@ module Shell = {
 };
 
 module Inner = {
+  let component = ReasonReact.statelessComponent(__MODULE__)
   let make = (~state as locale: Locale.locale, ~dispatch as _dispatch: Store.Action.t => unit, ~title: string, _children) => {
-    ...ReasonReact.statelessComponent(__MODULE__),
+    ...component,
     render: _self =>
       <ReactIntl.IntlProvider 
         locale=(locale|.Locale.toString)

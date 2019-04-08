@@ -296,7 +296,7 @@ module Inner {
              * on error we calculate a diff to find a changed letter and technically reset the input to it
              * but since FIXME: https://github.com/ambientlight/BallcastStats/issues/4 ReactCodeInput doesn't YET support two way binding (only initial value)
              * we trigger the reductive action
-             * which on signIn state change will result in full reinit of this component
+             * which on signIn state change will result in full reinit of this component (because of component spread hack below)
              */
             if(codeIncorrect || codeExpired && state.verificationCode|.length == 6){
               let idxs = Array.init(min(event|.length, state.verificationCode|.length), x => x) |> Array.to_list;
@@ -358,6 +358,10 @@ module Inner {
       
 
   let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode, ~title, _children): ReasonReact.component(state, retained, action) => {
+    /* 
+     * FIXME: Intentionally making component recreate on each prop change for reactCodeInput code to reset on incorrect code 
+     * until https://github.com/ambientlight/BallcastStats/issues/4 lands
+     */
     ...ReasonReact.reducerComponentWithRetainedProps(__MODULE__),
     retainedProps: {
       formRef: None,
@@ -371,13 +375,6 @@ module Inner {
       password: "",
       passwordConfirmation: "",
       staySignedIn: false,
-
-      /**
-       * FIXME: https://github.com/ambientlight/BallcastStats/issues/5
-       * unfortunately each change to reductive state (signInState)
-       * will result in full component recreation, thus to keep the verificationCode
-       * during the state change to verifying we need to preserve it reductive and pass here
-       */
       verificationCode: 
         switch(signInState){
         | AccountVerificationRequired(code, _)
