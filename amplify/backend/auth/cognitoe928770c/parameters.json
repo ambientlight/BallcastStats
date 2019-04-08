@@ -26,8 +26,7 @@
     "passwordPolicyCharacters": [
         "Requires Lowercase",
         "Requires Uppercase",
-        "Requires Numbers",
-        "Requires Symbols"
+        "Requires Numbers"
     ],
     "requiredAttributes": [
         "email"
