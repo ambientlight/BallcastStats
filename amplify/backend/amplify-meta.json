@@ -1,0 +1,56 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "ballcaststats-20190408230517-authRole",
+            "UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190408230517-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190408230517-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "ballcaststats-20190408230517-deployment",
+            "UnauthRoleName": "ballcaststats-20190408230517-unauthRole",
+            "StackName": "ballcaststats-20190408230517",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:229321913319:stack/ballcaststats-20190408230517/b8d050e0-5a0f-11e9-a792-065839e5808c"
+        },
+        "categories": {
+            "auth": {
+                "cognitoe928770c": {}
+            }
+        }
+    },
+    "auth": {
+        "cognitoe928770c": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "AppClientSecret": "u2fi6eu5jsq5rdhfts4ja272l0fnquk8s4tu3mn0g84o7seml6",
+                "UserPoolId": "ap-southeast-1_Zdfiwcqsd",
+                "AppClientIDWeb": "1r28ipu5aph7p7id1sqj8oadg7",
+                "AppClientID": "1i2879t0b3o0mgq5k0frdn4mkc",
+                "IdentityPoolId": "ap-southeast-1:ba977f3a-8d19-4086-9d4c-4fc767c5d210",
+                "IdentityPoolName": "cognitoe928770c_identitypool_e928770c__dev",
+                "UserPoolName": "cognitoe928770c_userpool_e928770c"
+            },
+            "lastPushTimeStamp": "2019-04-08T19:36:38.519Z",
+            "providerMetadata": {
+                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
+                "logicalId": "authcognitoe928770c"
+            }
+        }
+    },
+    "hosting": {
+        "S3AndCloudFront": {
+            "service": "S3AndCloudFront",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "S3BucketSecureURL": "https://ballcaststats-dev-dev.s3.amazonaws.com",
+                "WebsiteURL": "http://ballcaststats-dev-dev.s3-website-ap-southeast-1.amazonaws.com",
+                "Region": "ap-southeast-1",
+                "HostingBucketName": "ballcaststats-dev-dev"
+            },
+            "lastPushTimeStamp": "2019-04-08T19:36:38.520Z",
+            "providerMetadata": {
+                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/hosting/template.json",
+                "logicalId": "hostingS3AndCloudFront"
+            }
+        }
+    }
+}
