@@ -29,7 +29,7 @@
                 "IdentityPoolName": "cognitoe928770c_identitypool_e928770c__dev",
                 "UserPoolName": "cognitoe928770c_userpool_e928770c"
             },
-            "lastPushTimeStamp": "2019-04-08T19:36:38.519Z",
+            "lastPushTimeStamp": "2019-04-09T02:34:44.350Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
                 "logicalId": "authcognitoe928770c"
@@ -46,7 +46,7 @@
                 "Region": "ap-southeast-1",
                 "HostingBucketName": "ballcaststats-dev-dev"
             },
-            "lastPushTimeStamp": "2019-04-08T19:36:38.520Z",
+            "lastPushTimeStamp": "2019-04-09T02:34:44.200Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/hosting/template.json",
                 "logicalId": "hostingS3AndCloudFront"
