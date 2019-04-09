@@ -8,7 +8,8 @@
     "dev": "./node_modules/.bin/webpack-dev-server --host 0.0.0.0 --progress --config-register @babel/register --hot --env.development",
     "bsb": "./node_modules/.bin/bsb -make-world -w",
     "extract": "cp -r src/translations lib/js/src/ && cp ./lib/js/src/Locale.bs.js ./lib/js/src/Locale.bs.js.backup && sed -i -e 's|src/translations|./translations|g' ./lib/js/src/Locale.bs.js && node ./lib/js/src/utils/TranslationExtractor.bs.js && mv ./lib/js/src/Locale.bs.js.backup ./lib/js/src/Locale.bs.js",
-    "test": "./node_modules/.bin/jest --watchAll",
+    "test": "./node_modules/.bin/jest",
+    "testdev": "./node_modules/.bin/jest --watchAll",
     "coverage": "./node_modules/.bin/jest --coverage"
   },
   "keywords": [
