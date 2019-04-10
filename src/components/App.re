@@ -3,9 +3,13 @@ open Operators;
 GlobalCss.inject();
 
 module RouterProvider = {
+  let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
   let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => state.state.state.route, 
-    Store.store);
+    ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => 
+      Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => false })
+        ? forceSignInUrl
+        : state.state.state.route,
+      Store.store);
 };
 
 module LocaleProvider = {

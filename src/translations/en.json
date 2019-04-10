@@ -5,6 +5,11 @@
     "message": ""
   },
   {
+    "id": "Auth.beenHereBefore",
+    "defaultMessage": "How did you get here?",
+    "message": ""
+  },
+  {
     "id": "Auth.codeExpiredPleaseResend",
     "defaultMessage": "code expired, please resend",
     "message": ""

@@ -53,7 +53,7 @@ module Inner {
     let signIn = (state, retained, dispatch: action => unit) =>
       <form className=Styles.form ref=(element => { retained.formRef = Js.Nullable.toOption(!!element) }) id="AuthSignInForm">
         <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
-          <ReactIntl.DefinedMessage message=strings##gladToSeeYouBack/>
+          <ReactIntl.DefinedMessage message=(Env.signInRequired ? strings##beenHereBefore : strings##gladToSeeYouBack)/>
         </MaterialUi.Typography>
         <MaterialUi.TextField value=`String(state.email)
           className=(Styles.textField|.withTestClass("test-sign-in-email-field"))
@@ -88,11 +88,14 @@ module Inner {
                 onChange=((_event, value) => dispatch(`StaySignedInChanged(value)))/>
             />
           </MaterialUi.FormControl>
-          <LabelButton color=`TextPrimary onClick=(_event => dispatch(`RouterPushRoute(Routes.forgot)))>
-            <MaterialUi.Typography variant=`Body2 color=`Inherit>
-              <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
-            </MaterialUi.Typography>
-          </LabelButton>
+          (!Env.signInRequired 
+            ? <LabelButton color=`TextPrimary onClick=(_event => dispatch(`RouterPushRoute(Routes.forgot)))>
+                <MaterialUi.Typography variant=`Body2 color=`Inherit>
+                  <ReactIntl.DefinedMessage message=CommonLocale.strings##forgotYourPassword/>
+                </MaterialUi.Typography>
+              </LabelButton>
+            : <Fragment/>
+          )
         </div>
         <MaterialUi.Button variant=`Outlined
           className=(Styles.button|.withTestClass("test-sign-in-button"))
@@ -105,19 +108,22 @@ module Inner {
           }
         </MaterialUi.Button>
         
-        <div className=Styles.signUpContainer>
-          <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>
-            <ReactIntl.DefinedMessage message=strings##dontHaveAnAccount/>
-          </MaterialUi.Typography>
-          <LabelButton color=`TextPrimary 
-            className="test-sign-in-alt-signup-button"
-            emphasized=true 
-            onClick=(_event => dispatch(`RouterPushRoute(Routes.signUp)))>
-            <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
-              <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
-            </MaterialUi.Typography>
-          </LabelButton>
-        </div>
+        (!Env.signInRequired
+          ? <div className=Styles.signUpContainer>
+              <MaterialUi.Typography variant=`Subtitle1 style=ReactDOMRe.Style.make(~display="inline", ())>
+                <ReactIntl.DefinedMessage message=strings##dontHaveAnAccount/>
+              </MaterialUi.Typography>
+              <LabelButton color=`TextPrimary 
+                className="test-sign-in-alt-signup-button"
+                emphasized=true 
+                onClick=(_event => dispatch(`RouterPushRoute(Routes.signUp)))>
+                <MaterialUi.Typography style=ReactDOMRe.Style.make(~display="inline", ())>
+                  <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
+                </MaterialUi.Typography>
+              </LabelButton>
+            </div>
+          : <Fragment/>
+        )
       </form>;
     
     let signUp = (_state, retained, dispatch: action => unit) =>
