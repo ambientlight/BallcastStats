@@ -1,0 +1,68 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "ballcaststats-20190409014828-authRole",
+            "UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190409014828-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-20190409014828-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "ballcaststats-20190409014828-deployment",
+            "UnauthRoleName": "ballcaststats-20190409014828-unauthRole",
+            "StackName": "ballcaststats-20190409014828",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:229321913319:stack/ballcaststats-20190409014828/84e1fa10-5a26-11e9-9ed6-0a97a1834e8a"
+        },
+        "categories": {
+            "auth": {
+                "cognitoe928770c": {}
+            }
+        }
+    },
+    "auth": {
+        "cognitoe928770c": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "AppClientSecret": "vqikkhld0lqhjolmkcph48p2g3ssk8dcsmtt6d41l7dq02l6m8k",
+                "UserPoolId": "ap-southeast-1_YwusqTsBu",
+                "AppClientIDWeb": "5tabuq7802e3bv9cc26hll77p",
+                "AppClientID": "29lei62epoqh87c7qle4fa8duj",
+                "IdentityPoolId": "ap-southeast-1:6e850356-fa52-41cd-b26f-77bf3b05b6e2",
+                "IdentityPoolName": "cognitoe928770c_identitypool_e928770c__prod",
+                "UserPoolName": "cognitoe928770c_userpool_e928770c"
+            },
+            "lastPushTimeStamp": "2019-04-10T18:19:57.321Z",
+            "providerMetadata": {
+                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190409014828-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
+                "logicalId": "authcognitoe928770c"
+            }
+        }
+    },
+    "hosting": {
+        "S3AndCloudFront": {
+            "service": "S3AndCloudFront",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "CloudFrontSecureURL": "https://dth0ljzg3ovap.cloudfront.net",
+                "S3BucketSecureURL": "https://ballcaststats-prod.s3.amazonaws.com",
+                "WebsiteURL": "http://ballcaststats-prod.s3-website-ap-southeast-1.amazonaws.com",
+                "CloudFrontDistributionID": "E38YJY4ZESQSEJ",
+                "Region": "ap-southeast-1",
+                "HostingBucketName": "ballcaststats-prod",
+                "CloudFrontDomainName": "dth0ljzg3ovap.cloudfront.net"
+            },
+            "lastPushTimeStamp": "2019-04-10T18:19:57.322Z",
+            "providerMetadata": {
+                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190409014828-deployment/amplify-cfn-templates/hosting/template.json",
+                "logicalId": "hostingS3AndCloudFront"
+            }
+        }
+    },
+    "api": {
+        "ballcaststats": {
+            "service": "AppSync",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "securityType": "API_KEY"
+            }
+        }
+    }
+}
