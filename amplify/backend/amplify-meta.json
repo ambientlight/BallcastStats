@@ -53,5 +53,14 @@
 			},
 			"lastPushDirHash": "LJXlQ3XkccRbWDNwJGD3mQMkhoI="
 		}
+	},
+	"api": {
+		"ballcaststats": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"securityType": "API_KEY"
+			}
+		}
 	}
 }
