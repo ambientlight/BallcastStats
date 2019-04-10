@@ -5,6 +5,11 @@
     "message": "Уже зарегистрированы?"
   },
   {
+    "id": "Auth.beenHereBefore",
+    "defaultMessage": "How did you get here?",
+    "message": "Как ты сюда попал?"
+  },
+  {
     "id": "Auth.codeExpiredPleaseResend",
     "defaultMessage": "code expired, please resend",
     "message": "код истек, пожалуйста, отправьте повторно"

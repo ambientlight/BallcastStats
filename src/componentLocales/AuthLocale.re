@@ -88,5 +88,9 @@ let strings =
     "gladToSeeYouBack": {
       "id": "Auth.gladToSeeYouBack",
       "defaultMessage": "Glad to see you back"
+    },
+    "beenHereBefore": {
+      "id": "Auth.beenHereBefore",
+      "defaultMessage": "How did you get here?"
     }
   };
