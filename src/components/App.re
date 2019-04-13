@@ -1,4 +1,6 @@
 open Operators;
+open AWSExport;
+[@bs.module] external gql: ReasonApolloTypes.gql = "graphql-tag";
 
 GlobalCss.inject();
 
@@ -73,3 +75,32 @@ module Root = {
     make(~title=jsProps|.titleGet, [||])
   );
 };
+
+/* let client = AppSync.createClient(
+  AppSync.createClientParams(
+    ~url=config|.aws_appsync_graphqlEndpointGet,
+    ~region=config|.aws_appsync_regionGet,
+    ~auth=AppSync.createClientParamsAuth(
+      ~type_=config|.aws_appsync_authenticationTypeGet,
+      ~apiKey=config|.aws_appsync_apiKeyGet
+    )
+  )
+);
+
+let target = client##query({
+  "query": gql(. "
+    query {
+      listBlogs(limit: 10){
+        items{
+          id,
+          name
+        }
+      }
+    }
+  "),
+  "variables": Js.Json.parseExn("{}"),
+}) 
+|> Rx.Observable.fromPromise
+|> Rx.Observable.subscribe(~next=value => {
+  Js.log(value);
+}); */

@@ -22,7 +22,8 @@
     "reductive-dev-tools",
     "bs-webapi",
     "@jsiebern/bs-material-ui",
-    "bs-react-intl"
+    "bs-react-intl",
+    "reason-apollo"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",
@@ -35,6 +36,7 @@
   "refmt": 3,
   "bsc-flags": ["-bs-g"],
   "ppx-flags": [
-    "./node_modules/@jsiebern/bs-material-ui-ppx/ppx"
+    "./node_modules/@jsiebern/bs-material-ui-ppx/ppx",
+    "graphql_ppx/ppx"
   ] 
 }
