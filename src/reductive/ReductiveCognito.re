@@ -58,6 +58,22 @@ type cognitoAction = [
   | `ForceVerificationRequired(string as 'code, string as 'username)
 ];
 
+/** 
+ * misconfigured amplify will result in error not wrapping Amplify.Error.t, 
+ * rather a string, convert it to expected Amplify.Error.t
+ */
+let composeError = error => switch(Js.Types.classify(error)){
+  | JSUndefined 
+  | JSSymbol(_)
+  | JSFunction(_)
+  | JSNull => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error", ~message="Unknown Error")
+  | JSTrue => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error(True)", ~message="Unknown Error(True)")
+  | JSFalse => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error(False)", ~message="Unknown Error(False)")
+  | JSString(value) => Amplify.Error.t(~code="CRITICAL",~name=value, ~message=value)
+  | JSNumber(value) => Amplify.Error.t(~code=string_of_float(value), ~name="Unknown Error", ~message="Unknown Error")
+  | JSObject(objectValue) => objectValue|.Obj.magic
+}
+
 let cognitoReducer = reducer => (state, action) =>
   switch(action){
   | `SignInStarted()
@@ -137,7 +153,7 @@ module Epics {
         Amplify.Auth.signIn(~username, ~password)
         |> Rx.Observable.fromPromise
         |> map(user => `SignInCompleted(user))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignInError(error, username)))
+        |> catchError(error => Rx.Observable.of1(`SignInError(error|.composeError, username)))
       |]))
   });
 
@@ -151,7 +167,7 @@ module Epics {
         Amplify.Auth.completeNewPassword(~user, ~password, ())
         |> Rx.Observable.fromPromise
         |> map(target => `CompleteNewPasswordRequestCompleted(target))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`CompleteNewPasswordRequestError(error)))
+        |> catchError(error => Rx.Observable.of1(`CompleteNewPasswordRequestError(error|.composeError)))
       |]))
   });
 
@@ -170,7 +186,7 @@ module Epics {
             ()))
         |> Rx.Observable.fromPromise
         |> map(signUpResult => `SignUpCompleted(signUpResult))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignUpError(error)))
+        |> catchError(error => Rx.Observable.of1(`SignUpError(error|.composeError)))
       |]))
   });
 
@@ -183,7 +199,7 @@ module Epics {
         Amplify.Auth.confirmSignUp(~username, ~code, ())
         |> Rx.Observable.fromPromise
         |> map(result => `ConfirmSignUpCompleted(result))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`ConfirmSignUpError(error, code, username)))
+        |> catchError(error => Rx.Observable.of1(`ConfirmSignUpError(error|.composeError, code, username)))
       |]))
   });
 
@@ -196,7 +212,7 @@ module Epics {
         Amplify.Auth.resendSignUp(~username)
         |> Rx.Observable.fromPromise
         |> map(result => `ResendVerificationCompleted(result, username))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`ResendVerificationError(error)))
+        |> catchError(error => Rx.Observable.of1(`ResendVerificationError(error|.composeError)))
       |])
     )
   })
@@ -210,7 +226,7 @@ module Epics {
         Amplify.Auth.signOut(())
         |> Rx.Observable.fromPromise
         |> map(_result => `SignOutCompleted(()))
-        |> catchError((error: Amplify.Error.t) => Rx.Observable.of1(`SignOutError(error)))
+        |> catchError(error => Rx.Observable.of1(`SignOutError(error|.composeError)))
       |])
     )
   })

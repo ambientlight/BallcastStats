@@ -87,7 +87,11 @@ let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
     | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
   |> tap(~next=((error: Amplify.Error.t, dispatch)) => 
-    dispatch(Context.SetWarningMessage(Some(error|.Amplify.Error.messageGet))))
+    dispatch(
+      error|.Amplify.Error.codeGet == "CRITICAL" 
+        ? Context.SetErrorMessage(Some(error|.Amplify.Error.messageGet))
+        : Context.SetWarningMessage(Some(error|.Amplify.Error.messageGet))
+    ))
   |> empty;
 };
 
