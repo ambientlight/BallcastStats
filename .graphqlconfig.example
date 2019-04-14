@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "app": {
+      "schemaPath": "amplify/backend/api/ballcaststats/schema.graphql",
+      "includes": ["**/*.graphql"]
+    },
+    "extensions": {
+      "endpoints": {
+        "local": {
+          "url": "",
+          "headers": {
+            "x-api-key": ""
+          }
+        }
+      }
+    }
+  }
+}

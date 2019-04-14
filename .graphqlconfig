@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "app": {
+      "schemaPath": "amplify/backend/api/ballcaststats/schema.graphql",
+      "includes": ["**/*.graphql"]
+    }
+  }
+}
