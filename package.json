@@ -1,6 +1,9 @@
 {
   "name": "ballcaststats",
   "version": "0.1.1",
+  "bin": {
+    "send-introspection-query": "./node_modules/graphql_ppx/sendIntrospectionQuery.js" 
+  },
   "scripts": {
     "clean": "./node_modules/.bin/bsb -clean-world",
     "build": "./node_modules/.bin/bsb -make-world && ./node_modules/.bin/webpack --config webpack.config.js --config-register @babel/register --env.production",

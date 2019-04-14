@@ -13,5 +13,5 @@ type t = {
   aws_appsync_apiKey: string
 };
 
-[@bs.module "./aws-exports.js"][@bs.val]
-external config: t = "awsmobile";
+[@bs.module "src/aws-exports"][@bs.val]
+external config: t = "default";
