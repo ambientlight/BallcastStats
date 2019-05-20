@@ -1,4 +1,0 @@
-{
-    "AppSyncApiName": "ballcaststats",
-    "DynamoDBBillingMode": "PAY_PER_REQUEST"
-}
