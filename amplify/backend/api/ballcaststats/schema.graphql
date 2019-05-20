@@ -14,6 +14,3 @@ type Comment @model {
   content: String
   post: Post @connection(name: "PostComments")
 }
-type Query {
-  echo(msgP1: String, msgP2: String): String
-}

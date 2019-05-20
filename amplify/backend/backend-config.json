@@ -19,13 +19,5 @@
 				"securityType": "API_KEY"
 			}
 		}
-	},
-	"function": {
-		"ballcaststatsfuncs": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": []
-		}
 	}
 }

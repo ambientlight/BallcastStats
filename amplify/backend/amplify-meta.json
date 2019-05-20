@@ -29,7 +29,7 @@
 				"IdentityPoolName": "cognitoe928770c_identitypool_e928770c__dev",
 				"UserPoolName": "cognitoe928770c_userpool_e928770c"
 			},
-			"lastPushTimeStamp": "2019-04-15T17:34:19.411Z",
+			"lastPushTimeStamp": "2019-04-13T17:02:06.100Z",
 			"providerMetadata": {
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
 				"logicalId": "authcognitoe928770c"
@@ -49,7 +49,7 @@
 				"CloudFrontDistributionID": "E2MKCS2MTZUN27",
 				"CloudFrontDomainName": "ddozk5o3yyxk.cloudfront.net"
 			},
-			"lastPushTimeStamp": "2019-04-15T17:34:19.413Z",
+			"lastPushTimeStamp": "2019-04-13T17:02:06.102Z",
 			"providerMetadata": {
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
@@ -67,34 +67,12 @@
 				"GraphQLAPIEndpointOutput": "https://rwjcqjjv2vbgblsrndnektkqca.appsync-api.ap-southeast-1.amazonaws.com/graphql",
 				"GraphQLAPIKeyOutput": "da2-pjttgcqxqjc7dcq7jq6owyukey"
 			},
-			"lastPushTimeStamp": "2019-04-15T17:34:19.413Z",
+			"lastPushTimeStamp": "2019-04-13T17:02:06.102Z",
 			"providerMetadata": {
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apiballcaststats"
 			},
-			"lastPushDirHash": "HNyaHBi0Og8rQl1ftupXMsMA2aU="
-		}
-	},
-	"function": {
-		"ballcaststatsfuncs": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": [],
-			"lastBuildTimeStamp": "2019-04-15T16:31:56.168Z",
-			"lastPackageTimeStamp": "2019-04-15T17:33:14.999Z",
-			"distZipFilename": "ballcaststatsfuncs-1555349594-latest-build.zip",
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-20190408230517-deployment/amplify-cfn-templates/function/ballcaststatsfuncs-cloudformation-template.json",
-				"logicalId": "functionballcaststatsfuncs"
-			},
-			"lastPushTimeStamp": "2019-04-15T17:34:19.415Z",
-			"output": {
-				"Region": "ap-southeast-1",
-				"Arn": "arn:aws:lambda:ap-southeast-1:229321913319:function:echofunction-dev",
-				"Name": "echofunction-dev"
-			},
-			"lastPushDirHash": "zrvVmVzZQHiKvjjbDKhb2+SMhVs="
+			"lastPushDirHash": "Du02MQH1x0LtgLgVMgzchdmWgzg="
 		}
 	}
 }
