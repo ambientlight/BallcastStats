@@ -30,6 +30,7 @@ module Shell = {
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
       | ["verify-sign-up", ..._] => <Auth title mode=VerifySignUp/>
       | ["typography-test", ..._] => <TypographyTest/>
+      | ["formation-test", ..._] => <FormationTest/>
       | _ => <Landing dispatch title locale/>
       }
     })

@@ -5,3 +5,4 @@ let forgot = "forgot";
 let root = "/";
 let dashboard = "dashboard";
 let typographyTest = "typography-test";
+let formationTest = "formation-test";

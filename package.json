@@ -2,7 +2,7 @@
   "name": "ballcaststats",
   "version": "0.1.1",
   "bin": {
-    "send-introspection-query": "./node_modules/graphql_ppx/sendIntrospectionQuery.js" 
+    "send-introspection-query": "./node_modules/graphql_ppx/sendIntrospectionQuery.js"
   },
   "scripts": {
     "clean": "./node_modules/.bin/bsb -clean-world",
@@ -28,6 +28,7 @@
     "@babel/register": "^7.0.0",
     "@glennsl/bs-jest": "^0.4.8",
     "@jsiebern/bs-material-ui-ppx": "^1.0.4",
+    "@types/pixi.js": "^4.8.7",
     "babel-loader": "^8.0.5",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "bs-jest-dom": "^2.0.0",
@@ -66,6 +67,7 @@
     "bs-webapi": "^0.13.2",
     "graphql-tag": "^2.10.1",
     "intl": "^1.2.5",
+    "pixi.js": "^5.0.3",
     "react": "^16.7.0",
     "react-code-input": "^3.8.1",
     "react-dom": "^16.7.0",

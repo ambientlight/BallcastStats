@@ -1,3 +1,4 @@
+/*
 open Operators;
 open AWSExport;
 
@@ -33,3 +34,4 @@ let target = client##query({
 |> Rx.Observable.subscribe(~next=value => {
   Js.log(value);
 });
+*/

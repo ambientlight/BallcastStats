@@ -21,8 +21,9 @@ module Styles {
   ])
 };
 
+let component = ReasonReact.statelessComponent(__MODULE__);
 let make = (_children) => {
-  ...ReasonReact.statelessComponent(__MODULE__),
+  ...component,
   render: _self => 
     <div className=Styles.root>
       <MaterialUi.Typography variant=`H1>"H1"</MaterialUi.Typography>
