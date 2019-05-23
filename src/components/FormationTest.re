@@ -15,7 +15,7 @@ module Styles {
       backgroundColor(hsla(133, 51, 27, 1.0))
     ]),
     Media.atLeast(Media.Breakpoint.Tablet, [
-      backgroundImage(url([%bs.raw "require('assets/svgs/background.svg')"])),
+      unsafe("background", "linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url(" ++ [%bs.raw "require('assets/svgs/background.svg')"] ++ ")"),
       backgroundSize(`cover)
     ])
   ]);
@@ -26,6 +26,6 @@ let make = _children => {
   ...component,
   render: _self => 
     <div className=Styles.root>
-      <FormationView/>
+      <FormationContainer/>
     </div>
 }
