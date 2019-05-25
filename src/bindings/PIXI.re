@@ -3,10 +3,15 @@ open Webapi;
 module Container { 
   type t;
 
+  [@bs.get] external children: t => array(Js.Nullable.t(t)) = "children";
+  [@bs.get] external name: t => Js.Nullable.t(string) = "name";
+  [@bs.set] external setName: (t, string) => unit = "name";
+
   [@bs.module "pixi.js"][@bs.new]
   external create: unit => t = "Container";
 
   [@bs.send] external addChild: (t, t) => unit = "addChild";
+  [@bs.send] external removeChild: (t, t) => unit = "removeChild";
 };
 
 module Texture {
@@ -46,6 +51,9 @@ module Sprite {
   [@bs.set] external setY: (t, float) => unit = "y";
   [@bs.get] external x: t => float = "x";
   [@bs.set] external setX: (t, float) => unit = "x";
+
+  [@bs.get] external name: t => string = "name";
+  [@bs.set] external setName: (t, string) => unit = "name";
 
   [@bs.get] external anchor: t => ObservablePoint.t = "anchor";
 
@@ -113,6 +121,11 @@ module Text {
 
   [@bs.module "pixi.js"][@bs.new]
   external create: (~text: string, ~style: TextStyle.t=?, ~canvas: HtmlElementRe.t=?, unit) => t = "Text";
+
+  [@bs.get] external y: t => float = "y";
+  [@bs.set] external setY: (t, float) => unit = "y";
+  [@bs.get] external x: t => float = "x";
+  [@bs.set] external setX: (t, float) => unit = "x";
 
   [@bs.get] external anchor: t => ObservablePoint.t = "anchor";
 }

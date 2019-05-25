@@ -103,6 +103,8 @@ module Observable: {
     let takeUntil: (t('other), t('a)) => t('a);
 
     let bufferCount: (int, t('a)) => t(array('a));
+    
+    let delay: (int, t('a)) => t('a);
   };
 };
 

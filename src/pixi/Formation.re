@@ -1,19 +1,20 @@
-type position = 
-  | GK
-  | CB
-  | LB
-  | RB
-  | LWB
-  | RWB
-  | DM
-  | CM
-  | AM
-  | LM
-  | RM
-  | LW
-  | RW
-  | CF
-  | ST;
+[@bs.deriving jsConverter]
+type position = [
+  | `GK
+  | `CB
+  | `LB
+  | `RB
+  | `LWB
+  | `RWB
+  | `DM
+  | `CM
+  | `AM
+  | `LM
+  | `RM
+  | `LW
+  | `RW
+  | `CF
+  | `ST];
 
 type gridLocation = {
   x: int,
@@ -31,3 +32,10 @@ type t = {
   name: string,
   elements: array(element)
 };
+
+type playerInfo = {
+  name: string,
+  number: int
+};
+
+type squad = array(playerInfo);

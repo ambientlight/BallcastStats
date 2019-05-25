@@ -103,3 +103,10 @@ let takeUntil = (observable, source) =>
 external _bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
 let bufferCount = (bufferSize, source) =>
   (_bufferCount(bufferSize))(. source);
+
+[@bs.module "rxjs/operators"]
+external _delay: 
+  int => 
+  operatorFunction('a, 'a) = "delay";
+let delay = (time, source) => 
+  (_delay(time))(. source);
