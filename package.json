@@ -32,7 +32,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "bs-jest-dom": "^2.0.0",
-    "bs-platform": "4.0.18",
+    "bs-platform": "^5.0.4",
     "bs-react-intl-extractor-bin": "^0.7.0",
     "bs-react-testing-library": "^0.4.0",
     "copy-webpack-plugin": "^4.6.0",

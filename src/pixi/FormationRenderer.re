@@ -46,6 +46,8 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
 
   /* base container */
   let container = Container.create();
+  /* let containerC = ContainerC.create(); */
+  
   application |. Application.stage |. Container.addChild(container);
   
   let pitchTexture = Texture.from(~source=assets.pitchTexture);
@@ -90,20 +92,32 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
       );
 
       marker |. Sprite.setName("marker");
-      marker |. Sprite.anchor |. ObservablePoint.setPosition(~x=0.5, ~y=0.5);
+      (marker |. Sprite.anchor)##set(0.5, 0.5);
+
+
 
       let numberStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
       let text = Text.create(~text=string_of_int(squad[index].number), ~style=numberStyle, ());
-      text |. Text.anchor |. ObservablePoint.setPosition(~x=0.5, ~y=0.5);
+      (text |. Text.anchor)##set(0.5, 0.5);
       text |. Text.setY(-4.0);
       marker |. Sprite.addChild(!!text);
 
       let nameStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=24.0, ~fill=int_of_string("0xffffff"), ()));
       let text = Text.create(~text=(element.position |. Formation.positionToJs) ++ " | " ++ squad[index].name |. Js.String.toUpperCase, ~style=nameStyle, ());
-      text |. Text.anchor |. ObservablePoint.setPosition(~x=0.5, ~y=0.5);
+      (text |. Text.anchor)##set(0.5, 0.5);
       text |. Text.setY(72.0);
       marker |. Sprite.addChild(!!text);
       
       renderer.container |. Container.addChild(!!marker);
+
+      let equal = IPoint.equal(
+        `ObservablePoint(marker |. Sprite.anchor),
+        `ObservablePoint(marker |. Sprite.anchor));
+      ~~equal;
+
+      let point = Point.create(~x=0.0, ~y=0.0);
+      point |. IPoint.copyPointFrom(`ObservablePoint(marker |. Sprite.anchor)) |> ignore;
+      ~~point;
+      ()
     })
 };
