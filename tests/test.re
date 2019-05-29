@@ -64,3 +64,25 @@ class obj (x) = {
     x;
   };
 };
+
+let tbl: Hashtbl.t({.}, obj) = Hashtbl.create(17);
+let register = obj => Hashtbl.add(tbl, (obj :> {.}), obj);
+let recover = obj => Hashtbl.find(tbl, (obj :> {.}));
+
+class type restricted_point_type = {
+  pub get_x: int;
+  pub bump: unit;
+};
+
+class restricted_point (x_init) = {
+  as self;
+  val mutable x = x_init;
+  pub get_x = x;
+  pri move = d => x = x + d;
+  pub bump = self#move(1);
+};
+
+class restricted_point' (x) : restricted_point_type =
+  (class restricted_point)(x);
+
+  let colored_point_to_point = cp => (cp: #stack(int) :> stack(int));

@@ -31,7 +31,7 @@ type assets = {
 }
 
 let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: assets) => {
-  let application = Application.create(~options=Application.Options.t(
+  let application = Application.create(~options=Application.options(
     ~transparent=true,
     ~width=width,
     ~height=height,
@@ -39,25 +39,22 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
     ()), 
   ());
 
-  let style = application |. Application.view |. Dom.HtmlElement.style;
+  let style = application##view |. Dom.HtmlElement.style;
   Dom.CssStyleDeclaration.setProperty("width", string_of_int(width) ++ "px", "", style);
   Dom.CssStyleDeclaration.setProperty("height", string_of_int(height) ++ "px", "", style);
-  element |> Dom.HtmlElement.appendChild(application |. Application.view);
+  element |> Dom.HtmlElement.appendChild(application##view);
 
   /* base container */
   let container = Container.create();
-  /* let containerC = ContainerC.create(); */
-  
-  application |. Application.stage |. Container.addChild(container);
-  
+  application##stage##addChild(container) |> ignore;
   let pitchTexture = Texture.from(~source=assets.pitchTexture);
   let markerTexture = Texture.from(~source=assets.formationMarker);
 
   let pitch = Sprite.create(pitchTexture);
-  pitch |. Sprite.setWidth(520.0);
-  pitch |. Sprite.setHeight(400.0);
-  pitch |. Sprite.setName("pitch");
-  container |. Container.addChild(!!pitch);
+  pitch##width #= 520.0;
+  pitch##height #= 400.0;
+  pitch##name #= "pitch";
+  container##addChild(pitch) |> ignore;
 
   {
     application,
@@ -70,12 +67,13 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
 };
 
 let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad) => {
-  renderer.container |. Container.children 
-  |. Utils.Array.optMap(element => element |. Js.Nullable.toOption)
+  renderer.container##children 
+  /* null children appear on hot reload somehow */
+  |. Utils.Array.optMap(element => !!element |. Js.Nullable.toOption)
   |. Belt.Array.forEach(element => {
-    let name = (element |. PIXI.Container.name |. Js.Nullable.toOption);
+    let name = (element##name |. Js.Nullable.toOption);
     if(name == Some("marker")){
-      renderer.container |. Container.removeChild(element);
+      renderer.container##removeChild(element) |> ignore;
     }
   });
 
@@ -91,33 +89,21 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
         ()
       );
 
-      marker |. Sprite.setName("marker");
-      (marker |. Sprite.anchor)##set(0.5, 0.5);
+      marker##name #= "marker";
+      marker##anchor##set(0.5, 0.5);
 
-
-
-      let numberStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
+      let numberStyle = TextStyle.create(~style=TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
       let text = Text.create(~text=string_of_int(squad[index].number), ~style=numberStyle, ());
-      (text |. Text.anchor)##set(0.5, 0.5);
-      text |. Text.setY(-4.0);
-      marker |. Sprite.addChild(!!text);
+      text##anchor##set(0.5, 0.5);
+      text##y #= (-4.0);
+      marker##addChild(text) |> ignore;
 
       let nameStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=24.0, ~fill=int_of_string("0xffffff"), ()));
       let text = Text.create(~text=(element.position |. Formation.positionToJs) ++ " | " ++ squad[index].name |. Js.String.toUpperCase, ~style=nameStyle, ());
-      (text |. Text.anchor)##set(0.5, 0.5);
-      text |. Text.setY(72.0);
-      marker |. Sprite.addChild(!!text);
+      text##anchor##set(0.5, 0.5);
+      text##y #= 72.0;
+      marker##addChild(text) |> ignore;
       
-      renderer.container |. Container.addChild(!!marker);
-
-      let equal = IPoint.equal(
-        `ObservablePoint(marker |. Sprite.anchor),
-        `ObservablePoint(marker |. Sprite.anchor));
-      ~~equal;
-
-      let point = Point.create(~x=0.0, ~y=0.0);
-      point |. IPoint.copyPointFrom(`ObservablePoint(marker |. Sprite.anchor)) |> ignore;
-      ~~point;
-      ()
+      renderer.container##addChild(marker) |> ignore;
     })
 };

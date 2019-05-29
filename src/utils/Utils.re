@@ -24,3 +24,7 @@ module Tests {
   let withTestClass = (className, testClassName) =>
     List.join(~seperator=" ", [className, testClassName]);
 };
+
+module Option {
+  let optMap = Belt.Option.map;
+}
