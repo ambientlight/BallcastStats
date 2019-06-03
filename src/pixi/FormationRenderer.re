@@ -28,7 +28,7 @@ type t = {
 type assets = {
   pitchTexture: string,
   formationMarker: string
-}
+};
 
 let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: assets) => {
   let application = Application.create(~options=Application.options(

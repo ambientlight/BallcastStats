@@ -85,4 +85,9 @@ class restricted_point (x_init) = {
 class restricted_point' (x) : restricted_point_type =
   (class restricted_point)(x);
 
-  let colored_point_to_point = cp => (cp: #stack(int) :> stack(int));
+let colored_point_to_point = cp => (cp: #stack(int) :> stack(int));
+
+/** @deprecated {!Pervasives.( && )} should be used instead.
+    Right-associative operator at precedence level 3/11. */
+[@ocaml.deprecated "Use (&&) instead."]
+external (&): (bool, bool) => bool = "%sequand";

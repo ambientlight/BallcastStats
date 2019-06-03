@@ -1,5 +1,17 @@
 open Webapi;
 
+/**
+ * PIXI reasonml bindings
+ * 
+ * following (experimental) guidelines were used:
+ * 1. pixi's entities are modeled as class based Js.t for polymorphism with apis like .addChild() consuming subtypes seemlessly
+ * 2. methods are both available as object methods as well as module-level functions. (object method bindings have few limitations: no support for overloaded method args and labeled args)
+ * 3. union type fields like resizeTo: Window | HTMLElement are expressed as anonymous types and have corresponding module level getter/setter available that wraps the union type into polymorphic variant
+ * 4. overloaded object method argument is expressed as anonymous type.
+ * 5. object methods with arguments labeled as optionals and specifying default are not wrapped into Js.Undefined.t, otherwise option args are wrapped into Js.Undefined.t
+ * 6. few helper modules are available corresponding to pixi types: PIXI.IPoint -> IPoint 
+ */
+
 let optMap = Belt.Option.map;
 
 module Shapes {
@@ -13,31 +25,65 @@ module Shapes {
 };
 
 module Point {
+  type _use_IPoint_copyFrom;
+  type _use_IPoint_copyTo;
+  type _use_IPoint_equals;
+
   class type _t = [@bs] {
     [@bs.set] pub x: float;
     [@bs.set] pub y: float;
     pub set: (float, float) => unit;
     pub clone: unit => Js.t(_t);
+
+    [@deprecated "Use IPoint.copyFrom"]
+    pub copyFrom: _use_IPoint_copyFrom => Js.t(_t);
+    [@deprecated "Use IPoint.copyTo"]
+    pub copyTo: _use_IPoint_copyTo => _use_IPoint_copyTo;
+    [@deprecated "Use IPoint.equals"]
+    pub equals: _use_IPoint_equals => bool;
   };
 
   type t = Js.t(_t);
 
   [@bs.module "pixi.js"][@bs.new]
   external create: (~x: float=?, ~y: float=?, unit) => t = "Point";
+
+  [@bs.send]
+  external set: (t, ~x: int=?, ~y: int=?, unit) => unit = "set";
+
+  [@bs.send]
+  external clone: t => t = "clone";
 };
 
 module ObservablePoint {
+  type _use_IPoint_copyFrom;
+  type _use_IPoint_copyTo;
+  type _use_IPoint_equals;
+
   class type _t = [@bs] {
     [@bs.set] pub x: float;
     [@bs.set] pub y: float;
     pub set: (float, float) => unit;
     pub clone: (Js.t(_t) => unit, Js.t({..})) => unit;
+
+    [@deprecated "Use IPoint.copyFrom"]
+    pub copyFrom: _use_IPoint_copyFrom => Js.t(_t);
+    [@deprecated "Use IPoint.copyTo"]
+    pub copyTo: _use_IPoint_copyTo => _use_IPoint_copyTo;
+    [@deprecated "Use IPoint.equals"]
+    pub equals: _use_IPoint_equals => bool;
   };
 
   type t = Js.t(_t);
 
   [@bs.module "pixi.js"][@bs.new]
   external create: (~cb: t => unit, ~scope: Js.t({..}), ~x: float=?, ~y: float=?, unit) => t = "ObservablePoint";
+
+  [@bs.send]
+  external set: (t, ~x: int=?, ~y: int=?, unit) => unit = "set";
+
+  [@bs.send]
+  external clone: t => t = "clone";
 };
 
 module IPoint {
@@ -140,6 +186,30 @@ module Rectangle {
   [@bs.get]
   external _getType: t => int = "type";
   let getType = rect => rect |. _getType |. Shapes.tFromJs;
+
+  [@bs.send]
+  external ceil: (t, ~resolution:float=?, ~eps:float=?, unit) => unit = "ceil";
+
+  [@bs.send]
+  external clone: t => t = "unit";
+
+  [@bs.send]
+  external contains: (t, ~x: float, ~y: float) => bool = "contains";
+
+  [@bs.send]
+  external copyFrom: (t, ~rectangle: t) => t = "copyFrom";
+
+  [@bs.send]
+  external copyTo: (t, ~rectangle: t) => t = "copyTo";
+
+  [@bs.send]
+  external enlarge: (t, ~rectangle: t) => unit = "enlarge";
+
+  [@bs.send]
+  external fit: (t, ~rectangle: t) => unit = "fit";
+
+  [@bs.send]
+  external pad: (t, ~paddingX: float, ~paddingY: float) => unit = "pad";
 };
 
 module Program {
@@ -194,6 +264,14 @@ module State {
   external create: unit => t = "State";
 };
 
+module FilterSystem {
+  type t;
+};
+
+module RenderTexture {
+  type t;
+}
+
 module Filter {
   class type _t = [@bs] {
     inherit Shader._t;
@@ -205,6 +283,8 @@ module Filter {
     [@bs.set] pub padding: float;
     [@bs.set] pub resolution: float;
     [@bs.set] pub state: State.t;
+
+    pub apply: (FilterSystem.t, RenderTexture.t, RenderTexture.t, bool, Js.Undefined.t(Js.t({..}))) => unit;
   };
 
   type t = Js.t(_t);
@@ -220,6 +300,9 @@ module Filter {
 
   [@bs.val][@bs.module "pixi.js"][@bs.scope "Filter"]
   external sourceKeyMap: Js.t({..}) = "SOURCE_KEY_MAP";
+
+  [@bs.send]
+  external apply: (t, ~filterManager: FilterSystem.t, ~input: RenderTexture.t, ~output: RenderTexture.t, ~clear: bool, ~currentState: Js.t({..}) = ?, unit) => unit = "apply";
 };
 
 module Matrix {
@@ -232,12 +315,12 @@ module Matrix {
     [@bs.set] pub ty: float;
 
     pub append: Js.t(_t) => Js.t(_t);
-    pub apply: (Js.t(_t), Js.Undefined.t(Js.t(_t))) => Js.t(_t);
-    pub applyInverse: (Js.t(_t), Js.Undefined.t(Js.t(_t))) => Js.t(_t);
+    pub apply: (Point.t, Js.Undefined.t(Point.t)) => Point.t;
+    pub applyInverse: (Point.t, Js.Undefined.t(Point.t)) => Point.t;
     pub clone: unit => Js.t(_t);
     pub copyFrom: Js.t(_t) => Js.t(_t);
     pub copyTo: Js.t(_t) => Js.t(_t);
-    /* pub decompose: Transform.t => Transform.t; */
+    pub decompose: Js.t({..}) => Js.t({..});
     pub fromArray: array(float) => unit;
     pub identity: unit => Js.t(_t);
     pub invert: unit => Js.t(_t);
@@ -246,7 +329,7 @@ module Matrix {
     pub scale: (float, float) => Js.t(_t);
     pub set: (float, float, float, float, float, float) => Js.t(_t);
     pub setTransform: (float, float, float, float, float, float, float, float, float) => Js.t(_t);
-    pub toArray: (bool, Js.Undefined.t(array(float))) => array(float);
+    pub toArray: (bool, Js.Undefined.t(Js.Typed_array.Float32Array.t)) => array(float);
     pub translate: (float, float) => Js.t(_t);
   };
 
@@ -260,6 +343,57 @@ module Matrix {
 
   [@bs.val][@bs.module "pixi.js"][@bs.scope "Matrix"]
   external tempMatrix: t = "TEMP_MATRIX";
+
+  [@bs.send]
+  external append: (t, ~matrix: t) => t = "append";
+
+  [@bs.send]
+  external apply: (t, ~pos: Point.t, ~newPos: Point.t=?, unit) => Point.t = "apply";
+
+  [@bs.send]
+  external applyInverse: (t, ~pos: Point.t, ~newPos: Point.t=?, unit) => Point.t = "applyInverse";
+
+  [@bs.send]
+  external clone: t => t = "clone";
+
+  [@bs.send]
+  external copyFrom: (t, ~matrix: t) => t = "copyFrom";
+
+  [@bs.send]
+  external copyTo: (t, ~matrix: t) => t = "copyTo";
+
+  [@bs.send]
+  external decompose: (t, ~transform: Js.t({..})) => Js.t({..}) = "decompose";
+
+  [@bs.send]
+  external fromArray: (t, ~array: array(float)) => unit = "fromArray";
+
+  [@bs.send]
+  external identity_: t => t = "identity";
+
+  [@bs.send]
+  external invert: t => t = "invert";
+
+  [@bs.send]
+  external prepend: (t, ~matrix: t) => t = "prepend";
+
+  [@bs.send]
+  external rotate: (t, ~angle: float) => t = "rotate";
+
+  [@bs.send]
+  external scale: (t, ~x: float, ~y: float) => t = "scale";
+
+  [@bs.send]
+  external set: (t, ~a: float, ~b: float, ~c: float, ~d: float, ~tx: float, ~ty: float) => t = "set";
+
+  [@bs.send]
+  external setTransform: (t, ~x: float, ~y: float, ~pivotX: float, ~pivotY: float, ~scaleX: float, ~scaleY: float, ~rotation: float, ~skewX: float, ~skewY: float) => t = "setTransform";
+
+  [@bs.send]
+  external toArray: (t, ~transpose: bool, ~out: Js.Typed_array.Float32Array.t=?, unit) => array(float) = "toArray";
+
+  [@bs.send]
+  external translate: (t, ~x: float, ~y: float) => t = "translate";
 };
 
 module Transform {
@@ -281,15 +415,16 @@ module Transform {
 
   [@bs.module][@bs.new]
   external create: unit => t = "Transform";
-};
 
-class type _displayObject = [@bs] {
-  /* ... */
-  [@bs.set] pub parent: Js.t(_container);
-} and _container {
-  inherit _displayObject;
-  [@bs.set] pub something: int;
-}
+  [@bs.send]
+  external setFromMatrix: (t, ~matrix: Matrix.t) => unit = "setFromMatrix";
+
+  [@bs.send]
+  external updateLocalTransform: t => unit = "updateLocalTransform";
+
+  [@bs.send]
+  external updateTransform: (t, ~parentTransform: t) => unit = "updateTransform";
+};
 
 module Renderer {
   type t;
@@ -315,13 +450,19 @@ module DisplayObject {
     pub interactive: bool;
     pub isSprite: bool;
     pub localTransform: Matrix.t;
+
+    /* TODO: PIXI.Graphics | PIXI.Sprite */
     [@bs.set] pub mask: Js.t({..});
     [@bs.set][@bs.get nullable] pub name: string;
 
+    /* TODO: IPoint.t */
     [@bs.set] pub pivot: Point.t;
     [@bs.set] pub position: Point.t;
+
     [@bs.set] pub renderable: bool;
     [@bs.set] pub rotation: float;
+
+    /* TODO: IPoint.t */
     [@bs.set] pub scale: Point.t;
     [@bs.set] pub skew: ObservablePoint.t;
     [@bs.set] pub transform: Transform.t;
@@ -341,7 +482,10 @@ module DisplayObject {
     pub getLocalBounds: Js.Undefined.t(Rectangle.t) => Rectangle.t;
     pub render: Renderer.t => unit;
     pub setTransform: (float, float, float, float, float, float, float, float, float) => Js.t(_t);
+
+    /* TODO: IPoint.t */
     pub toGlobal: (Point.t, Js.Undefined.t(Point.t), bool) => Point.t;
+    /* TODO: IPoint.t */
     pub toLocal: (Point.t, Js.Undefined.t(Js.t(_t)), Js.Undefined.t(Point.t), bool) => Point.t;
     pub updateTransform: unit => unit;
   }
@@ -350,6 +494,38 @@ module DisplayObject {
 
   [@bs.module "pixi.js"][@bs.scope "DisplayObject"]
   external mixin: (~source: Js.t({..})) => t = "mixin";
+
+  [@bs.send]
+  external _recursivePostUpdateTransform: t => unit = "_recursivePostUpdateTransform";
+
+  [@bs.send]
+  external destroy: t => unit = "destroy";
+
+  [@bs.send]
+  external getBounds: (t, ~skipUpdate: bool=?, ~rect: Rectangle.t=?, unit) => Rectangle.t = "getBounds";
+
+  [@bs.send]
+  external getGlobalPosition: (t, ~point: Point.t=?, ~skipUpdate: bool=?, unit) => Point.t = "getGlobalPosition";
+
+  [@bs.send]
+  external getLocalBounds: (t, ~rect: Rectangle.t=?, unit) => Rectangle.t = "getLocalBounds";
+
+  [@bs.send]
+  external render: (t, ~renderer: Renderer.t) => unit = "render";
+
+  [@bs.send]
+  external setTransform: (t, ~x: float=?, ~y: float=?, ~scaleX: float=?, ~scaleY: float=?, ~rotation: float=?, ~skewX: float=?, ~skewY: float=?, ~pivotX: float=?, ~pivotY: float=?, unit) => t = "_recursivePostUpdateTransform";
+
+  /* TODO: returns IPoint.t */
+  [@bs.send]
+  external toGlobal: (t, ~position: [@bs.unwrap] [`Point(Point.t) | `ObservablePoint(ObservablePoint.t)], ~point: ([@bs.unwrap] [`Point(Point.t) | `ObservablePoint(ObservablePoint.t)])=?, ~skipUpdate: bool=?, unit) => Point.t = "toGlobal";
+
+  /* TODO: returns IPoint.t */
+  [@bs.send]
+  external toLocal: (t, ~position: [@bs.unwrap] [`Point(Point.t) | `ObservablePoint(ObservablePoint.t)], ~from: t=?, ~point: ([@bs.unwrap] [`Point(Point.t) | `ObservablePoint(ObservablePoint.t)])=?, ~skipUpdate: bool=?, unit) => Point.t = "toLocal";
+
+  [@bs.send]
+  external updateTransform: t => unit = "updateTransform";
 };
 
 module Container {
@@ -375,17 +551,69 @@ module Container {
     pub getChildIndex: Js.t(#DisplayObject._t) => int;
     pub removeChild: Js.t(#DisplayObject._t as 'a) => Js.t('a);
     pub removeChildAt: int => DisplayObject.t;
-    pub removeChildren: (int, int) => array(Js.t(#DisplayObject._t));
+    pub removeChildren: (int, int) => array(DisplayObject.t);
     pub renderCanvas: CanvasRenderer.t => unit;
     pub setChildIndex: (Js.t(#DisplayObject._t), int) => unit;
     pub sortChildren: unit => unit;
     pub swapChildren: (Js.t(#DisplayObject._t), Js.t(#DisplayObject._t)) => unit;
   };
 
+  [@bs.deriving abstract]
+  type destroyOptions = {
+    [@bs.optional] children: bool,
+    [@bs.optional] texture: bool,
+    [@bs.optional] baseTexture: bool
+  };
+
   type t = Js.t(_t);
 
   [@bs.module "pixi.js"][@bs.new]
   external create: unit => t = "Container";
+
+  [@bs.send]
+  external addChild: (t, ~child: Js.t(#DisplayObject._t as 'a)) => Js.t('a) = "addChild";
+
+  [@bs.send]
+  external addChildAt: (t, ~child: Js.t(#DisplayObject._t as 'a), ~index: int) => Js.t('a) = "addChildAt";
+
+  [@bs.send]
+  external calculateBounds: t => unit = "calculateBounds";
+
+  [@bs.send]
+  external destroy: (t, ~option: ([@bs.unwrap] [`Object(destroyOptions) | `Bool(bool)])=?, unit) => unit = "destroy";
+
+  [@bs.send]
+  external getChildAt: (t, ~index: int) => Js.t(#DisplayObject._t) = "getChildAt";
+
+  [@bs.send]
+  external getChildByName: (t, ~name: string) => Js.Nullable.t(Js.t(#DisplayObject._t)) = "getChildByName";
+
+  [@bs.send]
+  external getChildIndex: (t, ~child: Js.t(#DisplayObject._t)) => int = "getChildIndex";
+
+  [@bs.send]
+  external removeChild: (t, ~child: Js.t(#DisplayObject._t as 'a)) => Js.t('a) = "removeChild";
+  
+  [@bs.send]
+  external removeChildAt: (t, ~index: int) => DisplayObject.t = "removeChildAt";
+
+  [@bs.send]
+  external removeChildren: (t, ~beginIndex: int=?, ~endIndex: int=?, unit) => array(DisplayObject.t) = "removeChildren";
+
+  [@bs.send]
+  external renderCanvas: (t, ~renderer: CanvasRenderer.t) => unit = "renderCanvas";
+
+  [@bs.send]
+  external setChildIndex: (t, ~child: Js.t(#DisplayObject._t), ~index: int) => unit = "setChildIndex";
+
+  [@bs.send]
+  external sortChildren: t => unit = "sortChildren";
+
+  [@bs.send]
+  external swapChildren: (t, ~child: Js.t(#DisplayObject._t), ~child2: Js.t(#DisplayObject._t)) => unit = "swapChildren";
+
+  [@bs.send]
+  external getLocalBounds: (t, ~rect: Rectangle.t=?, unit) => Rectangle.t = "getLocalBounds";
 };
 
 module BaseTexture {
@@ -410,7 +638,7 @@ module Texture {
     [@bs.set] pub textureCacheIds: array(string);
     [@bs.set] pub trim: Rectangle.t;
     [@bs.set] pub uvMatrix: TextureMatrix.t;
-    [@bs.set] pub valid: float;
+    [@bs.set] pub valid: bool;
     [@bs.set] pub width: float;
 
     pub clone: unit => unit;
@@ -443,6 +671,18 @@ module Texture {
 
   [@bs.module "pixi.js"][@bs.scope "Texture"]
   external removeFromCache: (~texture: [@bs.unwrap] [`Texture(t) | `String(string)]) => Js.Nullable.t(t) = "removeFromCache";
+
+  [@bs.send]
+  external clone: t => unit = "clone";
+
+  [@bs.send]
+  external destroy: (t, ~destroyBase: bool=?, unit) => unit = "destroy";
+
+  [@bs.send]
+  external update: t => unit = "update";
+
+  [@bs.send]
+  external updateUvs: t => unit = "updateUvs";
 }
 
 module Sprite {
@@ -460,9 +700,16 @@ module Sprite {
 
     pub calculateTrimmedVertices: unit => unit;
     pub calculateVertices: unit => unit;
-    /* pub destroy: Js.t({..}) => unit; */
+    pub containsPoint: Point.t => bool;
   };
   type t = Js.t(_t);
+
+  [@bs.deriving abstract]
+  type destroyOptions = {
+    [@bs.optional] children: bool,
+    [@bs.optional] texture: bool,
+    [@bs.optional] baseTexture: bool
+  };
 
   [@bs.module "pixi.js"][@bs.new]
   external create: Texture.t => t = "Sprite";  
@@ -477,7 +724,22 @@ module Sprite {
     optMap(width, width => sprite##width #= width) |> ignore;
     optMap(height, height => sprite##height #= height) |> ignore;
     sprite
-  }
+  };
+
+  [@bs.send]
+  external calculateTrimmedVertices: t => unit = "calculateTrimmedVertices";
+
+  [@bs.send]
+  external calculateVertices: t => unit = "calculateVertices";
+
+  [@bs.send]
+  external containsPoint: (t, ~point: Point.t) => bool = "containsPoint";
+
+  [@bs.send]
+  external destroy: (t, ~option: ([@bs.unwrap] [`Object(destroyOptions) | `Bool(bool)])=?, unit) => unit = "destroy";
+
+  [@bs.send]
+  external getLocalBounds: (t, ~rect: Rectangle.t=?, unit) => Rectangle.t = "getLocalBounds";
 };
 
 module TextStyle {
@@ -560,9 +822,31 @@ module Application {
 
   type t = Js.t(_t);
 
+  [@bs.deriving abstract]
+  type destroyOptions = {
+    [@bs.optional] children: bool,
+    [@bs.optional] texture: bool,
+    [@bs.optional] baseTexture: bool
+  };
+
   [@bs.module "pixi.js"][@bs.new]
   external create: (~options: options=?, unit) => t = "Application";
 
   [@bs.module "pixi.js"][@bs.scope "Application"]
   external registerPlugin: (~plugin: plugin) => unit = "registerPlugin";
+
+  [@bs.send]
+  external destroy: (t, ~removeView: bool=?, ~stageOptions: ([@bs.unwrap] [`Object(destroyOptions) | `Bool(bool)])=?, unit) => unit = "destroy";
+
+  [@bs.send]
+  external render: t => unit = "render";
+
+  [@bs.send]
+  external resize: t => unit = "resize";
+
+  [@bs.send]
+  external start: t => unit = "start";
+
+  [@bs.send]
+  external stop: t => unit = "stop";
 };
