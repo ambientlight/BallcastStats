@@ -79,31 +79,31 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
 
   formation.elements
   |. Belt.Array.forEachWithIndex((index, element) => {
-      let gridPosition = GridManager.gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y)
-      let marker = Sprite.init(
-        ~texture=renderer.textures.marker,
-        ~x=gridPosition.x,
-        ~y=gridPosition.y,
-        ~width=45.0,
-        ~height=53.0,
-        ()
-      );
+    let gridPosition = GridManager.gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y)
+    let marker = Sprite.init(
+      ~texture=renderer.textures.marker,
+      ~x=gridPosition.x,
+      ~y=gridPosition.y,
+      ~width=45.0,
+      ~height=53.0,
+      ()
+    );
 
-      marker##name #= "marker";
-      marker##anchor##set(0.5, 0.5);
+    marker##name #= "marker";
+    marker##anchor##set(0.5, 0.5);
 
-      let numberStyle = TextStyle.create(~style=TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
-      let text = Text.create(~text=string_of_int(squad[index].number), ~style=numberStyle, ());
-      text##anchor##set(0.5, 0.5);
-      text##y #= (-4.0);
-      marker##addChild(text) |> ignore;
+    let numberStyle = TextStyle.create(~style=TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
+    let text = Text.create(~text=string_of_int(squad[index].number), ~style=numberStyle, ());
+    text##anchor##set(0.5, 0.5);
+    text##y #= (-4.0);
+    marker##addChild(text) |> ignore;
 
-      let nameStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=24.0, ~fill=int_of_string("0xffffff"), ()));
-      let text = Text.create(~text=(element.position |. Formation.positionToJs) ++ " | " ++ squad[index].name |. Js.String.toUpperCase, ~style=nameStyle, ());
-      text##anchor##set(0.5, 0.5);
-      text##y #= 72.0;
-      marker##addChild(text) |> ignore;
-      
-      renderer.container##addChild(marker) |> ignore;
-    })
+    let nameStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=24.0, ~fill=int_of_string("0xffffff"), ()));
+    let text = Text.create(~text=(element.position |. Formation.positionToJs) ++ " | " ++ squad[index].name |. Js.String.toUpperCase, ~style=nameStyle, ());
+    text##anchor##set(0.5, 0.5);
+    text##y #= 72.0;
+    marker##addChild(text) |> ignore;
+    
+    renderer.container##addChild(marker) |> ignore;
+  })
 };
