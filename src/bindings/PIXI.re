@@ -458,7 +458,7 @@ module EventEmitter {
   external emit: (Js.t(#_t), ~event: string) => bool = "emit";
   
   [@bs.send]
-  external on: (Js.t(#_t as 'a), ~event: string) => Js.t('a) = "on";
+  external on: (Js.t(#_t as 'a), ~event: string, ~fn: Js.t({..}) => unit) => Js.t('a) = "on";
 
   [@bs.send]
   external addListener: (Js.t(#_t as 'a), ~event: string, ~fn: Js.t({..}) => unit, ~context: Js.t({..})=?, unit) => Js.t('a) = "addListener";
@@ -1147,8 +1147,8 @@ module Viewport {
 
   type t = Js.t(_t);
 
-  [@bs.module "pixi-viewport"][@bs.new]
-  external create: (~options: createOptions('a)=?, unit) => t = "Viewport";
+  [@bs.module][@bs.new]
+  external create: (~options: createOptions('a)=?, unit) => t = "pixi-viewport";
   
   [@bs.send]
   external bounce: (t, ~options: ([@bs.unwrap][`EaseString(bounceOptionsEaseString) | `EaseFunction(bounceOptionsEaseFunction)])=?, unit) => t = "bounce";

@@ -45,7 +45,18 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   element |> Dom.HtmlElement.appendChild(application##view);
 
   /* base container */
-  let container = Container.create();
+  let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
+  let container = Viewport.create(~options=Viewport.createOptions(
+    ~worldWidth=1040.0,
+    ~worldHeight=800.0,
+    ~passiveWheel=true, 
+    ~interaction=applicationInterraction(. application), ()),
+    ())
+  |. Viewport.drag(~options=`ClampWheelBool(Viewport.dragOptionsClampWheelBool(~clampWheel=true, ())), ())
+  |. Viewport.wheel(());
+
+  container |. EventEmitter.on(~event="click", ~fn=_event => ~~"click") |> ignore;
+
   application##stage##addChild(container) |> ignore;
   let pitchTexture = Texture.from(~source=assets.pitchTexture);
   let markerTexture = Texture.from(~source=assets.formationMarker);
@@ -58,7 +69,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
 
   {
     application,
-    container,
+    container: (container :> Container.t),
     textures: {
       pitch: pitchTexture,
       marker: markerTexture

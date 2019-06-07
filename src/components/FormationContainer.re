@@ -43,7 +43,9 @@ let squad: Formation.squad = [|
 |]
 
 module Styles {
-  let root = style([])
+  let root = style([
+    border(px(1), `solid, rgba(255,255,255,0.5))
+  ])
 };
 
 type retained = {
