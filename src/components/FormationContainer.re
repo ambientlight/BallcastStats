@@ -8,7 +8,7 @@ let embedHeight = 400;
 
 let containedColor = raw("rgb(255, 255, 255)"|.AppTheme.rgbAddAlpha(0.25));
 
-[@bs.module] external pitchTexture: string = "assets/sprites/pitch_texture.png";
+[@bs.module] external pitchTexture: string = "assets/sprites/pitch_overscroll.png";
 [@bs.module] external formationMarker: string = "assets/sprites/formation_marker_default.png";
 
 let formation: Formation.t = {
@@ -44,7 +44,9 @@ let squad: Formation.squad = [|
 
 module Styles {
   let root = style([
-    border(px(1), `solid, rgba(255,255,255,0.5))
+    height(px(embedHeight + 2)),
+    width(px(embedWidth + 2)),
+    border(px(1), `solid, rgba(255,255,255,0.2))
   ])
 };
 

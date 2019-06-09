@@ -35,7 +35,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
     ~transparent=true,
     ~width=width,
     ~height=height,
-    ~resolution=2.0,
+    ~resolution=(!!DomRe.window) |. Js.Dict.unsafeGet("devicePixelRatio"),
     ()), 
   ());
 
@@ -45,25 +45,60 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   element |> Dom.HtmlElement.appendChild(application##view);
 
   /* base container */
+  let containerWidth = float(width);
+  let containerHeight = float(height);
   let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
-  let container = Viewport.create(~options=Viewport.createOptions(
-    ~worldWidth=1040.0,
-    ~worldHeight=800.0,
-    ~passiveWheel=true, 
-    ~interaction=applicationInterraction(. application), ()),
-    ())
-  |. Viewport.drag(~options=`ClampWheelBool(Viewport.dragOptionsClampWheelBool(~clampWheel=true, ())), ())
-  |. Viewport.wheel(());
+  let container = Viewport.(
+    create(~options=createOptions(
+      ~screenWidth=containerWidth *. 2.0,
+      ~screenHeight=containerHeight *. 2.0,
+      ~worldWidth=containerWidth *. 2.0,
+      ~worldHeight=containerHeight *. 2.0,
+      ~passiveWheel=true, 
+      ~interaction=applicationInterraction(. application), ()),
+      ())
+    |. drag(/*~options=`ClampWheelBool(dragOptionsClampWheelBool(~clampWheel=true, ())),*/ ())
+    |. wheel(())
+    |. bounce(~options=`EaseString(bounceOptionsEaseString(~sides="all", ~underflow="left and top", ~ease="easeInOutSine", ())), ())
+    |. clampZoom(~options=clampZoomOptions(
+      ~minWidth=520.0,
+      ~minHeight=400.0,
+      ~maxWidth=2080.0,
+      ~maxHeight=800.0,
+      ()),
 
-  container |. EventEmitter.on(~event="click", ~fn=_event => ~~"click") |> ignore;
+      ())
+  );
+
+  container 
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => { 
+    event##viewport##children
+    |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("marker"))
+    |. Belt.Array.map(child => { let container: Container.t = !!child; container })
+    |. Belt.Array.forEach(child => {
+      child##width #= (45.0 /. (event##viewport##lastViewport##scaleX));
+      child##height #= (53.0 /. (event##viewport##lastViewport##scaleY));
+    });
+    
+    /* hack the world width to have the */
+    let ratioX = 2.0 -. (0.5 *. (event##viewport##lastViewport##scaleX -. 1.0));
+    let ratioY = 2.0 -. (0.5 *. (event##viewport##lastViewport##scaleY -. 1.0));
+    event##viewport##worldWidth #= (containerWidth *. ratioX);
+    event##viewport##worldHeight #= (containerHeight *. ratioY);
+    ()    
+  }, ())
+  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
+  |> ignore;
+
 
   application##stage##addChild(container) |> ignore;
   let pitchTexture = Texture.from(~source=assets.pitchTexture);
   let markerTexture = Texture.from(~source=assets.formationMarker);
 
   let pitch = Sprite.create(pitchTexture);
-  pitch##width #= 520.0;
-  pitch##height #= 400.0;
+  pitch##width #= 1560.0;
+  pitch##height #= 1200.0;
+  pitch##anchor##set(0.333, 0.333);
   pitch##name #= "pitch";
   container##addChild(pitch) |> ignore;
 

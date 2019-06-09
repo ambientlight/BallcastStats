@@ -458,7 +458,7 @@ module EventEmitter {
   external emit: (Js.t(#_t), ~event: string) => bool = "emit";
   
   [@bs.send]
-  external on: (Js.t(#_t as 'a), ~event: string, ~fn: Js.t({..}) => unit) => Js.t('a) = "on";
+  external on: (Js.t(#_t as 'a), ~event: string, ~fn: Js.t({..}) => unit, ~context: Js.t({..})=?, unit) => Js.t('a) = "on";
 
   [@bs.send]
   external addListener: (Js.t(#_t as 'a), ~event: string, ~fn: Js.t({..}) => unit, ~context: Js.t({..})=?, unit) => Js.t('a) = "addListener";
@@ -1094,6 +1094,17 @@ module Viewport {
     [@bs.optional] divWheel: Dom.HtmlElement.t
   };
 
+  module LastViewport {
+    class type _t = [@bs]{
+      pub scaleX: float;
+      pub scaleY: float;
+      pub x: float;
+      pub y: float;
+    };
+
+    type t = Js.t(_t);
+  };
+
   class type _t = [@bs]{
     inherit Container._t;
     [@bs.set] pub bottom: float;
@@ -1114,6 +1125,7 @@ module Viewport {
     pub worldScreenHeight: float;
     pub worldScreenWidth: float;
     [@bs.set] pub worldWidth: float;
+    pub lastViewport: LastViewport.t;
 
     pub bounce: bounceOptionsEaseString => Js.t(_t);
     pub clamp: clampOptionsBool => Js.t(_t);
@@ -1155,6 +1167,9 @@ module Viewport {
 
   [@bs.send]
   external clamp: (t, ~options: ([@bs.unwrap] [`FloatOptions(clampOptionsFloat) | `BoolOptions(clampOptionsBool)])=?, unit) => t = "clamp";
+
+  [@bs.send]
+  external clampZoom: (t, ~options: clampZoomOptions, unit) => t = "clampZoom";
 
   [@bs.send]
   external decelerate: (t, ~options: decelerateOptions=?, unit) => t = "decelerate";
