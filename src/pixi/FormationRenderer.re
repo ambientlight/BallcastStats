@@ -57,16 +57,20 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
       ~passiveWheel=true, 
       ~interaction=applicationInterraction(. application), ()),
       ())
-    |. drag(/*~options=`ClampWheelBool(dragOptionsClampWheelBool(~clampWheel=true, ())),*/ ())
+    |. drag(~options=`ClampWheelBool(dragOptionsClampWheelBool(~clampWheel=true, ())), ())
     |. wheel(())
-    |. bounce(~options=`EaseString(bounceOptionsEaseString(~sides="all", ~underflow="left and top", ~ease="easeInOutSine", ())), ())
+    |. decelerate(())
+    |. bounce(~options=`EaseString(bounceOptionsEaseString(
+      ~sides="all", 
+      ~underflow="left and top", 
+      ~time=300,
+      ~ease="easeInOutSine", ())), 
+      ())
     |. clampZoom(~options=clampZoomOptions(
       ~minWidth=520.0,
       ~minHeight=400.0,
       ~maxWidth=2080.0,
-      ~maxHeight=800.0,
-      ()),
-
+      ~maxHeight=800.0, ()),
       ())
   );
 
