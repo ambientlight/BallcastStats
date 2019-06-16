@@ -48,29 +48,31 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   let containerWidth = float(width);
   let containerHeight = float(height);
   let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
+  
   let container = Viewport.(
     create(~options=createOptions(
-      ~screenWidth=containerWidth *. 2.0,
-      ~screenHeight=containerHeight *. 2.0,
-      ~worldWidth=containerWidth *. 2.0,
-      ~worldHeight=containerHeight *. 2.0,
+      ~screenWidth=containerWidth *. 1.0,
+      ~screenHeight=containerHeight *. 1.0,
+      ~worldWidth=containerWidth *. 1.0,
+      ~worldHeight=containerHeight *. 1.0,
       ~passiveWheel=true, 
       ~interaction=applicationInterraction(. application), ()),
       ())
     |. drag(~options=`ClampWheelBool(dragOptionsClampWheelBool(~clampWheel=true, ())), ())
     |. wheel(())
     |. decelerate(())
+    |. pinch(~options=pinchOptions(~percent=2.0, ()), ())
     |. bounce(~options=`EaseString(bounceOptionsEaseString(
       ~sides="all", 
-      ~underflow="left and top", 
+      ~underflow="center", 
       ~time=300,
       ~ease="easeInOutSine", ())), 
       ())
     |. clampZoom(~options=clampZoomOptions(
-      ~minWidth=520.0,
-      ~minHeight=400.0,
-      ~maxWidth=2080.0,
-      ~maxHeight=800.0, ()),
+      ~minWidth=containerWidth /. 2.0,
+      ~minHeight=containerHeight /. 2.0,
+      ~maxWidth=containerWidth,
+      ~maxHeight=containerHeight, ()),
       ())
   );
 
@@ -82,14 +84,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
     |. Belt.Array.forEach(child => {
       child##width #= (45.0 /. (event##viewport##lastViewport##scaleX));
       child##height #= (53.0 /. (event##viewport##lastViewport##scaleY));
-    });
-    
-    /* hack the world width to have the */
-    let ratioX = 2.0 -. (0.5 *. (event##viewport##lastViewport##scaleX -. 1.0));
-    let ratioY = 2.0 -. (0.5 *. (event##viewport##lastViewport##scaleY -. 1.0));
-    event##viewport##worldWidth #= (containerWidth *. ratioX);
-    event##viewport##worldHeight #= (containerHeight *. ratioY);
-    ()    
+    }); 
   }, ())
   |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
   |> ignore;
