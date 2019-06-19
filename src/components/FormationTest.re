@@ -5,7 +5,7 @@ module Styles {
   let root = style([
     display(`flex),
     alignItems(`center),
-    justifyContent(`spaceAround),
+    justifyContent(`center),
     flexDirection(`column),
 
     width(vw(100.0)),

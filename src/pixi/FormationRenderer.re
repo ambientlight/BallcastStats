@@ -2,16 +2,17 @@ open Operators;
 open Webapi;
 open PIXI;
 
+[@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run.png";
+[@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run.png";
+
 type position = {
   x: float,
   y: float
 };
 
-module GridManager {
-  let gridCellPosition = (~withSize as size: int, ~x: int, ~y: int): position => {
-    x: float(x * size),
-    y: float(y * size)
-  }
+let gridCellPosition = (~withSize as size: int, ~x: int, ~y: int): position => {
+  x: float(x * size),
+  y: float(y * size)
 };
 
 type textures = {
@@ -49,7 +50,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   let containerHeight = float(height);
   let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
   
-  let container = Viewport.(
+  let container = PIXIViewport.(
     create(~options=createOptions(
       ~screenWidth=containerWidth *. 1.0,
       ~screenHeight=containerHeight *. 1.0,
@@ -77,16 +78,15 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   );
 
   container 
-  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => { 
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIViewport.t})) =>
     event##viewport##children
     |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("marker"))
     |. Belt.Array.map(child => { let container: Container.t = !!child; container })
     |. Belt.Array.forEach(child => {
       child##width #= (45.0 /. (event##viewport##lastViewport##scaleX));
       child##height #= (53.0 /. (event##viewport##lastViewport##scaleY));
-    }); 
-  }, ())
-  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
+    }), ())
+  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIViewport.t) => (), ())
   |> ignore;
 
 
@@ -124,31 +124,26 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
 
   formation.elements
   |. Belt.Array.forEachWithIndex((index, element) => {
-    let gridPosition = GridManager.gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y)
-    let marker = Sprite.init(
-      ~texture=renderer.textures.marker,
-      ~x=gridPosition.x,
-      ~y=gridPosition.y,
-      ~width=45.0,
-      ~height=53.0,
-      ()
+    let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
+    let playerMarker = FormationItemsGenerators.playerMarker(
+      ~markerTexture=renderer.textures.marker,
+      ~x=gridPosition.x, ~y=gridPosition.y,
+      ~playerNumber=squad[index].number,
+      ~playerName=squad[index].name,
+      ~playerPosition=element.position
     );
-
-    marker##name #= "marker";
-    marker##anchor##set(0.5, 0.5);
-
-    let numberStyle = TextStyle.create(~style=TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=32.0, ~fill=int_of_string("0xffffff"), ()));
-    let text = Text.create(~text=string_of_int(squad[index].number), ~style=numberStyle, ());
-    text##anchor##set(0.5, 0.5);
-    text##y #= (-4.0);
-    marker##addChild(text) |> ignore;
-
-    let nameStyle = TextStyle.create(TextStyle.style(~fontFamily=[|"Gobold"|], ~fontSize=24.0, ~fill=int_of_string("0xffffff"), ()));
-    let text = Text.create(~text=(element.position |. Formation.positionToJs) ++ " | " ++ squad[index].name |. Js.String.toUpperCase, ~style=nameStyle, ());
-    text##anchor##set(0.5, 0.5);
-    text##y #= 72.0;
-    marker##addChild(text) |> ignore;
     
-    renderer.container##addChild(marker) |> ignore;
+    renderer.container##addChild(playerMarker) |> ignore;
+
+    if(index == 2){
+      let arrowTacticRun = FormationItemsGenerators.arrowTacticRun(
+        ~texture=Texture.from(~source=arrowDefensiveRun),
+        ~x=gridPosition.x,
+        ~y=gridPosition.y);
+
+      renderer.container##addChild(arrowTacticRun) |> ignore;
+    };
+
+    ()
   })
 };

@@ -25,7 +25,9 @@ type gridLocation = {
 
 type element = {
   position: position,
-  location: gridLocation
+  location: gridLocation,
+  offensiveRun: option(gridLocation),
+  defensiveRun: option(gridLocation)
 };
 
 type t = {

@@ -14,6 +14,46 @@ open Webapi;
 
 let optMap = Belt.Option.map;
 
+module TYPES {
+  [@bs.deriving jsConverter]
+  type t = 
+    | [@bs.as 5121] UnsignedByte
+    | [@bs.as 5123] UnsignedShort
+    | [@bs.as 33635] UnsignedShort_5_6_5
+    | [@bs.as 32819] UnsignedShort_4_4_4_4
+    | [@bs.as 32820] UnsignedShort_5_5_5_1
+    | [@bs.as 5126] Float
+    | [@bs.as 36193] HalfFloat;
+
+  let unsignedByte = 5121;
+  let unsignedShort = 5123;
+  let unsignedShort_5_6_5 = 33635;
+  let unsignedShort_4_4_4_4 = 32819;
+  let unsignedShort_5_5_5_1 = 32820;
+  let float = 5126;
+  let halfFloat = 36193;
+};
+
+module DRAW_MODES {
+  [@bs.deriving jsConverter]
+  type t = 
+    | [@bs.as 0] Points
+    | [@bs.as 1] Lines
+    | [@bs.as 2] LineLoop
+    | [@bs.as 3] LineStrip
+    | [@bs.as 4] Triangles
+    | [@bs.as 5] TriangleStrip
+    | [@bs.as 6] TriangleFan;
+
+  let points = 0;
+  let lines = 1;
+  let line_loop = 2;
+  let line_strip = 3;
+  let triangles = 4;
+  let triangle_strip = 5;
+  let triangle_fan = 6;
+};
+
 module Shapes {
   [@bs.deriving jsConverter]
   type t =
@@ -241,10 +281,10 @@ module Shader {
   type t = Js.t(_t);
 
   [@bs.module "pixi.js"][@bs.new]
-  external create: (~program: Program.t=?, ~uniforms: Js.t({..})=?, unit) => t = "Shader";
+  external create: (~program: Program.t=?, ~uniforms: Js.t({..})=?, unit) => Js.t(#_t) = "Shader";
 
   [@bs.module "pixi.js"][@bs.scope "Shader"]
-  external from: (~vertexSrc: string=?, ~fragmentSrc: string=?, ~uniforms: Js.t({..})=?, unit) => t = "from";
+  external from: (~vertexSrc: string=?, ~fragmentSrc: string=?, ~uniforms: Js.t({..})=?, unit) => Js.t(#_t) = "from";
 };
 
 module State {
@@ -290,7 +330,7 @@ module Filter {
   type t = Js.t(_t);
 
   [@bs.module "pixi.js"][@bs.new]
-  external create: (~vertexSrc: string=?, ~fragmentSrc: string=?, ~uniforms: Js.t({..})=?, unit) => t = "Filter";
+  external create: (~vertexSrc: string=?, ~fragmentSrc: string=?, ~uniforms: Js.t({..})=?, unit) => Js.t(#_t) = "Filter";
 
   [@bs.val][@bs.module "pixi.js"][@bs.scope "Filter"]
   external defaultFragmentSrc: string = "defaultFragmentSrc";
@@ -302,7 +342,7 @@ module Filter {
   external sourceKeyMap: Js.t({..}) = "SOURCE_KEY_MAP";
 
   [@bs.send]
-  external apply: (t, ~filterManager: FilterSystem.t, ~input: RenderTexture.t, ~output: RenderTexture.t, ~clear: bool, ~currentState: Js.t({..}) = ?, unit) => unit = "apply";
+  external apply: (Js.t(#_t), ~filterManager: FilterSystem.t, ~input: RenderTexture.t, ~output: RenderTexture.t, ~clear: bool, ~currentState: Js.t({..}) = ?, unit) => unit = "apply";
 };
 
 module Matrix {
@@ -897,358 +937,275 @@ module Application {
 
 module InteractionManager {
   type t;
-}
+};
 
-module Viewport {
-  module Plugin {
-    type t;
-  };
+module BLEND_MODES {
+  [@bs.deriving jsConverter]
+  type t =
+    | [@bs.as 0] Normal
+    | [@bs.as 1] Add
+    | [@bs.as 2] Multiply
+    | [@bs.as 3] Screen
+    | [@bs.as 4] Overlay
+    | [@bs.as 5] Darken
+    | [@bs.as 6] Lighten
+    | [@bs.as 7] Color_dodge
+    | [@bs.as 8] Color_burn
+    | [@bs.as 9] Hard_light
+    | [@bs.as 10] Soft_light
+    | [@bs.as 11] Difference
+    | [@bs.as 12] Exclusion
+    | [@bs.as 13] Hue
+    | [@bs.as 14] Saturation
+    | [@bs.as 15] Color
+    | [@bs.as 16] Luminosity
+    | [@bs.as 17] Normal_npm
+    | [@bs.as 18] Add_npm
+    | [@bs.as 19] Screen_npm
+    | [@bs.as 20] None
+    /* TODO: [@bs.as 0] Src_over */
+    | [@bs.as 21] Src_in
+    | [@bs.as 22] Src_out
+    | [@bs.as 23] Src_atop
+    | [@bs.as 24] Dst_over
+    | [@bs.as 25] Dst_in
+    | [@bs.as 26] Dst_out
+    | [@bs.as 27] Dst_atop
+    /* TODO: [@bs.as 26] Erase */
+    | [@bs.as 28] Subtract;
 
-  [@bs.deriving abstract]
-  type bounceOptionsEaseString = {
-    [@bs.optional] sides: string,
-    [@bs.optional] friction: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: string,
-    [@bs.optional] underflow: string
-  };
 
-  [@bs.deriving abstract]
-  type bounceOptionsEaseFunction = {
-    [@bs.optional] sides: string,
-    [@bs.optional] friction: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: (float, float, float, float) => float,
-    [@bs.optional] underflow: string
-  };
+  let normal = 0;
+  let add = 1;
+  let multiply = 2;
+  let screen = 3;
+  let overlay = 4;
+  let darken = 5;
+  let lighten = 6;
+  let color_dodge = 7;
+  let color_burn = 8;
+  let hard_light = 9;
+  let soft_light = 10;
+  let difference = 11;
+  let exclusion = 12;
+  let hue = 13;
+  let saturation = 14;
+  let color = 15;
+  let luminosity = 16;
+  let normal_npm = 17;
+  let add_npm = 18;
+  let screen_npm = 19;
+  let none = 20;
 
-  [@bs.deriving abstract]
-  type clampOptionsFloat = {
-    [@bs.optional] left: float,
-    [@bs.optional] right: float,
-    [@bs.optional] top: float,
-    [@bs.optional] bottom: float,
-    [@bs.optional] direction: string,
-    [@bs.optional] underflow: string
-  };
+  let src_over = 0;
+  let src_in = 21;
+  let src_out = 22;
+  let src_atop = 23;
+  let dst_over = 24;
+  let dst_in = 25;
+  let dst_out = 26;
+  let dst_atop = 27;
+  let erase = 26;
+  let subtract = 28;
+};
 
-  [@bs.deriving abstract]
-  type clampOptionsBool = {
-    [@bs.optional] left: bool,
-    [@bs.optional] right: bool,
-    [@bs.optional] top: bool,
-    [@bs.optional] bottom: bool,
-    [@bs.optional] direction: string,
-    [@bs.optional] underflow: string
-  };
-
-  [@bs.deriving abstract]
-  type clampZoomOptions = {
-    [@bs.optional] minWidth: float,
-    [@bs.optional] minHeight: float,
-    [@bs.optional] maxWidth: float,
-    [@bs.optional] maxHeight: float
-  };
-
-  [@bs.deriving abstract]
-  type decelerateOptions = {
-    [@bs.optional] friction: float,
-    [@bs.optional] bounce: float,
-    [@bs.optional] minSpeed: float
-  };
-
-  [@bs.deriving abstract]
-  type dragOptionsClampWheelBool = {
-    [@bs.optional] direction: string,
-    [@bs.optional] wheel: bool,
-    [@bs.optional] wheelScroll: int,
-    [@bs.optional] reverse: bool,
-    [@bs.optional] clampWheel: bool,
-    [@bs.optional] underflow: string,
-    [@bs.optional] factor: int,
-    [@bs.optional] mouseButtons: string
-  };
-
-  [@bs.deriving abstract]
-  type dragOptionsClampWheelString = {
-    [@bs.optional] direction: string,
-    [@bs.optional] wheel: bool,
-    [@bs.optional] wheelScroll: int,
-    [@bs.optional] reverse: bool,
-    [@bs.optional] clampWheel: string,
-    [@bs.optional] underflow: string,
-    [@bs.optional] factor: int,
-    [@bs.optional] mouseButtons: string
-  };
-
-  [@bs.deriving abstract]
-  type followOptions = {
-    [@bs.optional] speed: float,
-    [@bs.optional] acceleration: float,
-    [@bs.optional] radius: float
-  };
-
-  [@bs.deriving abstract]
-  type bounds = {
-    x: float,
-    y: float,
-    width: float,
-    height: float
-  };
-
-  [@bs.deriving abstract]
-  type mouseEdgesOptions = {
-    [@bs.optional] radius: float,
-    [@bs.optional] distance: float,
-    [@bs.optional] top: float,
-    [@bs.optional] bottom: float,
-    [@bs.optional] left: float,
-    [@bs.optional] right: float,
-    [@bs.optional] speed: int,
-    [@bs.optional] reverse: bool,
-    [@bs.optional] noDecelerate: bool,
-    [@bs.optional] linear: bool,
-    [@bs.optional] allowButtons: bool
-  };
-
-  [@bs.deriving abstract]
-  type pinchOptions = {
-    [@bs.optional] percent: float,
-    [@bs.optional] noDrag: bool,
-    [@bs.optional] center: Point.t
-  };
-
-  [@bs.deriving abstract]
-  type snapOptionsEaseString = {
-    [@bs.optional] topLeft: bool,
-    [@bs.optional] friction: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: string,
-    [@bs.optional] interrupt: bool,
-    [@bs.optional] removeOnComplete: bool,
-    [@bs.optional] removeOnInterrupt: bool,
-    [@bs.optional] forceStart: bool
-  };
-
-  [@bs.deriving abstract]
-  type snapOptionsEaseFunction = {
-    [@bs.optional] topLeft: bool,
-    [@bs.optional] friction: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: (float, float, float, float) => float,
-    [@bs.optional] interrupt: bool,
-    [@bs.optional] removeOnComplete: bool,
-    [@bs.optional] removeOnInterrupt: bool,
-    [@bs.optional] forceStart: bool
-  };
-
-  [@bs.deriving abstract]
-  type snapZoomOptionsEaseString = {
-    [@bs.optional] width: float,
-    [@bs.optional] height: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: string,
-    [@bs.optional] center: Point.t,
-    [@bs.optional] interrupt: bool,
-    [@bs.optional] removeOnComplete: bool,
-    [@bs.optional] removeOnInterrupt: bool,
-    [@bs.optional] forceStart: bool,
-    [@bs.optional] noMove: bool
-  };
-
-  [@bs.deriving abstract]
-  type snapZoomOptionsEaseFunction = {
-    [@bs.optional] width: float,
-    [@bs.optional] height: float,
-    [@bs.optional] time: int,
-    [@bs.optional] ease: (float, float, float, float) => float,
-    [@bs.optional] center: Point.t,
-    [@bs.optional] interrupt: bool,
-    [@bs.optional] removeOnComplete: bool,
-    [@bs.optional] removeOnInterrupt: bool,
-    [@bs.optional] forceStart: bool,
-    [@bs.optional] noMove: bool
-  };
-
-  [@bs.deriving abstract]
-  type wheelOptions = {
-    [@bs.optional] percent: float,
-    [@bs.optional] reverse: bool,
-    [@bs.optional] center: Point.t
-  };
-
-  [@bs.deriving abstract]
-  type createOptions('a) = {
-    [@bs.optional] screenWidth: float,
-    [@bs.optional] screenHeight: float,
-    [@bs.optional] worldWidth: float,
-    [@bs.optional] worldHeight: float,
-    [@bs.optional] threshold: int,
-    [@bs.optional] passiveWheel: bool,
-    [@bs.optional] stopPropagation: bool,
-    /* TODO: PIXI.Rectangle | PIXI.Circle | PIXI.Ellipse | PIXI.Polygon | PIXI.RoundedRectangle */
-    [@bs.optional] forceHitArea: 'a,
-    [@bs.optional] noTicker: bool,
-    [@bs.optional] ticker: Ticker.t,
-    [@bs.optional] interaction: InteractionManager.t,
-    [@bs.optional] divWheel: Dom.HtmlElement.t
-  };
-
-  module LastViewport {
-    class type _t = [@bs]{
-      pub scaleX: float;
-      pub scaleY: float;
-      pub x: float;
-      pub y: float;
-    };
-
-    type t = Js.t(_t);
-  };
-
-  class type _t = [@bs]{
-    inherit Container._t;
-    [@bs.set] pub bottom: float;
-    [@bs.set] pub center: float;
-    [@bs.set] pub corner: Point.t;
-    [@bs.set] pub dirty: bool;
-    /* TODO: PIXI.Rectangle | PIXI.Circle | PIXI.Ellipse | PIXI.Polygon | PIXI.RoundedRectangle */
-    [@bs.set] pub forceHitArea: Js.t({..});
-    [@bs.set] pub left: float;
-    [@bs.set] pub pause: bool;
-    [@bs.set] pub right: float;
-    [@bs.set] pub screenWidth: float;
-    pub screenWorldHeight: float;
-    pub screenWorldWidth: float;
-    [@bs.set] pub top: float;
-    pub touches: array(float);
-    [@bs.set] pub worldHeight: float;
-    pub worldScreenHeight: float;
-    pub worldScreenWidth: float;
-    [@bs.set] pub worldWidth: float;
-    pub lastViewport: LastViewport.t;
-
-    pub bounce: bounceOptionsEaseString => Js.t(_t);
-    pub clamp: clampOptionsBool => Js.t(_t);
-    pub clampZoom: clampZoomOptions => Js.t(_t);
-    pub decelerate: decelerateOptions => Js.t(_t);
-    pub drag: dragOptionsClampWheelBool => Js.t(_t);
-    pub ensureVisible: (float, float, float, float) => unit;
-    pub fit: (bool, Js.Undefined.t(float), Js.Undefined.t(float)) => Js.t(_t);
-    pub fitHeight: (Js.Undefined.t(float), bool, bool, bool) => Js.t(_t);
-    pub fitWidth: (Js.Undefined.t(float), bool, bool, bool) => Js.t(_t);
-    pub fitWorld: bool => Js.t(_t);
-    pub follow: (Js.t(#DisplayObject._t), Js.Undefined.t(followOptions)) => Js.t(_t);
-    pub getVisibleBounds: unit => bounds;
-    pub mouseEdges: mouseEdgesOptions => Js.t(_t);
-    pub moveCenter: (float, float) => Js.t(_t);
-    pub pausePlugin: string => unit;
-    pub pinch: pinchOptions => unit;
-    pub removePlugin: string => unit;
-    pub resize: (Js.Undefined.t(float), Js.Undefined.t(float), Js.Undefined.t(float), Js.Undefined.t(float)) => unit;
-    pub resumePlugin: string => unit;
-    pub snap: (float, float, snapOptionsEaseString) => Js.t(_t);
-    pub snapZoom: snapZoomOptionsEaseString => Js.t(_t);
-    pub toScreen: (float, float) => Point.t;
-    pub toWorld: (float, float) => Point.t;
-    pub update: unit => unit;
-    pub userPlugin: (string, Plugin.t, int) => unit;
-    pub wheel: wheelOptions => unit;
-    pub zoom: (float, bool) => Js.t(_t);
-    pub zoomPercent: (float, bool) => Js.t(_t);
+module Buffer {
+  class type _t = {
+    /* TODO: ArrayBuffer | SharedArrayBuffer | ArrayBufferView */
+    pub data: Js.Typed_array.ArrayBuffer.t;
+    pub destroy: unit => unit;
+    pub dispose: unit => unit;
+    pub update: Js.Typed_array.ArrayBuffer.t => unit;
   };
 
   type t = Js.t(_t);
 
-  [@bs.module][@bs.new]
-  external create: (~options: createOptions('a)=?, unit) => t = "pixi-viewport";
+  /* TODO: ArrayBuffer | SharedArrayBuffer | ArrayBufferView */
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~data: Js.Typed_array.ArrayBuffer.t, ~_static: bool=?, ~index: bool=?, unit) => t = "Buffer";
+
+  [@bs.send]
+  external destroy: t => unit = "destroy";
+
+  [@bs.send]
+  external dispose: t => unit = "dispose";
+
+  /* TODO: ArrayBuffer | SharedArrayBuffer | ArrayBufferView */
+  [@bs.send]
+  external update: (t, Js.Typed_array.ArrayBuffer.t) => unit = "update";
+};
+
+module Attribute {
+  class type _t = {
+    pub from: (string, Js.Undefined.t(int), Js.Undefined.t(bool), Js.Undefined.t(int), Js.Undefined.t(int), Js.Undefined.t(int)) => Js.t(_t);
+    pub destroy: unit => unit;
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~buffer: string=?, ~size: int=?, ~normalized: bool=?, ~_type: int=?, ~stride: int=?, ~start: int=?, unit) => t = "Attribute";
+
+  [@bs.send]
+  external from: (t, ~buffer: string=?, ~size: int=?, ~stride: int=?, ~start: int=?, ~normalized: bool=?, unit) => t = "from";
+
+  [@bs.send]
+  external destroy: t => unit = "destroy";
+};
+
+module Geometry {
+  class type _t = {
+    pub refCount: int;
+
+    pub addAttribute: (string, Js.Undefined.t(Buffer.t), Js.Undefined.t(int), Js.Undefined.t(bool), Js.Undefined.t(int), Js.Undefined.t(int), Js.Undefined.t(int)) => Js.t(_t);
+    pub addIndex: Js.Undefined.t(Buffer.t) => Js.t(_t);
+    pub clone: unit => Js.t(_t);
+    pub destroy: unit => unit;
+    pub dispose: unit => unit;
+    pub getAttribute: string => Attribute.t;
+    pub getBuffer: string => Buffer.t;
+    pub getIndex: unit => Buffer.t;
+    pub interleave: unit => Js.t(_t); 
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~buffers: array(Buffer.t)=?, ~attributes: Js.t({..})=?, unit) => t = "Geometry";
+
+  [@bs.val][@bs.module "pixi.js"][@bs.scope "Geometry"]
+  external merge: (~geometries: array(t)) => t = "merge";
+
+  [@bs.send]
+  external _addAttribute: (t, ~id: string, ~buffer: Buffer.t=?, ~size: int=?, ~normalized: bool=?, ~_type: int=?, ~stride: int=?, ~start: int=?, unit) => t = "addAttribute";
+
+  let addAttribute = (t, ~id: string, ~buffer: option(Buffer.t)=?, ~size: option(TYPES.t)=?, ~normalized: option(bool)=?, ~_type: option(int)=?, ~stride: option(int)=?, ~start: option(int)=?, _t: unit) =>
+    _addAttribute(t, ~id, ~buffer?, ~size=?switch(size){ | Some(size) => Some(TYPES.tToJs(size)) | _ => None }, ~normalized?, ~_type?, ~stride?, ~start?, ());
+
+  [@bs.send]
+  external addIndex: (t, ~buffer: Buffer.t=?, unit) => t = "addIndex";
+
+  [@bs.send]
+  external clone: t => t = "clone";
+
+  [@bs.send]
+  external destroy: t => unit = "destroy";
+
+  [@bs.send]
+  external dispose: t => unit = "dispose";
+
+  [@bs.send]
+  external getAttribute: (t, ~id: string) => Attribute.t = "getAttribute";
+
+  [@bs.send]
+  external getBuffer: (t, ~id: string) => Buffer.t = "getBuffer";
+
+  [@bs.send]
+  external getIndex: t => Buffer.t = "getIndex";
+
+  [@bs.send]
+  external interleave: t => t = "interleave";
+};
+
+
+
+module MeshMaterial {
+  class type _t = {
+    inherit Shader._t;
+
+    [@bs.set] pub alpha: int;
+    [@bs.set] pub batchable: bool;
+    [@bs.set] pub pluginBatch: string;
+    [@bs.set] pub texture: Texture.t;
+    [@bs.set] pub tint: int;
+    pub uvMatrix: TextureMatrix.t;
+
+    pub update: unit => unit;
+  };
+
+  [@bs.deriving abstract]
+  type meshMaterialOptions('a) = {
+    [@bs.optional] alpha: int,
+    [@bs.optional] tint: int,
+    [@bs.optional] pluginName: string,
+    [@bs.optional] program: Program.t,
+    [@bs.optional] uniforms: Js.t({..} as 'a)
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~uSampler: Texture.t, ~options: meshMaterialOptions('a)=?, unit) => t = "MeshMaterial";
+
+  [@bs.send]
+  external update: t => unit = "update";
+}
+
+module Mesh {
+  [@bs.deriving abstract]
+  type destroyOptions = {
+    [@bs.optional] children: bool
+  };
+
+  class type _t = {
+    inherit Container._t;
+    [@bs.set] pub blendMode: int;
+    [@bs.set] pub drawMode: int;
+    pub geometry: Geometry.t;
+    [@bs.set] pub material: MeshMaterial.t;
+    [@bs.set] pub roundPixels: bool;
+    [@bs.set] pub shader: Shader.t;
+    [@bs.set] pub size: float;
+    [@bs.set] pub start: int;
+    [@bs.set] pub state: State.t;
+    [@bs.set] pub texture: Texture.t;
+    [@bs.set] pub tint: int;
+    pub uvBuffer: Buffer.t;
+    pub verticesBuffer: Buffer.t;
+
+    pub calculateUvs: unit => unit;
+    pub calculateVertices: unit => unit;
+    pub containsPoint: Point.t => bool;
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi.js"][@bs.new]
+  external _create: (~geometry: Geometry.t, ~shader: [@bs.unwrap] [`Shader(Shader.t) | `MeshMaterial(MeshMaterial.t)], ~state: State.t=?, ~drawMode: int=?, unit) => Js.t(#_t) = "Mesh";
+
+  let create = (~geometry: Geometry.t, ~shader: [@bs.unwrap] [`Shader(Shader.t) | `MeshMaterial(MeshMaterial.t)], ~state: option(State.t)=?, ~drawMode: option(DRAW_MODES.t)=?, unit) => 
+    _create(~geometry, ~shader, ~state?, ~drawMode=?switch(drawMode){ | Some(mode) => Some(DRAW_MODES.tToJs(mode)) | _ => None }, ());
+
+  [@bs.val][@bs.module "pixi.js"][@bs.scope "Mesh"]
+  external batchableSize: int = "BATCHABLE_SIZE";
+
+  let getBlendMode: Js.t(#_t) => BLEND_MODES.t = entity => BLEND_MODES.tFromJs(entity##blendMode) |. Belt.Option.getExn;
+  let getDrawMode: Js.t(#_t) => DRAW_MODES.t = entity => DRAW_MODES.tFromJs(entity##drawMode) |. Belt.Option.getExn;
+  let setBlendMode = (entity: Js.t(#_t), blendMode: BLEND_MODES.t) => { entity##blendMode #= (blendMode |. BLEND_MODES.tToJs) };
+  let setDrawMode = (entity: Js.t(#_t), drawMode: DRAW_MODES.t) => { entity##drawMode #= (drawMode |. DRAW_MODES.tToJs) };
+
+  [@bs.send]
+  external calculateUvs: Js.t(#_t) => unit = "calculateUvs";
+
+  [@bs.send]
+  external calculateVertices: Js.t(#_t) => unit = "calculateVertices";
+
+  [@bs.send]
+  external containsPoint: (Js.t(#_t), ~point: Point.t) => bool = "containsPoints";
+
+  [@bs.send]
+  external destroy: (Js.t(#_t), ~options: destroyOptions=?, unit) => unit = "destroy";
+};
+
+module SimpleRope {
+  class type _t = {
+    inherit Mesh._t;
+
+    [@bs.set] pub autoUpdate: bool;
+  };
   
-  [@bs.send]
-  external bounce: (t, ~options: ([@bs.unwrap][`EaseString(bounceOptionsEaseString) | `EaseFunction(bounceOptionsEaseFunction)])=?, unit) => t = "bounce";
+  type t = Js.t(_t);
 
-  [@bs.send]
-  external clamp: (t, ~options: ([@bs.unwrap] [`FloatOptions(clampOptionsFloat) | `BoolOptions(clampOptionsBool)])=?, unit) => t = "clamp";
-
-  [@bs.send]
-  external clampZoom: (t, ~options: clampZoomOptions, unit) => t = "clampZoom";
-
-  [@bs.send]
-  external decelerate: (t, ~options: decelerateOptions=?, unit) => t = "decelerate";
-
-  [@bs.send]
-  external drag: (t, ~options: ([@bs.unwrap] [`ClampWheelBool(dragOptionsClampWheelBool) | `ClampWheelString(dragOptionsClampWheelString)])=?, unit) => t = "drag";
-
-  [@bs.send]
-  external ensureVisible: (t, ~x: float, ~y: float, ~width: float, ~height: float) => unit = "ensureVisible";
-
-  [@bs.send]
-  external fit: (t, ~center: bool=?, ~width: float=?, ~height: float=?, unit) => t = "fit";
-
-  [@bs.send]
-  external fitHeight: (t, ~height: float=?, ~center: bool=?, ~scaleX: bool=?, ~noClamp: bool=?, unit) => t = "fitHeight";
-
-  [@bs.send]
-  external fitWidth: (t, ~width: float=?, ~center: bool=?, ~scaleX: bool=?, ~noClamp: bool=?, unit) => t = "fitHeight";
-
-  [@bs.send]
-  external fitWorld: (t, ~center: bool=?, unit) => t = "fitWorld";
-
-  [@bs.send]
-  external follow: (t, ~target: Js.t(#DisplayObject._t), ~options: followOptions=?, unit) => t = "follow";
-
-  [@bs.send]
-  external getVisibleBounds: t => bounds = "getVisibleBounds";
-
-  [@bs.send]
-  external mouseEdges: (t, ~options: mouseEdgesOptions=?, unit) => t = "mouseEdges";
-
-  [@bs.send]
-  external moveCenter: (t, ~x: float, ~y: float) => t = "moveCenter";
-
-  [@bs.send]
-  external moveCenterToPoint: (t, ~point: Point.t) => t = "moveCenter";
-
-  [@bs.send]
-  external pausePlugin: (t, ~type_: string) => unit = "pausePlugin";
-
-  [@bs.send]
-  external pinch: (t, ~options: pinchOptions=?, unit) => t = "pinch";
-
-  [@bs.send]
-  external removePlugin: (t, ~type_: string) => unit = "removePlugin";
-
-  [@bs.send]
-  external resize: (t, ~screenWidth:float=?, ~screenHeight:float=?, ~worldWidth:float=?, ~worldHeight:float=?, unit) => unit = "resize";
-
-  [@bs.send]
-  external resumePlugin: (t, ~type_: string) => unit = "resumePlugin";
-
-  [@bs.send]
-  external snap: (t, ~x: float, ~y: float, ~options: ([@bs.unwrap][`EaseString(snapOptionsEaseString) | `EaseFunction(snapOptionsEaseFunction)])=?, unit) => t = "snap";
-
-  [@bs.send]
-  external snapZoom: (t, ~options: ([@bs.unwrap][`EaseString(snapZoomOptionsEaseString) | `EaseFunction(snapZoomOptionsEaseFunction)])=?, unit) => t = "snapZoom";
-
-  [@bs.send]
-  external toScreen: (t, ~x: float, ~y: float) => Point.t = "toScreen";
-
-  [@bs.send]
-  external pointToScreen: (t, ~point: Point.t) => Point.t = "toScreen";
-
-  [@bs.send]
-  external toWorld: (t, ~x: float, ~y: float) => Point.t = "toWorld";
-
-  [@bs.send]
-  external pointToWorld: (t, ~point: Point.t) => Point.t = "toWorld";
-
-  [@bs.send]
-  external userPlugin: (t, ~name: string, ~plugin: Plugin.t, ~index: int) => unit = "userPlugin";
-
-  [@bs.send]
-  external wheel: (t, ~options: wheelOptions=?, unit) => t = "wheel";
-
-  [@bs.send]
-  external zoom: (t, ~change: float, ~center: bool=?, unit) => t = "zoom";
-
-  [@bs.send]
-  external zoomPercent: (t, ~percent: float, ~center: bool=?, unit) => t = "zoomPercent";
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~texture: Texture.t, ~points: array(Point.t)) => Js.t(#_t) = "SimpleRope";  
 };

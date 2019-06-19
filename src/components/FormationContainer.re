@@ -14,17 +14,17 @@ let containedColor = raw("rgb(255, 255, 255)"|.AppTheme.rgbAddAlpha(0.25));
 let formation: Formation.t = {
   name: "4-1-3-2",
   elements: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }},
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }}
+    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
   |]
 };
 
@@ -84,15 +84,15 @@ let make = (_children) => {
     |> FontFaceObserver.load
     |> Rx.Observable.fromPromise
     |> take(1)
-    |> Rx.Observable.subscribe(~next=() => {
+    |> Rx.Observable.subscribe(~next=() =>
       Belt.Option.map(pixiContainerRef, containerRef => {
         let formationRenderer = containerRef |. FormationRenderer.create(
           embedWidth, 
           embedHeight, 
           { pitchTexture, formationMarker });
         self.send(SetFormationRenderer(Some(formationRenderer)));
-      }) |> ignore;
-    }) |> ignore;
+      }) |> ignore
+    ) |> ignore
   }),
 
   didUpdate: ({ oldSelf, newSelf }) => {
