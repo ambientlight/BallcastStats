@@ -714,7 +714,7 @@ module Texture {
     [@bs.set] pub baseTexture: BaseTexture.t;
     [@bs.set] pub defaultAnchor: Point.t;
     [@bs.set] pub frame: Rectangle.t;
-    [@bs.set] pub height: float;
+    pub height: float;
     [@bs.set] pub noFrame: bool;
     [@bs.set] pub orig: Rectangle.t;
     [@bs.set] pub requiresUpdate: bool;
@@ -723,7 +723,7 @@ module Texture {
     [@bs.set] pub trim: Rectangle.t;
     [@bs.set] pub uvMatrix: TextureMatrix.t;
     [@bs.set] pub valid: bool;
-    [@bs.set] pub width: float;
+    pub width: float;
 
     pub clone: unit => unit;
     pub destroy: bool => unit;

@@ -44,15 +44,12 @@ let playerMarker = (
 };
 
 let arrowTacticRun = (~texture: Texture.t, ~x:float, ~y:float) => {
-  let ropeLength = (55.0 /. 20.0) /. 2.0;
+  let ropeLength = (texture##width /. 20.0);
   let points = 
     Belt.Array.range(0, 19)
     |> Array.map(idx => PIXI.Point.create(~x=float_of_int(idx) *. ropeLength, ~y=0.0, ()));
-    /* |> Array.map(idx => PIXI.Point.create(~x=float_of_int(idx) *. ropeLength, ~y=float_of_int(idx) *. float_of_int(idx) *. 0.1, ())); */
-  
+    
   let arrowDefensiveRun: PIXI.SimpleRope.t = PIXI.SimpleRope.create(~texture, ~points);
-  arrowDefensiveRun##width #= (55.0 /. 2.0);
-  arrowDefensiveRun##height #= (33.0 /. 2.0);
   arrowDefensiveRun##x #= x;
   arrowDefensiveRun##y #= (y +. (8.0 /. 4.0));
   arrowDefensiveRun

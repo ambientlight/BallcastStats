@@ -136,8 +136,14 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
     renderer.container##addChild(playerMarker) |> ignore;
 
     if(index == 2){
+      let arrowTacticsRunTexture = Texture.from(~source=arrowDefensiveRun);
+      let rect = Rectangle.create(
+        ~width=(55.0 /. 2.0),
+        ~height=(33.0 /. 2.0), ());
+      arrowTacticsRunTexture##orig #= rect;
+
       let arrowTacticRun = FormationItemsGenerators.arrowTacticRun(
-        ~texture=Texture.from(~source=arrowDefensiveRun),
+        ~texture=arrowTacticsRunTexture,
         ~x=gridPosition.x,
         ~y=gridPosition.y);
 
