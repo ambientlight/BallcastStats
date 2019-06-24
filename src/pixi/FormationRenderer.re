@@ -78,14 +78,25 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   );
 
   container 
-  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIViewport.t})) =>
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIViewport.t})) => {
     event##viewport##children
     |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("marker"))
     |. Belt.Array.map(child => { let container: Container.t = !!child; container })
     |. Belt.Array.forEach(child => {
-      child##width #= (45.0 /. (event##viewport##lastViewport##scaleX));
-      child##height #= (53.0 /. (event##viewport##lastViewport##scaleY));
-    }), ())
+      child##width #= (40.0 /. (event##viewport##lastViewport##scaleX));
+      child##height #= (48.0 /. (event##viewport##lastViewport##scaleY));
+    });
+
+    event##viewport##children
+    |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("tacticRun"))
+    |. Belt.Array.map(child => { let container: Container.t = !!child; container })
+    |. Belt.Array.forEach(child => {
+      child##alpha #= (event##viewport##lastViewport##scaleX -. 1.0);
+      ()
+    });
+
+    }, ()
+  )
   |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIViewport.t) => (), ())
   |> ignore;
 
@@ -135,21 +146,38 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
     
     renderer.container##addChild(playerMarker) |> ignore;
 
-    if(index == 2){
-      let arrowTacticsRunTexture = Texture.from(~source=arrowDefensiveRun);
-      let rect = Rectangle.create(
-        ~width=(55.0 /. 2.0),
-        ~height=(33.0 /. 2.0), ());
-      arrowTacticsRunTexture##orig #= rect;
+    switch(element.offensiveRun){
+    | Some(offensiveRun) => {
+      let arrowTacticsRunTexture = Texture.from(~source=arrowOffensiveRun);
+      arrowTacticsRunTexture##orig #= Rectangle.create(~width=(55.0 /. 2.0), ~height=(33.0 /. 2.0), ());
 
+      let offensiveRunTargetGrid = gridCellPosition(~withSize=40, ~x=offensiveRun.x, ~y=offensiveRun.y);
       let arrowTacticRun = FormationItemsGenerators.arrowTacticRun(
         ~texture=arrowTacticsRunTexture,
         ~x=gridPosition.x,
-        ~y=gridPosition.y);
-
+        ~y=gridPosition.y,
+        ~tx=offensiveRunTargetGrid.x,
+        ~ty=offensiveRunTargetGrid.y);
       renderer.container##addChild(arrowTacticRun) |> ignore;
+    } 
+    | None => ()
     };
 
-    ()
+    switch(element.defensiveRun){
+    | Some(defensiveRun) => {
+      let arrowTacticsRunTexture = Texture.from(~source=arrowDefensiveRun);
+      arrowTacticsRunTexture##orig #= Rectangle.create(~width=(55.0 /. 2.0), ~height=(33.0 /. 2.0), ());
+
+      let offensiveRunTargetGrid = gridCellPosition(~withSize=40, ~x=defensiveRun.x, ~y=defensiveRun.y);
+      let arrowTacticRun = FormationItemsGenerators.arrowTacticRun(
+        ~texture=arrowTacticsRunTexture,
+        ~x=gridPosition.x,
+        ~y=gridPosition.y,
+        ~tx=offensiveRunTargetGrid.x,
+        ~ty=offensiveRunTargetGrid.y);
+      renderer.container##addChild(arrowTacticRun) |> ignore;
+    }
+    | None => ()
+    };
   })
 };

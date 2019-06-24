@@ -834,6 +834,8 @@ module TextStyle {
     [@bs.optional] fontFamily: array(string),
     [@bs.optional] fontSize: float,
     [@bs.optional] fill: int,
+    [@bs.optional] lineJoin: string,
+    [@bs.optional] letterSpacing: float
   };
 
   [@bs.module "pixi.js"][@bs.new]

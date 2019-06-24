@@ -9,22 +9,24 @@ let embedHeight = 400;
 let containedColor = raw("rgb(255, 255, 255)"|.AppTheme.rgbAddAlpha(0.25));
 
 [@bs.module] external pitchTexture: string = "assets/sprites/pitch_overscroll.png";
+[@bs.module] external pitchTextureUniform: string = "assets/sprites/pitch_overscroll_uniform.png";
 [@bs.module] external formationMarker: string = "assets/sprites/formation_marker_default.png";
+[@bs.module] external formationMarkerThin: string = "assets/sprites/formation_marker_thin_corner_default.png";
 
 let formation: Formation.t = {
   name: "4-1-3-2",
   elements: [|
     { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
+    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 9, y: 2, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}) },
+    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 9, y: 8, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}) },
+    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 4, y: 5, xOffset: 0.0, yOffset: 0.0}) },
+    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 6, y: 3, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 6, y: 7, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 2, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 8, xOffset: 0.0, yOffset: 0.0 }) }
   |]
 };
 
@@ -89,7 +91,7 @@ let make = (_children) => {
         let formationRenderer = containerRef |. FormationRenderer.create(
           embedWidth, 
           embedHeight, 
-          { pitchTexture, formationMarker });
+          { pitchTexture: pitchTexture, formationMarker });
         self.send(SetFormationRenderer(Some(formationRenderer)));
       }) |> ignore
     ) |> ignore
