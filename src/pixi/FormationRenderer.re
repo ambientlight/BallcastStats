@@ -2,8 +2,8 @@ open Operators;
 open Webapi;
 open PIXI;
 
-[@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run.png";
-[@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run.png";
+[@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run_v2.png";
+[@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run_v2.png";
 
 type position = {
   x: float,

@@ -49,52 +49,65 @@ let playerMarker = (
   marker
 };
 
-let arrowTacticRun = (~texture: Texture.t, ~x:float, ~y:float, ~tx:float, ~ty:float) => {
-  /* divide the thing into 20 anchors */
-  let anchorCount = 20.0;
-  let ropeLength = (texture##width  /. anchorCount);
-  /* a head is a half of texture */
-  let arrowHeadFractionToWidth = 0.5;
-  let arrowHeadWidth = texture##width *. arrowHeadFractionToWidth;
-
-  let arrowWidth = tx -. x;
-  let baseWidth = arrowWidth -. arrowHeadWidth;
-
-  let headStartIdx = arrowHeadFractionToWidth *. anchorCount;
+let arrowTacticRun = (~texture: Texture.t, ~x: float, ~y: float, ~tx: float, ~ty: float): Container.t => {
+  let anchorsPerBase = 10;
+  let anchorsPerArrow = 10;
+  let arrowWidthFraction = 0.50;
   
-  let distBetweenBaseAnchor = baseWidth /. (anchorCount *. (1.0 -. arrowHeadFractionToWidth));
-  let distBetweenHeadAnchor = arrowHeadWidth /. (anchorCount *. arrowHeadFractionToWidth) *. (distBetweenBaseAnchor > 0.0 ? 1.0 : -1.0);
+  /* nothing */
+  let (points, rotation) = 
+  if(x == tx && y == ty){
+    ([||], 0.0)
+  /* vertical */
+  } else if(x == tx){
+    let arrowHeight = texture##width *. arrowWidthFraction;
+    /* don't get smaller then the arrow size */
+    let total = max(abs_float(ty -. y), arrowHeight);
+    let baseHeight = total -. arrowHeight; 
 
-  ~~({
-    "arrowHeadWidth": arrowHeadWidth,
-    "arrowWidth": arrowWidth,
-    "baseWidth": baseWidth,
-    "headStartIdx": headStartIdx,
-    "distBetweenBaseAnchor": distBetweenBaseAnchor,
-    "distBetweenHeadAnchor": distBetweenHeadAnchor
-  });
+    let multiple = ty -. y >= 0.0 ? 1.0 : -1.0;
+    let basePoints = Belt.Array.range(1, anchorsPerBase)
+      |> Array.map(idx => PIXI.Point.create(~x=0.0, ~y=(float_of_int(idx) /. float_of_int(anchorsPerBase)) *. baseHeight *. multiple, ()) );
+    let arrowPoints = Belt.Array.range(1, anchorsPerArrow)
+      |> Array.map(idx => PIXI.Point.create(~x=0.0, ~y=(baseHeight +. (float_of_int(idx) /. float_of_int(anchorsPerArrow)) *. arrowHeight) *. multiple, ()) );
+    (Array.append(basePoints, arrowPoints), 0.0)
+  /* horizontal */
+  } else if(y == ty){
+    let arrowWidth = texture##width *. arrowWidthFraction;
+    /* don't get smaller then the arrow size */
+    let total = max(abs_float(tx -. x), arrowWidth);
+    let baseWidth = total -. arrowWidth;
 
-  let ratio = abs_float((ty -. y) /. (tx -. x));
+    let multiple = tx -. x >= 0.0 ? 1.0 : -1.0;
+    let basePoints = Belt.Array.range(1, anchorsPerBase)
+      |> Array.map(idx => PIXI.Point.create(~x=(float_of_int(idx) /. float_of_int(anchorsPerBase)) *. baseWidth *. multiple, ~y=0.0, ()) );
+    let arrowPoints = Belt.Array.range(1, anchorsPerArrow)
+      |> Array.map(idx => PIXI.Point.create(~x=(baseWidth +. (float_of_int(idx) /. float_of_int(anchorsPerArrow)) *. arrowWidth) *. multiple, ~y=0.0, ()) );
+    (Array.append(basePoints, arrowPoints), 0.0)
+  /* calc the diagonal, and rotate based on the angle with horizontal */
+  } else {
+    let arrowWidth = texture##width *. arrowWidthFraction;
+    let total = max(sqrt((tx -. x) *. (tx -. x) +. (ty -. y) *. (ty -. y)), arrowWidth);
+    let baseWidth = total -. arrowWidth;
 
-  let yOffset = 4.0;
-  let baseY = (y +. yOffset);
-  let points = 
-    Belt.Array.range(0, int_of_float(anchorCount) - 1)
-    |> Array.map(idx => PIXI.Point.create(
-      ~x=float_of_int(idx) < headStartIdx
-        ? distBetweenBaseAnchor *. float_of_int(idx)
-        : (distBetweenBaseAnchor *. headStartIdx) +. (float_of_int(idx) -. headStartIdx) *. distBetweenHeadAnchor, 
-      
-      /* CLEAN THIS S UP */
-      ~y=float_of_int(idx) < headStartIdx
-        ? ((ty -. y) *. ratio *. float_of_int(idx) /. anchorCount) 
-        : ((ty -. y) *. ratio *. headStartIdx /. anchorCount) +. ((float_of_int(idx) -. headStartIdx) *. (ty -. y) *. ratio *. (distBetweenHeadAnchor /. distBetweenBaseAnchor) /. anchorCount),
-      ()));
+    let multiple = tx -. x >= 0.0 ? 1.0 : -1.0;
+    let basePoints = Belt.Array.range(1, anchorsPerBase)
+      |> Array.map(idx => PIXI.Point.create(~x=(float_of_int(idx) /. float_of_int(anchorsPerBase)) *. baseWidth *. multiple, ~y=0.0, ()) );
+    let arrowPoints = Belt.Array.range(1, anchorsPerArrow)
+      |> Array.map(idx => PIXI.Point.create(~x=(baseWidth +. (float_of_int(idx) /. float_of_int(anchorsPerArrow)) *. arrowWidth) *. multiple, ~y=0.0, ()) );
     
-  let arrowDefensiveRun: PIXI.SimpleRope.t = PIXI.SimpleRope.create(~texture, ~points);
-  arrowDefensiveRun##x #= x;
-  arrowDefensiveRun##y #= baseY;
-  arrowDefensiveRun##name #= "tacticRun";
-  arrowDefensiveRun##alpha #= 0.0;
-  arrowDefensiveRun
+    (Array.append(basePoints, arrowPoints), atan( (ty -. y) /. (tx -. x) ))
+  };
+
+  if(points |. Array.length == 0){
+    PIXI.Container.create(())
+  } else {
+    let arrowDefensiveRun: PIXI.SimpleRope.t = PIXI.SimpleRope.create(~texture, ~points);
+    arrowDefensiveRun##x #= x;
+    arrowDefensiveRun##y #= y;
+    arrowDefensiveRun##name #= "tacticRun";
+    arrowDefensiveRun##alpha #= 0.0;
+    arrowDefensiveRun##rotation #= rotation;
+    (arrowDefensiveRun :> PIXI.Container.t)
+  };
 };
