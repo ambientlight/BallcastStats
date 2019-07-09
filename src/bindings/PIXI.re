@@ -572,7 +572,7 @@ module DisplayObject {
     /* TODO: IPoint.t */
     pub toLocal: (Point.t, Js.Undefined.t(Js.t(_t)), Js.Undefined.t(Point.t), bool) => Point.t;
     pub updateTransform: unit => unit;
-  }
+  };
 
   type t = Js.t(_t);
 
