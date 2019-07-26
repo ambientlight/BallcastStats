@@ -50,7 +50,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   let containerHeight = float(height);
   let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
   
-  let container = PIXIViewport.(
+  let container = PIXIExtras.Viewport.(
     create(~options=createOptions(
       ~screenWidth=containerWidth *. 1.0,
       ~screenHeight=containerHeight *. 1.0,
@@ -78,7 +78,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   );
 
   container 
-  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIViewport.t})) => {
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIExtras.Viewport.t})) => {
     event##viewport##children
     |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("marker"))
     |. Belt.Array.map(child => { let container: Container.t = !!child; container })
@@ -97,7 +97,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
 
     }, ()
   )
-  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIViewport.t) => (), ())
+  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIExtras.Viewport.t) => (), ())
   |> ignore;
 
 

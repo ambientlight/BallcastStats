@@ -3,6 +3,10 @@ open PIXI;
 type easeFunction = (float, float, float, float) => float;
 type stringOrEaseFunction;
 type easeDisplayObjectOrEaseDisplayObjectArray;
+type easeParams;
+type addOptions;
+type displayObjectOrPoint;
+type stringOrStringArray;
 
 [@bs.deriving abstract]
 type easeOptionsEaseString = {
@@ -112,15 +116,37 @@ module EaseDisplayObject {
   type t = Js.t(_t);
 };
 
+module Easing {
+
+  class type _t = [@bs] {
+    inherit EventEmitter._t;
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi-ease"][@bs.new]
+  external create: (~element: [@bs.unwrap][`DisplayObject(DisplayObject.t) | `DisplayObjectArray(array(DisplayObject.t))], ~params: Js.t({..}), ~options: Js.t({..})) => t = "Easing";
+};
+
 module Ease {
   
   class type _t = [@bs] {
     inherit EventEmitter._t;
 
+    [@bs.set] pub count: int;
     [@bs.set] pub duration: float;
     [@bs.set] pub ease: stringOrEaseFunction;
 
+    pub add: (DisplayObject.t, easeParams, Js.Undefined.t(addOptions)) => easeDisplayObjectOrEaseDisplayObjectArray;
+    pub countRunning: unit => int;
     pub destroy: unit => unit;
+    pub face: (DisplayObject.t, displayObjectOrPoint, int, Js.Undefined.t(addOptions)) => Easing.t;
+
+    pub removeAll: unit => unit;
+    pub removeAllEases: (DisplayObject.t) => unit;
+    pub removeEase: (DisplayObject.t, stringOrStringArray) => unit;
+    pub target: (DisplayObject.t, displayObjectOrPoint, int, Js.Undefined.t(addOptions)) => Easing.t;
+    pub update: float => unit;
   };
 
   type t = Js.t(_t);
@@ -139,9 +165,6 @@ module Ease {
 
   [@bs.get]
   external getEaseFunction: t => easeFunction = "ease";
-
-  [@bs.send]
-  external destroy: t => unit = "destroy";
 
   [@bs.send]
   external _add: (t, 
@@ -177,4 +200,52 @@ module Ease {
       `EaseDisplayObject(Obj.magic(res))
     }
   };
+
+  [@bs.send]
+  external countRunning: unit => int = "countRunning";
+
+  [@bs.send]
+  external destroy: t => unit = "destroy";
+
+  [@bs.send]
+  external face: (
+    t, 
+    ~element: DisplayObject.t, 
+    ~target: [@bs.unwrap][`DisplayObject(DisplayObject.t) | `Point(Point.t)], 
+    ~speed: int, 
+    ~options: option([@bs.unwrap][
+      | `EaseStringRepeatBool(addOptionsEaseStringRepeatBool) 
+      | `EaseFunctionRepeatBool(addOptionsEaseFunctionRepeatBool)
+      | `EaseStringRepeatInt(addOptionsEaseStringRepeatInt)
+      | `EaseFunctionRepeatInt(addOptionsEaseFunctionRepeatInt)])=?,
+    unit) => Easing.t = "face";
+
+  [@bs.send]
+  external removeAll: t => unit = "removeAll";
+  
+  [@bs.send]
+  external removeAllEases: (t, ~object_: DisplayObject.t) => unit = "removeAllEases";
+
+  [@bs.send]
+  external removeEase: (t, ~element: DisplayObject.t, ~params: [@bs.unwrap][`String(string) | `StringArray(array(string))]) => unit = "removeEase";
+  
+  [@bs.send]
+  external target: (
+    t, 
+    ~element: DisplayObject.t, 
+    ~target: [@bs.unwrap][`DisplayObject(DisplayObject.t) | `Point(Point.t)],
+    ~speed: int,
+    ~options: option([@bs.unwrap][
+      | `EaseStringRepeatBool(addOptionsEaseStringRepeatBool) 
+      | `EaseFunctionRepeatBool(addOptionsEaseFunctionRepeatBool)
+      | `EaseStringRepeatInt(addOptionsEaseStringRepeatInt)
+      | `EaseFunctionRepeatInt(addOptionsEaseFunctionRepeatInt)])=?,
+    unit) => Easing.t = "target";
+
+  [@bs.send]
+  external update: (t, ~elapsed: int) => unit = "update";
 }
+
+/*** default instantiated Ease class ***/
+[@bs.module "pixi-ease"][@bs.val]
+external ease: Ease.t = "ease";
