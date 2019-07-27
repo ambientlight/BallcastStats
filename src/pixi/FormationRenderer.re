@@ -1,6 +1,7 @@
 open Operators;
 open Webapi;
 open PIXI;
+open PIXIExtras;
 
 [@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run_v2.png";
 [@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run_v2.png";
@@ -18,12 +19,18 @@ let gridCellPosition = (~withSize as size: int, ~x: int, ~y: int): position => {
 type textures = {
   pitch: Texture.t,
   marker: Texture.t
-}
+};
+
+type state = {
+  formation: Formation.t,
+  squad: Formation.squad
+};
 
 type t = {
   application: Application.t,
-  container: PIXIExtras.Viewport.t,
-  textures: textures
+  container: Viewport.t,
+  textures: textures,
+  state: option(state)
 };
 
 type assets = {
@@ -31,7 +38,7 @@ type assets = {
   formationMarker: string
 };
 
-let handleZoom = (viewport: PIXIExtras.Viewport.t) => {
+let handleZoom = (viewport: Viewport.t) => {
   viewport##children
   |. Belt.Array.keep(child =>
     child##name 
@@ -85,7 +92,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   let containerHeight = float(height);
   let applicationInterraction: (. Application.t) => InteractionManager.t = [%raw {|function(application){ return application.renderer.plugins.interaction }|}];
   
-  let container = PIXIExtras.Viewport.(
+  let container = Viewport.(
     create(~options=createOptions(
       ~screenWidth=containerWidth *. 1.0,
       ~screenHeight=containerHeight *. 1.0,
@@ -113,8 +120,8 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   );
 
   container 
-  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIExtras.Viewport.t})) => handleZoom(event##viewport), ())
-  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIExtras.Viewport.t) => (), ())
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => handleZoom(event##viewport), ())
+  |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
   |> ignore;
 
   application##stage##addChild(container) |> ignore;
@@ -133,8 +140,8 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
     container: container,
     textures: {
       pitch: pitchTexture,
-      marker: markerTexture
-    }
+      marker: markerTexture },
+    state: None
   }
 };
 
@@ -197,5 +204,49 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
     }
     | None => ()
     };
-  })
+  });
+
+  {
+    ...renderer,
+    state: Some({ formation, squad })
+  }
+};
+
+let transitionTo = (~formation: Formation.t, renderer: t) => {
+  let ease = Ease.ease;
+  let subject: Rx.Subject.t(unit) = Rx.Subject.make();
+
+  if(! !?renderer.state){
+    Console.warn("Transition has been called when no formation loaded, done nothing");
+    Rx.Observable.of1(renderer)
+  } else {
+    let state = ?!!renderer.state;
+    state.squad
+    |. Belt.Array.mapWithIndex((idx, playerInfo) => {
+      let number = playerInfo.number;
+      (idx, renderer.container##children |. Belt.Array.getBy(obj => obj##name |. Js.toOption == Some({j|marker:$number|j}))) })
+    |. Belt.Array.forEach(((idx, container)) => {
+      let element = formation.elements[idx];
+      let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
+
+      switch(container){
+      | Some(container) => { 
+        ease |. Ease.add(
+          ~element=container,
+          ~params=`Point(Ease.easeParamsPoint(~x=gridPosition.x, ~y=gridPosition.y, ())),
+          ~options=`EaseStringRepeatBool(Ease.addOptionsEaseStringRepeatBool(~duration=3000.0, ())),
+          ()
+        ) |> ignore;
+
+        ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore }
+      | None => ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore }
+    });
+
+    subject 
+      |. Rx.Subject.asObservable
+      |> Rx.Observable.Operators.bufferCount(Array.length(state.squad))
+      |> Rx.Observable.Operators.map(_entity => { ...renderer, state: Some({ ...state, formation }) })
+      |> Rx.Observable.Operators.take(1)
+      
+  }
 };

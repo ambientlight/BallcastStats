@@ -69,6 +69,7 @@
     "fontfaceobserver": "^2.1.0",
     "graphql-tag": "^2.10.1",
     "intl": "^1.2.5",
+    "pixi-ease": "^2.3.0",
     "pixi-viewport": "^3.23.2",
     "pixi.js": "^5.0.3",
     "react": "^16.7.0",
