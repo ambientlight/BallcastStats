@@ -226,7 +226,7 @@ class type _t = [@bs]{
   pub worldScreenHeight: float;
   pub worldScreenWidth: float;
   [@bs.set] pub worldWidth: float;
-  pub lastViewport: LastViewport.t;
+  pub lastViewport: Js.Undefined.t(LastViewport.t);
 
   pub bounce: bounceOptionsEaseString => Js.t(_t);
   pub clamp: clampOptionsBool => Js.t(_t);

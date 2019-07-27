@@ -22,7 +22,7 @@ type textures = {
 
 type t = {
   application: Application.t,
-  container: Container.t,
+  container: PIXIExtras.Viewport.t,
   textures: textures
 };
 
@@ -30,6 +30,41 @@ type assets = {
   pitchTexture: string,
   formationMarker: string
 };
+
+let handleZoom = (viewport: PIXIExtras.Viewport.t) => {
+  viewport##children
+  |. Belt.Array.keep(child =>
+    child##name 
+    |. Js.Nullable.toOption
+    |. Belt.Option.getWithDefault("")
+    |> Js.String.startsWith("marker"))
+  |. Belt.Array.map(child => { let container: Container.t = !!child; container })
+  |. Belt.Array.forEach(child => {
+    let lastViewport = (viewport##lastViewport |. Js.Undefined.toOption) |? [%bs.obj {
+      scaleX: viewport##scale##x,
+      scaleY: viewport##scale##y,
+      x: 0.0,
+      y: 0.0
+    }];
+
+    child##width #= (40.0 /. (lastViewport##scaleX));
+    child##height #= (48.0 /. (lastViewport##scaleY));
+  });
+
+  viewport##children
+  |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("tacticRun"))
+  |. Belt.Array.map(child => { let container: Container.t = !!child; container })
+  |. Belt.Array.forEach(child => {
+    let lastViewport = (viewport##lastViewport |. Js.Undefined.toOption) |? [%bs.obj {
+      scaleX: viewport##scale##x,
+      scaleY: viewport##scale##y,
+      x: 0.0,
+      y: 0.0
+    }];
+
+    child##alpha #= (lastViewport##scaleX -. 1.0);
+  });
+}
 
 let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: assets) => {
   let application = Application.create(~options=Application.options(
@@ -78,28 +113,9 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
   );
 
   container 
-  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIExtras.Viewport.t})) => {
-    event##viewport##children
-    |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("marker"))
-    |. Belt.Array.map(child => { let container: Container.t = !!child; container })
-    |. Belt.Array.forEach(child => {
-      child##width #= (40.0 /. (event##viewport##lastViewport##scaleX));
-      child##height #= (48.0 /. (event##viewport##lastViewport##scaleY));
-    });
-
-    event##viewport##children
-    |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some("tacticRun"))
-    |. Belt.Array.map(child => { let container: Container.t = !!child; container })
-    |. Belt.Array.forEach(child => {
-      child##alpha #= (event##viewport##lastViewport##scaleX -. 1.0);
-      ()
-    });
-
-    }, ()
-  )
+  |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: PIXIExtras.Viewport.t})) => handleZoom(event##viewport), ())
   |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: PIXIExtras.Viewport.t) => (), ())
   |> ignore;
-
 
   application##stage##addChild(container) |> ignore;
   let pitchTexture = Texture.from(~source=assets.pitchTexture);
@@ -114,7 +130,7 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
 
   {
     application,
-    container: (container :> Container.t),
+    container: container,
     textures: {
       pitch: pitchTexture,
       marker: markerTexture
@@ -128,7 +144,9 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
   |. Utils.Array.optMap(element => !!element |. Js.Nullable.toOption)
   |. Belt.Array.forEach(element => {
     let name = (element##name |. Js.Nullable.toOption);
-    if(name == Some("marker")){
+    
+    if(name |. Belt.Option.getWithDefault("") |> Js.String.startsWith("marker") ||
+       name |. Belt.Option.getWithDefault("") |> Js.String.startsWith("tacticRun")){
       renderer.container##removeChild(element) |> ignore;
     }
   });

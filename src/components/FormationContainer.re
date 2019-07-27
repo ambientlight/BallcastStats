@@ -99,8 +99,11 @@ let make = (_children) => {
 
   didUpdate: ({ oldSelf, newSelf }) => {
     newSelf.state.renderer 
-    |. Belt.Option.map(renderer => renderer |. FormationRenderer.loadFormation(formation, squad))
-    |> ignore
+    |. Belt.Option.map(renderer => { 
+      renderer |. FormationRenderer.loadFormation(formation, squad);
+      FormationRenderer.handleZoom(renderer.container);
+    })
+    |> ignore;
   },
 
   render: ({ retainedProps }) => 

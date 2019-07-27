@@ -17,7 +17,7 @@ let playerMarker = (
     ()
   );
 
-  marker##name #= "marker";
+  marker##name #= {j|marker:$playerNumber|j};
   marker##anchor##set(0.5, 0.5);
 
   let squadNumber = Text.create(
@@ -100,7 +100,9 @@ let arrowTacticRun = (~texture: Texture.t, ~x: float, ~y: float, ~tx: float, ~ty
   };
 
   if(points |. Array.length == 0){
-    PIXI.Container.create(())
+    let dummyContainer = PIXI.Container.create(())
+    dummyContainer##name #= "tacticRun";
+    dummyContainer
   } else {
     let arrowDefensiveRun: PIXI.SimpleRope.t = PIXI.SimpleRope.create(~texture, ~points);
     arrowDefensiveRun##x #= x;
