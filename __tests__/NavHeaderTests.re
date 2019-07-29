@@ -12,7 +12,7 @@ describe("NavHeader", () => {
     <NavHeader dispatch=((_action) => ()) title="Ballcast Tests" locale=Locale.En/>
     |> withIntl
     |> render
-    |> getByText(~matcher=`Str("Ballcast Tests")) |> (??)
+    |> getByText(~matcher=`Str("Ballcast Tests"))
     |> expect
     |> toBeVisible
   );
@@ -22,7 +22,6 @@ describe("NavHeader", () => {
     |> withIntl
     |> render
     |> getByClassName("test-navheader-signup-button") 
-    |> (??)
     |> expect
     |> toBeVisible
   );
@@ -32,7 +31,6 @@ describe("NavHeader", () => {
     |> withIntl
     |> render
     |> getByClassName("test-navheader-signin-button") 
-    |> (??)
     |> expect
     |> toBeVisible
   );

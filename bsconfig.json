@@ -36,7 +36,6 @@
   "refmt": 3,
   "bsc-flags": ["-bs-g"],
   "ppx-flags": [
-    "./node_modules/@jsiebern/bs-material-ui-ppx/ppx",
     "graphql_ppx/ppx"
   ] 
 }

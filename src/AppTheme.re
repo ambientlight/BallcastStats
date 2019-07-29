@@ -240,14 +240,8 @@ let overrides = Overrides.make(
       ~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
       ()
     ),
-    ~colorPrimary=ReactDOMRe.Style.make(
-      ~color=primary|.Primary.mainGet,
-      ()
-    ),
-    ~colorSecondary=ReactDOMRe.Style.make(
-      ~color=secondary|.Secondary.mainGet,
-      ()
-    ),
+    ~colorPrimary=primary|.Primary.mainGet,
+    ~colorSecondary=secondary|.Secondary.mainGet,
     ()
   ),
 

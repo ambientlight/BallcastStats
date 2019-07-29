@@ -16,7 +16,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getById("AuthSignInForm") |> (??)
+    |> getById("AuthSignInForm")
     |> expect
     |> toBeVisible
   );
@@ -29,7 +29,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getById("AuthSignUpForm") |> (??)
+    |> getById("AuthSignUpForm")
     |> expect
     |> toBeVisible
   );
@@ -42,7 +42,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getById("AuthForgotPasswordForm") |> (??)
+    |> getById("AuthForgotPasswordForm")
     |> expect
     |> toBeVisible
   );
@@ -55,7 +55,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getById("AuthVerifySignInForm") |> (??)
+    |> getById("AuthVerifySignInForm")
     |> expect
     |> toBeVisible
   );
@@ -68,7 +68,7 @@ describe("AppShell", () => {
       title="Ballcast Tests"/>
     |> withIntl
     |> render
-    |> getById("Landing") |> (??)
+    |> getById("Landing")
     |> expect
     |> toBeVisible
   );
