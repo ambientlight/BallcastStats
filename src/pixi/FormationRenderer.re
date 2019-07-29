@@ -159,18 +159,9 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
   });
 
   formation.elements
-  |. Belt.Array.forEachWithIndex((index, element) => {
+  |. Belt.Array.mapWithIndex((index, element) => {
     let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
-    let playerMarker = FormationItemsGenerators.playerMarker(
-      ~markerTexture=renderer.textures.marker,
-      ~x=gridPosition.x, ~y=gridPosition.y,
-      ~playerNumber=squad[index].number,
-      ~playerName=squad[index].name,
-      ~playerPosition=element.position
-    );
     
-    renderer.container##addChild(playerMarker) |> ignore;
-
     switch(element.offensiveRun){
     | Some(offensiveRun) => {
       let arrowTacticsRunTexture = Texture.from(~source=arrowOffensiveRun);
@@ -204,6 +195,20 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
     }
     | None => ()
     };
+
+    (index, element)
+  })
+  |. Belt.Array.forEach(((index, element)) => {
+    let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
+    let playerMarker = FormationItemsGenerators.playerMarker(
+      ~markerTexture=renderer.textures.marker,
+      ~x=gridPosition.x, ~y=gridPosition.y,
+      ~playerNumber=squad[index].number,
+      ~playerName=squad[index].name,
+      ~playerPosition=element.position
+    );
+    
+    renderer.container##addChild(playerMarker) |> ignore;
   });
 
   {
@@ -212,7 +217,7 @@ let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad
   }
 };
 
-let transitionTo = (~formation: Formation.t, renderer: t) => {
+let transitionTo = (~formation: Formation.t, renderer: t, ~labels: bool) => {
   let ease = Ease.ease;
   let subject: Rx.Subject.t(unit) = Rx.Subject.make();
 
@@ -234,6 +239,13 @@ let transitionTo = (~formation: Formation.t, renderer: t) => {
         ease |. Ease.add(
           ~element=container,
           ~params=`Point(Ease.easeParamsPoint(~x=gridPosition.x, ~y=gridPosition.y, ())),
+          ~options=`EaseStringRepeatBool(Ease.addOptionsEaseStringRepeatBool(~duration=3000.0, ())),
+          ()
+        ) |> ignore;
+
+        ease |. Ease.add(
+          ~element=((!!container)##children[1]),
+          ~params=`Point(Ease.easeParamsPoint(~alpha=labels ? 1.0 : 0.0, ())),
           ~options=`EaseStringRepeatBool(Ease.addOptionsEaseStringRepeatBool(~duration=3000.0, ())),
           ()
         ) |> ignore;

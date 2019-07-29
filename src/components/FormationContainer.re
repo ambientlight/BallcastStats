@@ -21,12 +21,29 @@ let formation: Formation.t = {
     { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }) },
     { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }) },
     { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 9, y: 8, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}) },
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 4, y: 5, xOffset: 0.0, yOffset: 0.0}) },
-    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 6, y: 3, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 6, y: 7, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 2, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 8, y: 8, xOffset: 0.0, yOffset: 0.0 }) }
+    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}) },
+    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }) }
+  |]
+};
+
+let defensiveFormation: Formation.t = {
+  name: "4-1-3-2",
+  elements: [|
+    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `LB, location: { x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
+    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `RB, location: { x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
+    { position: `DM, location: { x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
+    { position: `CM, location: { x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `CM, location: { x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `AM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `LW, location: { x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
+    { position: `RW, location: { x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
   |]
 };
 
@@ -41,23 +58,6 @@ let offensiveFormation: Formation.t = {
     { position: `DM, location: { x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
     { position: `CM, location: { x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
     { position: `CM, location: { x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
-  |]
-};
-
-let defensiveFormation: Formation.t = {
-  name: "4-1-3-2",
-  elements: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 4, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 6, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 6, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
     { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
     { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
     { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
@@ -142,8 +142,9 @@ let make = (_children) => {
        */
       FormationRenderer.handleZoom(renderer.container);
       renderer 
-      |> FormationRenderer.transitionTo(~formation=offensiveFormation)
-      |> Rx.Observable.Operators.mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation=defensiveFormation))
+      |> FormationRenderer.transitionTo(~formation=offensiveFormation, ~labels=false)
+      |> Rx.Observable.Operators.mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation=defensiveFormation, ~labels=false))
+      |> Rx.Observable.Operators.mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation, ~labels=true))
       |> Rx.Observable.subscribe(~complete=() => ());
     })
     |> ignore;
