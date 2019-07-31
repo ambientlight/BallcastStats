@@ -40,7 +40,9 @@ let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children
           : <ReactIntl.DefinedMessage message=strings##inEnglish/>
         }
       </MaterialUi.Button>
-      <MaterialUi.Button className=Styles.button>
+      <MaterialUi.Button 
+        className=Styles.button
+        onClick=((_event) => dispatch(`RouterPushRoute(Routes.formationTest)))>
         <ReactIntl.DefinedMessage message=strings##pricing/>
       </MaterialUi.Button>
       <MaterialUi.Button

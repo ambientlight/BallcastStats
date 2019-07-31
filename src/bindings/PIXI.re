@@ -833,6 +833,7 @@ module TextStyle {
   type style = {
     [@bs.optional] fontFamily: array(string),
     [@bs.optional] fontSize: float,
+    [@bs.optional] fontWeight: string,
     [@bs.optional] fill: int,
     [@bs.optional] lineJoin: string,
     [@bs.optional] letterSpacing: float
@@ -1211,3 +1212,47 @@ module SimpleRope {
   [@bs.module "pixi.js"][@bs.new]
   external create: (~texture: Texture.t, ~points: array(Point.t)) => Js.t(#_t) = "SimpleRope";  
 };
+
+module GraphicsGeometry {
+  type t;
+};
+
+module Graphics {
+  class type _t = {
+    inherit Container._t;
+
+    [@bs.set] pub blendMode: int;
+    [@bs.set] pub cacheAsBitmap: bool;
+  };
+
+  type t = Js.t(_t);
+
+  [@bs.module "pixi.js"][@bs.new]
+  external create: (~geometry: GraphicsGeometry.t=?, unit) => Js.t(#_t) = "Graphics";
+
+  [@bs.send]
+  external beginFill: (Js.t(#_t), ~color: int, ~alpha: float) => Js.t(#_t) = "beginFill";
+
+  [@bs.send]
+  external endFill: Js.t(#_t) => Js.t(#_t) = "endFill";
+
+  [@bs.send]
+  external drawCircle: (Js.t(#_t), ~x: float, ~y: float, ~radius: float) => Js.t(#_t) = "drawCircle";
+
+  [@bs.send]
+  external lineStyle: (Js.t(#_t), ~width: float=?, ~color: int=?, ~alpha: float=?, ~alignment: float=?, ~native: bool=?, unit) => Js.t(#_t) = "lineStyle";
+};
+
+module GraphicsCurves {
+
+  [@bs.deriving abstract]
+  type t = {
+    mutable adaptive: bool,
+    mutable maxLength: float,
+    mutable minSegments: float,
+    mutable maxSegments: float
+  };
+};
+
+[@bs.module "pixi.js"]
+external graphicsCurves: GraphicsCurves.t = "GRAPHICS_CURVES";

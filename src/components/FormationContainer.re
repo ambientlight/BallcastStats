@@ -1,6 +1,7 @@
 open Operators;
 open Css;
 open Webapi;
+open Rx.Observable.Operators;
 
 let gridCellSize = 20;
 let embedWidth = 520;
@@ -114,13 +115,15 @@ let make = (_children) => {
   })
   },
 
-  didMount: self => Rx.Observable.Operators.({
+  didMount: self => {
     let pixiContainerRef = self.retainedProps.pixiContainerRef;
-    FontFaceObserver.create(~fontFamily="Gobold")
-    |> FontFaceObserver.load
-    |> Rx.Observable.fromPromise
-    |> take(1)
-    |> Rx.Observable.subscribe(~next=() =>
+    Rx.Observable.merge([|
+      FontFaceObserver.create(~fontFamily="Gobold", ()) |> FontFaceObserver.load |> Rx.Observable.fromPromise,
+      FontFaceObserver.create(~fontFamily="Jost", ~options=FontFaceObserver.options(~weight=800, ()), ()) |> FontFaceObserver.load |> Rx.Observable.fromPromise
+    |])
+    |> Rx.Observable.Operators.bufferCount(2)
+    |> Rx.Observable.Operators.take(1)
+    |> Rx.Observable.subscribe(~next=_value =>
       Belt.Option.map(pixiContainerRef, containerRef => {
         let formationRenderer = containerRef |. FormationRenderer.create(
           embedWidth, 
@@ -129,22 +132,23 @@ let make = (_children) => {
         self.send(SetFormationRenderer(Some(formationRenderer)));
       }) |> ignore
     ) |> ignore
-  }),
+  },
 
   didUpdate: ({ oldSelf, newSelf }) => {
     newSelf.state.renderer 
     |. Belt.Option.map(renderer => { 
       let renderer = renderer |. FormationRenderer.loadFormation(formation, squad);
-      
+      renderer |. FormationRenderer.graphicsTest;
+
       /**
        * make sure all content is properly adjusted to a current zoom 
        * this is important during hot reload
        */
       FormationRenderer.handleZoom(renderer.container);
-      renderer 
+      renderer
       |> FormationRenderer.transitionTo(~formation=offensiveFormation, ~labels=false)
-      |> Rx.Observable.Operators.mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation=defensiveFormation, ~labels=false))
-      |> Rx.Observable.Operators.mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation, ~labels=true))
+      |> mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation=defensiveFormation, ~labels=false))
+      |> mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation, ~labels=true))
       |> Rx.Observable.subscribe(~complete=() => ());
     })
     |> ignore;

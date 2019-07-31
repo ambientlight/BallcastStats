@@ -78,9 +78,14 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
     ~transparent=true,
     ~width=width,
     ~height=height,
+    ~antialias=true,
     ~resolution=(!!DomRe.window) |. Js.Dict.unsafeGet("devicePixelRatio"),
     ()), 
   ());
+
+  // PIXI.graphicsCurves |. PIXI.GraphicsCurves.adaptiveSet(false);
+  // PIXI.graphicsCurves |. PIXI.GraphicsCurves.maxLengthSet(25.0);
+
 
   let style = application##view |. Dom.HtmlElement.style;
   Dom.CssStyleDeclaration.setProperty("width", string_of_int(width) ++ "px", "", style);
@@ -143,6 +148,60 @@ let create = (element: Dom.HtmlElement.t, width: int, height: int, assets: asset
       marker: markerTexture },
     state: None
   }
+};
+
+let graphicsTest = (renderer: t) => {
+  renderer.container##children
+  |. Belt.Array.keepMap(element => !!element |. Js.toOption)
+  |. Belt.Array.keep(element => (element##name |. Js.toOption) == Some("test-graphics"))
+  |. Belt.Array.forEach(element => renderer.container##removeChild(element) |> ignore);
+
+  let container = Container.create();
+  container##y #= 320.0;
+  container##x #= 60.0
+  container##name #= "test-graphics";
+  
+  let outer = Graphics.create(());
+  outer
+  |. Graphics.lineStyle(~width=0.0, ())
+  |. Graphics.beginFill(~color=int_of_string("0Xffffff"), ~alpha=1.0)
+  |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=20.0)
+  |. Graphics.endFill |> ignore;
+  container##addChild(outer) |> ignore;
+
+  let outline = Graphics.create(());
+  outline
+  |. Graphics.lineStyle(~width=0.0, ())
+  |. Graphics.beginFill(~color=int_of_string("0X760206"), ~alpha=1.0)
+  |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=16.0)
+  |. Graphics.endFill |> ignore;
+  container##addChild(outline) |> ignore;
+
+  let inner = Graphics.create(());
+  inner
+  |. Graphics.lineStyle(~width=0.0, ())
+  |. Graphics.beginFill(~color=int_of_string("0X971014"), ~alpha=1.0)
+  |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=12.0)
+  |. Graphics.endFill |> ignore;
+  container##addChild(inner) |> ignore;
+  
+  let squadNumber = Text.create(
+    ~text=string_of_int(8), 
+    ~style=TextStyle.create(
+      ~style=TextStyle.style(
+        ~fontFamily=[|"Jost"|],
+        ~fontWeight="800",
+        ~fontSize=24.0, 
+        ~fill=int_of_string("0xffffff"), ())), ());
+  squadNumber##resolution #= 2.0;
+  squadNumber##anchor##set(0.5, 0.5);
+  squadNumber##x #= 0.0;
+  squadNumber##y #= 0.0;
+  container##addChild(squadNumber) |> ignore;
+
+  renderer.container##addChild(container) |> ignore;
+  container##width #= (container##width /. 1.5);
+  container##height #= (container##height /. 1.5);
 };
 
 let loadFormation = (renderer: t, formation: Formation.t, squad: Formation.squad) => {

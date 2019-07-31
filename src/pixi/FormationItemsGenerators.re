@@ -24,7 +24,7 @@ let playerMarker = (
     ~text=string_of_int(playerNumber), 
     ~style=TextStyle.create(
       ~style=TextStyle.style(
-        ~fontFamily=[|"Gobold Thin"|],
+        ~fontFamily=[|"Gobold"|],
         ~fontSize=34.0, 
         ~fill=int_of_string("0xffffff"), ())), ());
 
@@ -36,7 +36,7 @@ let playerMarker = (
     ~text=(playerPosition |. Formation.positionToJs) ++ " | " ++ playerName |. Js.String.toUpperCase, 
     ~style=TextStyle.create(
       ~style=TextStyle.style(
-        ~fontFamily=[|"Gobold Thin"|], 
+        ~fontFamily=[|"Gobold"|], 
         ~fontSize=25.0,
         ~letterSpacing=1.,
         ~fill=int_of_string("0xffffff"), ())), ());
