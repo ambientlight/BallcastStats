@@ -9,11 +9,6 @@ let embedHeight = 400;
 
 let containedColor = raw("rgb(255, 255, 255)"|.AppTheme.rgbAddAlpha(0.25));
 
-[@bs.module] external pitchTexture: string = "assets/sprites/pitch_overscroll.png";
-[@bs.module] external pitchTextureUniform: string = "assets/sprites/pitch_overscroll_uniform.png";
-[@bs.module] external formationMarker: string = "assets/sprites/formation_marker_default.png";
-[@bs.module] external formationMarkerThin: string = "assets/sprites/formation_marker_thin_corner_default.png";
-
 let formation: Formation.t = {
   name: "4-1-3-2",
   elements: [|
@@ -25,7 +20,7 @@ let formation: Formation.t = {
     { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}) },
     { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }) },
     { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
+    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
     { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }) },
     { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }) }
   |]
@@ -92,10 +87,12 @@ type retained = {
 };
 
 type state = {
-  renderer: option(FormationRenderer.t)
+  renderer: option(FormationRenderer.pitchScene)
 }
 
-type action = SetFormationRenderer(option(FormationRenderer.t));
+type action = SetFormationRenderer(option(FormationRenderer.pitchScene));
+
+module BasePitchScene = FormationRenderer.BuildPitchScene(FormationSkin.BaseSkin);
 
 let component = ReasonReact.reducerComponentWithRetainedProps(__MODULE__);
 let make = (_children) => {
@@ -125,10 +122,7 @@ let make = (_children) => {
     |> Rx.Observable.Operators.take(1)
     |> Rx.Observable.subscribe(~next=_value =>
       Belt.Option.map(pixiContainerRef, containerRef => {
-        let formationRenderer = containerRef |. FormationRenderer.create(
-          embedWidth, 
-          embedHeight, 
-          { pitchTexture: pitchTexture, formationMarker });
+        let formationRenderer = BasePitchScene.create(~element=containerRef, ~width=embedWidth, ~height=embedHeight);
         self.send(SetFormationRenderer(Some(formationRenderer)));
       }) |> ignore
     ) |> ignore
@@ -137,18 +131,17 @@ let make = (_children) => {
   didUpdate: ({ oldSelf, newSelf }) => {
     newSelf.state.renderer 
     |. Belt.Option.map(renderer => { 
-      let renderer = renderer |. FormationRenderer.loadFormation(formation, squad);
-      renderer |. FormationRenderer.graphicsTest;
-
+      let renderer = renderer |. BasePitchScene.loadFormation(~formation, ~squad);
+      
       /**
        * make sure all content is properly adjusted to a current zoom 
        * this is important during hot reload
        */
-      FormationRenderer.handleZoom(renderer.container);
+      BasePitchScene.handleZoom(renderer.container);
       renderer
-      |> FormationRenderer.transitionTo(~formation=offensiveFormation, ~labels=false)
-      |> mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation=defensiveFormation, ~labels=false))
-      |> mergeMap(renderer => renderer |> FormationRenderer.transitionTo(~formation, ~labels=true))
+      |> BasePitchScene.transitionTo(~formation=offensiveFormation, ~labels=false)
+      |> mergeMap(renderer => renderer |> BasePitchScene.transitionTo(~formation=defensiveFormation, ~labels=false))
+      |> mergeMap(renderer => renderer |> BasePitchScene.transitionTo(~formation, ~labels=true))
       |> Rx.Observable.subscribe(~complete=() => ());
     })
     |> ignore;
