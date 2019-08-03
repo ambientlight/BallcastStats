@@ -2,6 +2,7 @@ open Operators;
 open Webapi;
 open PIXI;
 open PIXIExtras;
+open Shortener;
 
 type position = {
   x: float,
@@ -34,7 +35,9 @@ module type PitchScene {
   let create: (~element: Dom.HtmlElement.t, ~width: int, ~height: int) => pitchScene;
   let handleZoom: Viewport.t => unit;
   let loadFormation: (pitchScene, ~formation: Formation.t, ~squad: Formation.squad) => pitchScene;
-  let transitionTo: (pitchScene, ~formation: Formation.t, ~labels: bool) => Rx.Observable.t(pitchScene);
+  
+  let transitionToFormation: (pitchScene, ~formation: Formation.t, ~labels: bool) => Rx.Observable.t(pitchScene);
+  let transitionToSkin: (pitchScene, ~skinBundle: FormationSkin.generators) => Rx.Observable.t(pitchScene);
 };
 
 module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
@@ -42,14 +45,11 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
 
     if(!Skin.scaleLock){
       viewport##children
-      |. Belt.Array.keep(child =>
-        child##name 
-        |. Js.Nullable.toOption
-        |. Belt.Option.getWithDefault("")
-        |> Js.String.startsWith(Skin.names.playerMarkerPrefix))
-      |. Belt.Array.map(child => { let container: Container.t = !!child; container })
-      |. Belt.Array.forEach(child => {
-        let lastViewport = (viewport##lastViewport |. Js.Undefined.toOption) |? [%bs.obj {
+      |. afilter(child =>
+        child##name |. toopt |. withdef("") |> sstartswith(Skin.names.playerMarkerPrefix))
+      |. amap(child => { let container: Container.t = !!child; container })
+      |. aforeach(child => {
+        let lastViewport = (viewport##lastViewport |. utoopt) |? [%bs.obj {
           scaleX: viewport##scale##x,
           scaleY: viewport##scale##y,
           x: 0.0,
@@ -58,13 +58,13 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
         child##width #= (40.0 /. (lastViewport##scaleX));
         child##height #= (48.0 /. (lastViewport##scaleY));
       });
-    }
+    };
 
     viewport##children
-    |. Belt.Array.keep(child => child##name |. Js.Nullable.toOption == Some(Skin.names.tacticRunArrow))
-    |. Belt.Array.map(child => { let container: Container.t = !!child; container })
-    |. Belt.Array.forEach(child => {
-      let lastViewport = (viewport##lastViewport |. Js.Undefined.toOption) |? [%bs.obj {
+    |. afilter(child => child##name |. toopt == Some(Skin.names.tacticRunArrow))
+    |. amap(child => { let container: Container.t = !!child; container })
+    |. aforeach(child => {
+      let lastViewport = (viewport##lastViewport |. utoopt) |? [%bs.obj {
         scaleX: viewport##scale##x,
         scaleY: viewport##scale##y,
         x: 0.0,
@@ -128,7 +128,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => handleZoom(event##viewport), ())
       |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
       |> ignore;
-    }
+    };
 
     application##stage##addChild(container) |> ignore;
     let pitchTexture = Texture.from(~source=Skin.pitchTexturePath);
@@ -149,18 +149,16 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
   let loadFormation = (scene: pitchScene, ~formation: Formation.t, ~squad: Formation.squad) => {
     scene.container##children 
     /* null children appear on hot reload somehow */
-    |. Utils.Array.optMap(element => !!element |. Js.Nullable.toOption)
-    |. Belt.Array.forEach(element => {
-      let name = (element##name |. Js.Nullable.toOption);
-      
-      if(name |. Belt.Option.getWithDefault("") |> Js.String.startsWith(Skin.names.playerMarkerPrefix) ||
-        name |. Belt.Option.getWithDefault("") |> Js.String.startsWith(Skin.names.tacticRunArrow)){
-        scene.container##removeChild(element) |> ignore;
-      }
-    });
+    |. aoptmap(element => !!element |. toopt)
+    |. afilter((element: DisplayObject.t) => 
+      element##name |. toopt |. withdef("") |> sstartswith(Skin.names.playerMarkerPrefix) ||
+      element##name |. toopt |. withdef("") |> sstartswith(Skin.names.tacticRunArrow))
+    |. aforeach(element => 
+      scene.container##removeChild(element) |> ignore
+    );
 
     formation.elements
-    |. Belt.Array.mapWithIndex((index, element) => {
+    |. amapi((index, element) => {
       let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
       
       switch(element.offensiveRun){
@@ -191,7 +189,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
 
       (index, element)
     })
-    |. Belt.Array.forEach(((index, element)) => {
+    |. aforeach(((index, element)) => {
       let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
       let playerMarker = Skin.playerMarker(
         ~x=gridPosition.x, ~y=gridPosition.y,
@@ -199,7 +197,10 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
         ~name=squad[index].name,
         ~position=element.position
       );
-      
+
+      let markerPrefix = Skin.names.playerMarkerPrefix;
+      let number = squad[index].number;
+      playerMarker##name #= {j|$markerPrefix:$number|j};
       scene.container##addChild(playerMarker) |> ignore;
     });
 
@@ -209,7 +210,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
     }
   };
 
-  let transitionTo = (scene: pitchScene, ~formation: Formation.t, ~labels: bool) => {
+  let transitionToSkin = (scene: pitchScene, ~skinBundle: FormationSkin.generators) => {
     let ease = Ease.ease;
     let subject: Rx.Subject.t(unit) = Rx.Subject.make();
 
@@ -219,10 +220,76 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
     } else {
       let state = ?!!scene.state;
       state.squad
-      |. Belt.Array.mapWithIndex((idx, playerInfo) => {
+      |. amapi((idx, playerInfo) => {
         let number = playerInfo.number;
         (idx, scene.container##children |. Belt.Array.getBy(obj => obj##name |. Js.toOption == Some({j|marker:$number|j}))) })
-      |. Belt.Array.forEach(((idx, container)) => {
+      |. aforeach(((idx, container)) => {
+        let element = state.formation.elements[idx];
+        let playerInfo = state.squad[idx];
+
+        switch(container){
+        | Some(container) => {
+          let newMarker = skinBundle.playerMarker(
+            ~x=container##x, ~y=container##y, 
+            ~name=playerInfo.name, ~number=playerInfo.number,
+            ~position=element.position);
+          let markerPrefix = Skin.names.playerMarkerPrefix;
+          let number = playerInfo.number;
+          newMarker##name #= {j|$markerPrefix:$number|j};
+
+          let twidth = newMarker##width;
+          let theight = newMarker##height;
+          let talpha = newMarker##alpha;
+          
+          newMarker##width #= 0.0;
+          newMarker##height #= 0.0;
+          newMarker##alpha #= 0.0;
+          scene.container##addChild(newMarker) |> ignore;
+
+          ease |. Ease.add(
+            ~element=container, 
+            ~params=`Point(Ease.easeParamsPoint(~width=0.0, ~height=0.0, ~alpha=0.0, ())),
+            ~options=`EaseStringRepeatBool(Ease.addOptionsEaseStringRepeatBool(~duration=1000.0, ())),
+            ()) |> ignore;
+
+          ease |. Ease.add(
+            ~element=newMarker,
+            ~params=`Point(Ease.easeParamsPoint(~width=twidth, ~height=theight, ~alpha=talpha, ())),
+            ~options=`EaseStringRepeatBool(Ease.addOptionsEaseStringRepeatBool(~duration=1000.0, ())),
+            ()) |> ignore;
+
+          ease |. EventEmitter.on(~event="complete", ~fn=_event => {
+            scene.container##removeChild(container) |> ignore;
+            subject |. Rx.Subject.next(());
+          }, ()) |> ignore
+        }
+        | None => ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore
+        }
+      });
+
+      Rx.Observable.Operators.(
+        subject
+        |> Rx.Subject.asObservable
+        |> bufferCount(Array.length(state.squad))
+        |> map(_entity => scene)
+        |> take(1))
+    };
+  };
+
+  let transitionToFormation = (scene: pitchScene, ~formation: Formation.t, ~labels: bool) => {
+    let ease = Ease.ease;
+    let subject: Rx.Subject.t(unit) = Rx.Subject.make();
+
+    if(! !?scene.state){
+      Console.warn("Transition has been called when no formation loaded, done nothing");
+      Rx.Observable.of1(scene)
+    } else {
+      let state = ?!!scene.state;
+      state.squad
+      |. amapi((idx, playerInfo) => {
+        let number = playerInfo.number;
+        (idx, scene.container##children |. Belt.Array.getBy(obj => obj##name |. Js.toOption == Some({j|marker:$number|j}))) })
+      |. aforeach(((idx, container)) => {
         let element = formation.elements[idx];
         let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
 
@@ -242,15 +309,17 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
           //   ()
           // ) |> ignore;
 
-          ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore }
+          ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore 
+        }
         | None => ease |. EventEmitter.on(~event="complete", ~fn=_event => subject |. Rx.Subject.next(()), ()) |> ignore }
       });
 
-      subject 
+      Rx.Observable.Operators.(
+        subject 
         |. Rx.Subject.asObservable
-        |> Rx.Observable.Operators.bufferCount(Array.length(state.squad))
-        |> Rx.Observable.Operators.map(_entity => { ...scene, state: Some({ ...state, formation }) })
-        |> Rx.Observable.Operators.take(1)
+        |> bufferCount(Array.length(state.squad))
+        |> map(_entity => { ...scene, state: Some({ ...state, formation }) })
+        |> take(1))
     }
   };
 };

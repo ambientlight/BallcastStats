@@ -5,6 +5,13 @@ type containerNames = {
   tacticRunArrow: string,
 };
 
+type generators = {
+  playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position) => Container.t,
+  defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
+  offensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
+  pitchTexturePath: string
+};
+
 module type T = {
   let playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position) => Container.t;
   let defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t;
@@ -13,6 +20,13 @@ module type T = {
 
   let names: containerNames;
   let scaleLock: bool;
+
+  /***
+   * went ahead with functors and realized I am not really able
+   * to wrap my head around making skins customizable / dynamic and transitionable
+   * for now, going with a simple object bundling these generators
+   */
+  let bundle: generators;
 };
 
 module BaseSkin: T {
@@ -35,8 +49,6 @@ module BaseSkin: T {
       ~width=40.0, ~height=48.0,
       ());
 
-    let markerPrefix = names.playerMarkerPrefix;
-    marker##name #= {j|$markerPrefix:$number|j};
     marker##anchor##set(0.5, 0.5);
 
     let squadNumber = Text.create(
@@ -145,6 +157,13 @@ module BaseSkin: T {
 
     _arrowTacticRun(~texture, ~x, ~y, ~tx, ~ty);
   }
+
+  let bundle = {
+    playerMarker,
+    defensiveRunArrow,
+    offensiveRunArrow,
+    pitchTexturePath
+  };
 };
 
 module CompactPresentationSkin {
@@ -161,9 +180,6 @@ module CompactPresentationSkin {
     container##y #= y;
     container##x #= x;
 
-    let markerPrefix = names.playerMarkerPrefix;
-    container##name #= {j|$markerPrefix:$number|j};
-    
     let outer = Graphics.create(());
     outer
     |. Graphics.lineStyle(~width=0.0, ())
@@ -205,5 +221,12 @@ module CompactPresentationSkin {
     container##width #= (container##width /. 1.5);
     container##height #= (container##height /. 1.5);
     container
+  };
+
+  let bundle = {
+    playerMarker,
+    defensiveRunArrow,
+    offensiveRunArrow,
+    pitchTexturePath
   };
 };

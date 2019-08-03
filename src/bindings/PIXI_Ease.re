@@ -166,7 +166,7 @@ external getEaseFunction: t => easeFunction = "ease";
 
 [@bs.send]
 external _add: (t, 
-  ~element: DisplayObject.t, 
+  ~element: Js.t(#DisplayObject._t), 
   ~params: [@bs.unwrap][`DisplayObject(easeParamsDisplayObject) | `Point(easeParamsPoint)], 
   ~options: ([@bs.unwrap][
     | `EaseStringRepeatBool(addOptionsEaseStringRepeatBool) 
@@ -176,7 +176,7 @@ external _add: (t,
   unit) => easeDisplayObjectOrEaseDisplayObjectArray = "add";
 
 let add = (ease: t, 
-  ~element: DisplayObject.t, 
+  ~element: Js.t(#DisplayObject._t), 
   ~params: [@bs.unwrap][`DisplayObject(easeParamsDisplayObject) | `Point(easeParamsPoint)],
   ~options: option([@bs.unwrap][
     | `EaseStringRepeatBool(addOptionsEaseStringRepeatBool) 

@@ -87,12 +87,13 @@ type retained = {
 };
 
 type state = {
-  renderer: option(FormationRenderer.pitchScene)
+  scene: option(FormationRenderer.pitchScene)
 }
 
-type action = SetFormationRenderer(option(FormationRenderer.pitchScene));
+type action = SetScene(option(FormationRenderer.pitchScene));
 
 module BasePitchScene = FormationRenderer.BuildPitchScene(FormationSkin.BaseSkin);
+module CompactPitchScene = FormationRenderer.BuildPitchScene(FormationSkin.CompactPresentationSkin);
 
 let component = ReasonReact.reducerComponentWithRetainedProps(__MODULE__);
 let make = (_children) => {
@@ -102,13 +103,13 @@ let make = (_children) => {
   },
 
   initialState: () => {
-    renderer: None
+    scene: None
   },
 
   reducer: (action, state) => switch(action){
-  | SetFormationRenderer(renderer) => ReasonReact.Update({ 
+  | SetScene(scene) => ReasonReact.Update({ 
     ...state,
-    renderer
+    scene
   })
   },
 
@@ -122,26 +123,32 @@ let make = (_children) => {
     |> Rx.Observable.Operators.take(1)
     |> Rx.Observable.subscribe(~next=_value =>
       Belt.Option.map(pixiContainerRef, containerRef => {
-        let formationRenderer = BasePitchScene.create(~element=containerRef, ~width=embedWidth, ~height=embedHeight);
-        self.send(SetFormationRenderer(Some(formationRenderer)));
+        let scene = BasePitchScene.create(~element=containerRef, ~width=embedWidth, ~height=embedHeight);
+        self.send(SetScene(Some(scene)));
       }) |> ignore
     ) |> ignore
   },
 
   didUpdate: ({ oldSelf, newSelf }) => {
-    newSelf.state.renderer 
-    |. Belt.Option.map(renderer => { 
-      let renderer = renderer |. BasePitchScene.loadFormation(~formation, ~squad);
+    newSelf.state.scene 
+    |. Belt.Option.map(scene => { 
+      let scene = scene |. BasePitchScene.loadFormation(~formation, ~squad);
       
       /**
        * make sure all content is properly adjusted to a current zoom 
        * this is important during hot reload
        */
-      BasePitchScene.handleZoom(renderer.container);
-      renderer
-      |> BasePitchScene.transitionTo(~formation=offensiveFormation, ~labels=false)
-      |> mergeMap(renderer => renderer |> BasePitchScene.transitionTo(~formation=defensiveFormation, ~labels=false))
-      |> mergeMap(renderer => renderer |> BasePitchScene.transitionTo(~formation, ~labels=true))
+      BasePitchScene.handleZoom(scene.container);
+      Rx.Observable.of1(scene)
+      |> delay(1000)
+      |> mergeMap(scene => 
+        scene |> BasePitchScene.transitionToSkin(~skinBundle=FormationSkin.CompactPresentationSkin.bundle))
+      |> mergeMap(scene =>
+        scene |> BasePitchScene.transitionToFormation(~formation=offensiveFormation, ~labels=false))
+      |> mergeMap(scene => 
+        scene |> BasePitchScene.transitionToFormation(~formation=defensiveFormation, ~labels=false))
+      |> mergeMap(scene => 
+        scene |> BasePitchScene.transitionToFormation(~formation, ~labels=true))
       |> Rx.Observable.subscribe(~complete=() => ());
     })
     |> ignore;
