@@ -21,9 +21,8 @@ type textures = {
 
 type state = {
   formation: Formation.t,
-  squad: Formation.squad
+  team: Team.t
 };
-
 
 type pitchScene = {
   application: Application.t,
@@ -34,7 +33,7 @@ type pitchScene = {
 module type PitchScene {
   let create: (~element: Dom.HtmlElement.t, ~width: int, ~height: int) => pitchScene;
   let handleZoom: Viewport.t => unit;
-  let loadFormation: (pitchScene, ~formation: Formation.t, ~squad: Formation.squad) => pitchScene;
+  let loadFormation: (pitchScene, ~formation: Formation.t, ~team: Team.t) => pitchScene;
   
   let transitionToFormation: (pitchScene, ~formation: Formation.t, ~labels: bool) => Rx.Observable.t(pitchScene);
   let transitionToSkin: (pitchScene, ~skinBundle: FormationSkin.generators) => Rx.Observable.t(pitchScene);
@@ -43,22 +42,21 @@ module type PitchScene {
 module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
   let handleZoom = (viewport: Viewport.t) => {
 
-    if(!Skin.scaleLock){
-      viewport##children
-      |. afilter(child =>
-        child##name |. toopt |. withdef("") |> sstartswith(Skin.names.playerMarkerPrefix))
-      |. amap(child => { let container: Container.t = !!child; container })
-      |. aforeach(child => {
-        let lastViewport = (viewport##lastViewport |. utoopt) |? [%bs.obj {
-          scaleX: viewport##scale##x,
-          scaleY: viewport##scale##y,
-          x: 0.0,
-          y: 0.0
-        }];
-        child##width #= (40.0 /. (lastViewport##scaleX));
-        child##height #= (48.0 /. (lastViewport##scaleY));
-      });
-    };
+    viewport##children
+    |. afilter(child => child##interactive)
+    |. afilter(child =>
+      child##name |. toopt |. withdef("") |> sstartswith(Skin.names.playerMarkerPrefix))
+    |. amap(child => { let container: Container.t = !!child; container })
+    |. aforeach(child => {
+      let lastViewport = (viewport##lastViewport |. utoopt) |? [%bs.obj {
+        scaleX: viewport##scale##x,
+        scaleY: viewport##scale##y,
+        x: 0.0,
+        y: 0.0
+      }];
+      child##width #= (40.0 /. (lastViewport##scaleX));
+      child##height #= (48.0 /. (lastViewport##scaleY));
+    });
 
     viewport##children
     |. afilter(child => child##name |. toopt == Some(Skin.names.tacticRunArrow))
@@ -123,12 +121,10 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
         ~maxHeight=containerHeight, ()),
         ()));
 
-    if(!Skin.scaleLock){
-      container 
-      |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => handleZoom(event##viewport), ())
-      |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
-      |> ignore;
-    };
+    container 
+    |. EventEmitter.on(~event="zoomed", ~fn=(event: Js.t({.. viewport: Viewport.t})) => handleZoom(event##viewport), ())
+    |. EventEmitter.on(~event="zoomed-end", ~fn=(viewport: Viewport.t) => (), ())
+    |> ignore;
 
     application##stage##addChild(container) |> ignore;
     let pitchTexture = Texture.from(~source=Skin.pitchTexturePath);
@@ -146,7 +142,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
     }
   };
 
-  let loadFormation = (scene: pitchScene, ~formation: Formation.t, ~squad: Formation.squad) => {
+  let loadFormation = (scene: pitchScene, ~formation: Formation.t, ~team: Team.t) => {
     scene.container##children 
     /* null children appear on hot reload somehow */
     |. aoptmap(element => !!element |. toopt)
@@ -193,20 +189,21 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       let gridPosition = gridCellPosition(~withSize=40, ~x=element.location.x, ~y=element.location.y);
       let playerMarker = Skin.playerMarker(
         ~x=gridPosition.x, ~y=gridPosition.y,
-        ~number=squad[index].number,
-        ~name=squad[index].name,
-        ~position=element.position
+        ~number=team.squad[index].number,
+        ~name=team.squad[index].name,
+        ~position=element.position,
+        ~colors=team.kit.home
       );
 
       let markerPrefix = Skin.names.playerMarkerPrefix;
-      let number = squad[index].number;
+      let number = team.squad[index].number;
       playerMarker##name #= {j|$markerPrefix:$number|j};
       scene.container##addChild(playerMarker) |> ignore;
     });
 
     {
       ...scene,
-      state: Some({ formation, squad })
+      state: Some({ formation, team })
     }
   };
 
@@ -219,20 +216,21 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       Rx.Observable.of1(scene)
     } else {
       let state = ?!!scene.state;
-      state.squad
+      state.team.squad
       |. amapi((idx, playerInfo) => {
         let number = playerInfo.number;
         (idx, scene.container##children |. Belt.Array.getBy(obj => obj##name |. Js.toOption == Some({j|marker:$number|j}))) })
       |. aforeach(((idx, container)) => {
         let element = state.formation.elements[idx];
-        let playerInfo = state.squad[idx];
+        let playerInfo = state.team.squad[idx];
 
         switch(container){
         | Some(container) => {
           let newMarker = skinBundle.playerMarker(
             ~x=container##x, ~y=container##y, 
             ~name=playerInfo.name, ~number=playerInfo.number,
-            ~position=element.position);
+            ~position=element.position,
+            ~colors=state.team.kit.home);
           let markerPrefix = Skin.names.playerMarkerPrefix;
           let number = playerInfo.number;
           newMarker##name #= {j|$markerPrefix:$number|j};
@@ -270,7 +268,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       Rx.Observable.Operators.(
         subject
         |> Rx.Subject.asObservable
-        |> bufferCount(Array.length(state.squad))
+        |> bufferCount(Array.length(state.team.squad))
         |> map(_entity => scene)
         |> take(1))
     };
@@ -285,7 +283,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       Rx.Observable.of1(scene)
     } else {
       let state = ?!!scene.state;
-      state.squad
+      state.team.squad
       |. amapi((idx, playerInfo) => {
         let number = playerInfo.number;
         (idx, scene.container##children |. Belt.Array.getBy(obj => obj##name |. Js.toOption == Some({j|marker:$number|j}))) })
@@ -317,7 +315,7 @@ module BuildPitchScene = (Skin: FormationSkin.T): PitchScene => {
       Rx.Observable.Operators.(
         subject 
         |. Rx.Subject.asObservable
-        |> bufferCount(Array.length(state.squad))
+        |> bufferCount(Array.length(state.team.squad))
         |> map(_entity => { ...scene, state: Some({ ...state, formation }) })
         |> take(1))
     }

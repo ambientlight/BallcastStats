@@ -34,10 +34,3 @@ type t = {
   name: string,
   elements: array(element)
 };
-
-type playerInfo = {
-  name: string,
-  number: int
-};
-
-type squad = array(playerInfo);

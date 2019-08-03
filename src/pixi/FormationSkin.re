@@ -6,20 +6,19 @@ type containerNames = {
 };
 
 type generators = {
-  playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position) => Container.t,
+  playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors) => Container.t,
   defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
   offensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
   pitchTexturePath: string
 };
 
 module type T = {
-  let playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position) => Container.t;
+  let playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors) => Container.t;
   let defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t;
   let offensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t;
   let pitchTexturePath: string;
 
   let names: containerNames;
-  let scaleLock: bool;
 
   /***
    * went ahead with functors and realized I am not really able
@@ -35,14 +34,12 @@ module BaseSkin: T {
     tacticRunArrow: "tacticRun"
   };
 
-  let scaleLock = false;
-
   [@bs.module] external formationMarker: string = "assets/sprites/formation_marker_default.png";
   [@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run_v2.png";
   [@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run_v2.png";
   [@bs.module] external pitchTexturePath: string = "assets/sprites/pitch_overscroll.png";
 
-  let playerMarker = (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position): Js.t(#Container._t) => {
+  let playerMarker = (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors): Js.t(#Container._t) => {
     let marker = Sprite.init(
       ~texture=Texture.from(~source=formationMarker),
       ~x, ~y,
@@ -76,6 +73,8 @@ module BaseSkin: T {
     positionAndName##anchor##set(0.5, 0.5);
     positionAndName##y #= 72.0;
     marker##addChild(positionAndName) |> ignore;
+
+    marker##interactive #= true;
     (marker :> Container.t)
   };
 
@@ -175,7 +174,7 @@ module CompactPresentationSkin {
 
   let scaleLock = true;
 
-  let playerMarker = (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position): Js.t(#Container._t) => {
+  let playerMarker = (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors): Js.t(#Container._t) => {
     let container = Container.create();
     container##y #= y;
     container##x #= x;
@@ -183,7 +182,7 @@ module CompactPresentationSkin {
     let outer = Graphics.create(());
     outer
     |. Graphics.lineStyle(~width=0.0, ())
-    |. Graphics.beginFill(~color=int_of_string("0Xffffff"), ~alpha=1.0)
+    |. Graphics.beginFill(~color=colors.text, ~alpha=1.0)
     |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=20.0)
     |. Graphics.endFill |> ignore;
     container##addChild(outer) |> ignore;
@@ -191,7 +190,7 @@ module CompactPresentationSkin {
     let outline = Graphics.create(());
     outline
     |. Graphics.lineStyle(~width=0.0, ())
-    |. Graphics.beginFill(~color=int_of_string("0X760206"), ~alpha=1.0)
+    |. Graphics.beginFill(~color=colors.secondary, ~alpha=1.0)
     |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=16.0)
     |. Graphics.endFill |> ignore;
     container##addChild(outline) |> ignore;
@@ -199,7 +198,7 @@ module CompactPresentationSkin {
     let inner = Graphics.create(());
     inner
     |. Graphics.lineStyle(~width=0.0, ())
-    |. Graphics.beginFill(~color=int_of_string("0X971014"), ~alpha=1.0)
+    |. Graphics.beginFill(~color=colors.main, ~alpha=1.0)
     |. Graphics.drawCircle(~x=0.0, ~y=0.0, ~radius=12.0)
     |. Graphics.endFill |> ignore;
     container##addChild(inner) |> ignore;
@@ -217,6 +216,8 @@ module CompactPresentationSkin {
     squadNumber##x #= 0.0;
     squadNumber##y #= 0.0;
     container##addChild(squadNumber) |> ignore;
+
+    container##interactive #= false;
 
     container##width #= (container##width /. 1.5);
     container##height #= (container##height /. 1.5);

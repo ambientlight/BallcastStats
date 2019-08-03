@@ -60,7 +60,7 @@ let offensiveFormation: Formation.t = {
   |]
 };
 
-let squad: Formation.squad = [|
+let squad: Team.squad = [|
   { name: "Allison", number: 13 },
   { name: "Robertson", number: 26 },
   { name: "Van Dijk", number: 4 },
@@ -72,7 +72,7 @@ let squad: Formation.squad = [|
   { name: "Wijnaldum", number: 5 },
   { name: "Mane", number: 10 },
   { name: "Salah", number: 11 }
-|]
+|];
 
 module Styles {
   let root = style([
@@ -132,7 +132,7 @@ let make = (_children) => {
   didUpdate: ({ oldSelf, newSelf }) => {
     newSelf.state.scene 
     |. Belt.Option.map(scene => { 
-      let scene = scene |. BasePitchScene.loadFormation(~formation, ~squad);
+      let scene = scene |. BasePitchScene.loadFormation(~formation, ~team=Team.liverpool);
       
       /**
        * make sure all content is properly adjusted to a current zoom 
@@ -140,7 +140,7 @@ let make = (_children) => {
        */
       BasePitchScene.handleZoom(scene.container);
       Rx.Observable.of1(scene)
-      |> delay(1000)
+      |> delay(5000)
       |> mergeMap(scene => 
         scene |> BasePitchScene.transitionToSkin(~skinBundle=FormationSkin.CompactPresentationSkin.bundle))
       |> mergeMap(scene =>

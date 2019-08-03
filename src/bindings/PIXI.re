@@ -531,7 +531,7 @@ module DisplayObject {
     [@bs.set] pub filterArea: Js.Nullable.t(Rectangle.t);
     [@bs.set] pub filters: Js.Nullable.t(array(Filter.t));
     [@bs.set] pub hitArea: Js.t({..});
-    pub interactive: bool;
+    [@bs.set] pub interactive: bool;
     pub isSprite: bool;
     pub localTransform: Matrix.t;
 
