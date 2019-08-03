@@ -1,39 +1,13 @@
 open PIXI;
 
-type containerNames = {
-  playerMarkerPrefix: string,
-  tacticRunArrow: string,
-};
-
-type generators = {
+type t = {
   playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors) => Container.t,
   defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
   offensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t,
   pitchTexturePath: string
 };
 
-module type T = {
-  let playerMarker: (~x: float, ~y: float, ~name: string, ~number: int, ~position: Formation.position, ~colors: Team.colors) => Container.t;
-  let defensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t;
-  let offensiveRunArrow: (~x: float, ~y: float, ~tx: float, ~ty: float) => Container.t;
-  let pitchTexturePath: string;
-
-  let names: containerNames;
-
-  /***
-   * went ahead with functors and realized I am not really able
-   * to wrap my head around making skins customizable / dynamic and transitionable
-   * for now, going with a simple object bundling these generators
-   */
-  let bundle: generators;
-};
-
-module BaseSkin: T {
-  let names = {
-    playerMarkerPrefix: "marker",
-    tacticRunArrow: "tacticRun"
-  };
-
+module Base {
   [@bs.module] external formationMarker: string = "assets/sprites/formation_marker_default.png";
   [@bs.module] external arrowDefensiveRun: string = "assets/sprites/arrow_defensive_run_v2.png";
   [@bs.module] external arrowOffensiveRun: string = "assets/sprites/arrow_offensive_run_v2.png";
@@ -130,13 +104,11 @@ module BaseSkin: T {
 
     if(points |. Array.length == 0){
       let dummyContainer = PIXI.Container.create(())
-      dummyContainer##name #= names.tacticRunArrow;
       dummyContainer
     } else {
       let arrowDefensiveRun: PIXI.SimpleRope.t = PIXI.SimpleRope.create(~texture, ~points);
       arrowDefensiveRun##x #= x;
       arrowDefensiveRun##y #= y;
-      arrowDefensiveRun##name #= names.tacticRunArrow;
       arrowDefensiveRun##alpha #= 0.0;
       arrowDefensiveRun##rotation #= rotation;
       (arrowDefensiveRun :> PIXI.Container.t)
@@ -165,11 +137,10 @@ module BaseSkin: T {
   };
 };
 
-module CompactPresentationSkin {
-  let names = BaseSkin.names;
+module Compact {
   let defensiveRunArrow = (~x: float, ~y: float, ~tx: float, ~ty: float): Js.t(#Container._t) => Container.create();
   let offensiveRunArrow = (~x: float, ~y: float, ~tx: float, ~ty: float): Js.t(#Container._t) => Container.create();
-  let pitchTexturePath = BaseSkin.pitchTexturePath;
+  let pitchTexturePath = Base.pitchTexturePath;
   //[@bs.module] external pitchTexturePath: string = "assets/sprites/pitch_overscroll_uniform.png";
 
   let scaleLock = true;
@@ -210,7 +181,7 @@ module CompactPresentationSkin {
           ~fontFamily=[|"Jost"|],
           ~fontWeight="800",
           ~fontSize=(string_of_int(number) |. String.length) == 1 ? 24.0 : 22.0, 
-          ~fill=int_of_string("0xffffff"), ())), ());
+          ~fill=colors.text, ())), ());
     squadNumber##resolution #= 2.0;
     squadNumber##anchor##set(0.5, 0.5);
     squadNumber##x #= 0.0;

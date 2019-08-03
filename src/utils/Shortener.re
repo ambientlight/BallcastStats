@@ -9,6 +9,7 @@ let aforeach = Belt.Array.forEach;
 let afilter = Belt.Array.keep;
 let aoptmap = Belt.Array.keepMap;
 let areduce = Belt.Array.reduce;
+let alength = Array.length;
 
 let toopt = Js.toOption;
 let utoopt = Js.Undefined.toOption;
