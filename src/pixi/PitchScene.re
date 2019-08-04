@@ -1,3 +1,5 @@
+[%%debugger.chrome]
+
 open Operators;
 open Shortener;
 open PIXI;
@@ -217,7 +219,7 @@ let loadState = (scene: t, ~state: State.t) => {
   | FormationSingle(state) => _loadFormation(state)
   | FormationTeamVsTeam(state) => {
     _loadFormation(state.home);
-    _loadFormation(state.away);
+    _loadFormation({...state.away, formation: state.away.formation |. Formation.flipToAway(()) });
   }};
 
   {...scene, state}
@@ -367,3 +369,16 @@ let _singleFormationTransition = (scene: t, ~compact: bool) =>
 
 let transitionToCompact = _singleFormationTransition(~compact=true);
 let transitionToBase = _singleFormationTransition(~compact=false);
+
+let twoTeamsFormationTransition = (scene: t, ~home: array(Formation.element), ~away: array(Formation.element)) => 
+  switch(scene.state){
+  | FormationTeamVsTeam(state) => {
+    Rx.Observable.merge2(
+      scene |. _formationTransition(~team=state.home.team, ~elements=home),
+      scene |. _formationTransition(~team=state.away.team, ~elements=away |. Formation.flipElements(()))) 
+    |> Rx.Observable.Operators.bufferCount(2)
+    |> Rx.Observable.Operators.take(1)
+    |> Rx.Observable.Operators.map(_value => scene)
+  }
+  | _ => Rx.Observable.of1(scene)
+  };

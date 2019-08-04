@@ -33,10 +33,10 @@ let liverpool = {
     { name: "Arnold", number: 66 },
     { name: "Fabinho", number: 3 },
     { name: "Milner", number: 7 },
-    { name: "Wijnaldum", number: 5 },
-    { name: "Shaqiri", number: 23 },
+    { name: "Henderson", number: 14 },
+    { name: "Origi", number: 27 },
     { name: "Mane", number: 10 },
-    { name: "Origi", number: 27 }
+    { name: "Shaqiri", number: 23 }
   |],
   kit: {
     home: {
@@ -65,8 +65,8 @@ let barcelona = {
     { name: "Pique", number: 3 },
     { name: "Lenglet", number: 15 },
     { name: "Alba", number: 18 },
-    { name: "Vidal", number: 22 },
     { name: "Busqets", number: 5 },
+    { name: "Vidal", number: 22 },
     { name: "Rakitic", number: 4 },
     { name: "Suarez", number: 9 },
     { name: "Messi", number: 10 },
