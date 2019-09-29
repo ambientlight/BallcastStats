@@ -11,5 +11,21 @@
 			"providerPlugin": "awscloudformation"
 		}
 	},
-	"api": {}
+	"api": {
+		"corefootball": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"additionalAuthenticationProviders": [],
+					"defaultAuthentication": {
+						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
+						"userPoolConfig": {
+							"userPoolId": "authcognitoe928770c"
+						}
+					}
+				}
+			}
+		}
+	}
 }

@@ -1,0 +1,11 @@
+{
+    "AppSyncApiName": "corefootball",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognitoe928770c",
+            "Outputs.UserPoolId"
+        ]
+    }
+}

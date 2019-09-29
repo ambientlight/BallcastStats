@@ -1,0 +1,144 @@
+enum SportmonksGameStatus {
+  NS,
+  LIVE,
+  HT,
+  FT,
+  ET,
+  PEN_LIVE,
+  AET,
+  BREAK,
+  FT_PEN,
+  CANCL,
+  POSTP,
+  INT,
+  ABAN,
+  SUSP,
+  AWARDED,
+  DELAYED,
+  TBA,
+  WO,
+  AU,
+  Deleted
+}
+
+enum SportmonksGameEventType {
+  goal,
+  penalty,
+  missed_penalty,
+  yellowcard,
+  yellowred,
+  redcard,
+  substitution,
+  pen_shootout_goal
+  pen_shootout_miss
+}
+
+type Score {
+  home: Int!
+  away: Int!
+}
+
+type Scores {
+  current: Score!
+  ht: Score
+  ft: Score
+  et: Score
+  pen: Score
+}
+
+type GameTime {
+  min: Int!
+  sec: Int!
+  ht_added: Int!
+  ft_added: Int!
+  fet_added: Int
+  set_added: Int
+}
+
+type S3Object {
+  bucket: String
+  key: String
+  region: String
+}
+
+type FormationElement {
+  playerId: ID!
+  playerName: String!
+  number: Int!
+  position: String!
+  formationIdx: Int!
+  captain: Boolean!
+  stats: AWSJSON
+
+  posx: Int
+  posy: Int
+
+  playerIdSportmonks: ID
+}
+
+type GameEvent {
+  eventType: SportmonksGameEventType!
+  playerId: ID!
+  playerName: String!
+  relatedPlayerId: ID
+  relatedPlayerName: String
+  minute: Int!
+  extraMinute: Int
+  reason: String
+  # not sure what they meant here
+  # injuried: Boolean
+  result: Score
+
+  idSportmonks: ID
+}
+
+type GameComment {
+  important: Boolean!,
+  order: Int!,
+  goal: Boolean!,
+  minute: Int!
+  extraMinute: Int
+  comment: String!
+}
+
+
+type Fixture @model 
+  @key(fields: ["id"])
+  @key(
+    name: "byDateAndComponents", 
+    fields: ["date", "status", "competitionId", "homeTeamId", "awayTeamId"], 
+    queryField: "fixturesByDateAndComponents")
+  @key(
+    name: "byDateAndTimestamp",
+    fields: ["date", "startTs"],
+    queryField: "fixturesByDateAndTimestamp")
+{
+  id: ID!
+  modelVersion: Int!
+  
+  date: AWSDate!
+  competitionId: ID!
+  homeTeamId: ID!
+  awayTeamId: ID!
+
+  startTs: AWSTimestamp!
+  startTime: AWSDateTime!
+  status: SportmonksGameStatus!
+  scores: Scores
+  time: GameTime
+
+  homeTeamName: String!
+  awayTeamName: String!
+  competitionName: String!
+  homeTeamFormation: String
+  awayTeamFormation: String
+  homeTeamLineup: [FormationElement!]
+  awayTeamLineup: [FormationElement!]
+
+  events: [GameEvent!]
+  comments: [GameComment!]
+
+  # sportmonks specific (for simplicity we will just throw more external datasource fields here)
+  idSportmonks: ID
+  dumpSportmonks: S3Object
+}

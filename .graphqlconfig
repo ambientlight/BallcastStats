@@ -1,8 +1,1 @@
-{
-  "projects": {
-    "app": {
-      "schemaPath": "amplify/backend/api/ballcaststats/schema.graphql",
-      "includes": ["**/*.graphql"]
-    }
-  }
-}
+{"projects":{"app":{"schemaPath":"amplify/backend/api/ballcaststats/schema.graphql","includes":["**/*.graphql"]}},"extensions":{"amplify":{"version":3}}}

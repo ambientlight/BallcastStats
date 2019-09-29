@@ -1,0 +1,8 @@
+{
+    "Version": 4,
+    "StackMapping": {
+        "QueryfixturesByDateComponentsResolver": "FixtureR",
+        "QueryfixturesByDateAndComponentsResolver": "FixtureR",
+        "QueryfixturesByDateAndTimestampResolver": "FixtureR"
+    }
+}
