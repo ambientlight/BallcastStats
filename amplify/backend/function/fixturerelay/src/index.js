@@ -28,17 +28,8 @@ const client = new AWSAppSyncClient({
 });
 
 const query = gql(`
-  query{
-    fixturesByDateAndComponents(date:"2019-10-02"){
-      items{
-        id,
-        date,
-        competitionName,
-        homeTeamName,
-        awayTeamId
-      },
-      nextToken
-    }
+  query {
+    relay(msg:"Hi")
   }
 `);
 

@@ -4,18 +4,6 @@
 	"Parameters": {
 		"env": {
 			"Type": "String"
-		},
-		"apicorefootballNGetAttFixtureTableStreamArn": {
-			"Type": "String",
-			"Default": "apicorefootballNGetAttFixtureTableStreamArn"
-		},
-		"apicorefootballGraphQLAPIIdOutput": {
-			"Type": "String",
-			"Default": "apicorefootballGraphQLAPIIdOutput"
-		},
-		"apicorefootballGraphQLAPIEndpointOutput": {
-			"Type": "String",
-			"Default": "apicorefootballGraphQLAPIEndpointOutput"
 		}
 	},
 	"Conditions": {
@@ -40,12 +28,12 @@
 				"FunctionName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"fixturerelay",
+						"relay",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"fixturerelay",
+									"relay",
 									"-",
 									{
 										"Ref": "env"
@@ -62,12 +50,6 @@
 						},
 						"REGION": {
 							"Ref": "AWS::Region"
-						},
-						"API_COREFOOTBALL_GRAPHQLAPIIDOUTPUT": {
-							"Ref": "apicorefootballGraphQLAPIIdOutput"
-						},
-						"API_COREFOOTBALL_GRAPHQLAPIENDPOINTOUTPUT": {
-							"Ref": "apicorefootballGraphQLAPIEndpointOutput"
 						}
 					}
 				},
@@ -81,7 +63,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
-					"S3Key": "amplify-builds/fixturerelay-785a6b326c354e735a46-build.zip"
+					"S3Key": "amplify-builds/relay-6c79554f5575784f7456-build.zip"
 				}
 			}
 		},
@@ -91,12 +73,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"ballcaststatsLambdaRole08451386",
+						"ballcaststatsLambdaRolee97b8bc1",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"ballcaststatsLambdaRole08451386",
+									"ballcaststatsLambdaRolee97b8bc1",
 									"-",
 									{
 										"Ref": "env"
@@ -165,86 +147,6 @@
 						}
 					]
 				}
-			}
-		},
-		"LambdaTriggerPolicy": {
-			"DependsOn": [
-				"LambdaExecutionRole"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": "amplify-lambda-execution-policy",
-				"Roles": [
-					{
-						"Ref": "LambdaExecutionRole"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"dynamodb:DescribeStream",
-								"dynamodb:GetRecords",
-								"dynamodb:GetShardIterator",
-								"dynamodb:ListStreams"
-							],
-							"Resource": {
-								"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
-							}
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"appsync:GraphQL"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:appsync:",
-											{
-												"Ref": "AWS::Region"
-											},
-											":",
-											{
-												"Ref": "AWS::AccountId"
-											},
-											":apis/",
-											{
-												"Ref": "apicorefootballGraphQLAPIIdOutput"
-											},
-											"/*"
-										]
-									]
-								}
-							]
-						}
-					]
-				}
-			}
-		},
-		"LambdaEventSourceMapping": {
-			"Type": "AWS::Lambda::EventSourceMapping",
-			"DependsOn": [
-				"LambdaTriggerPolicy",
-				"LambdaExecutionRole"
-			],
-			"Properties": {
-				"BatchSize": 100,
-				"Enabled": true,
-				"EventSourceArn": {
-					"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
-				},
-				"FunctionName": {
-					"Fn::GetAtt": [
-						"LambdaFunction",
-						"Arn"
-					]
-				},
-				"StartingPosition": "LATEST"
 			}
 		}
 	},

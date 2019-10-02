@@ -48,6 +48,11 @@
 					]
 				}
 			]
+		},
+		"relay": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true
 		}
 	},
 	"storage": {}

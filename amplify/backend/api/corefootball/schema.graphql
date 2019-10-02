@@ -150,3 +150,7 @@ type Fixture
   idSportmonks: ID
   dumpSportmonks: S3Object  
 }
+
+# type Query {
+#   relay(msg: String): String @function(name: "relay-${env}") @aws_iam @aws_cognito_user_pools
+# }
