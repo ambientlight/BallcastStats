@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
 				"logicalId": "authcognitoe928770c"
 			},
-			"lastPushTimeStamp": "2019-10-02T17:48:04.941Z",
+			"lastPushTimeStamp": "2019-10-02T18:40:22.456Z",
 			"output": {
 				"AppClientSecret": "1lmerkohv7c79u868cdd2pdj09i8e2c080jlpoahgbs9qinh7oai",
 				"UserPoolId": "eu-central-1_9ILsWqTTc",
@@ -40,7 +40,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2019-10-02T17:48:04.943Z",
+			"lastPushTimeStamp": "2019-10-02T18:40:22.458Z",
 			"output": {
 				"CloudFrontSecureURL": "https://d29raqdmbf7apv.cloudfront.net",
 				"S3BucketSecureURL": "https://ballcaststats-euprod.s3.amazonaws.com",
@@ -81,7 +81,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apicorefootball"
 			},
-			"lastPushTimeStamp": "2019-10-02T17:48:04.944Z",
+			"lastPushTimeStamp": "2019-10-02T18:40:22.459Z",
 			"lastPushDirHash": "3YzJD9m45sqlpzWB6YAypgqT0QY="
 		}
 	},
@@ -102,20 +102,20 @@
 				}
 			],
 			"lastBuildTimeStamp": "2019-10-02T17:00:12.588Z",
-			"lastPackageTimeStamp": "2019-10-02T17:46:11.108Z",
+			"lastPackageTimeStamp": "2019-10-02T18:35:13.532Z",
 			"distZipFilename": "fixturerelay-2f4a4c56566f302f6a38-build.zip",
 			"providerMetadata": {
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/fixturerelay-cloudformation-template.json",
 				"logicalId": "functionfixturerelay"
 			},
-			"lastPushTimeStamp": "2019-10-02T17:48:04.946Z",
+			"lastPushTimeStamp": "2019-10-02T18:40:22.462Z",
 			"output": {
 				"Region": "eu-central-1",
 				"Arn": "arn:aws:lambda:eu-central-1:229321913319:function:fixturerelay-euprod",
 				"Name": "fixturerelay-euprod",
 				"LambdaExecutionRole": "ballcaststatsLambdaRole08451386-euprod"
 			},
-			"lastPushDirHash": "st7cyc0lKs0ThXOme/TIbLbr2G4="
+			"lastPushDirHash": "adrMN93U5Iv8LWqC2fgr7Ln1CYA="
 		}
 	},
 	"storage": {}

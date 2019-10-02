@@ -62,6 +62,12 @@
 						},
 						"REGION": {
 							"Ref": "AWS::Region"
+						},
+						"API_COREFOOTBALL_GRAPHQLAPIIDOUTPUT": {
+							"Ref": "apicorefootballGraphQLAPIIdOutput"
+						},
+						"API_COREFOOTBALL_GRAPHQLAPIENDPOINTOUTPUT": {
+							"Ref": "apicorefootballGraphQLAPIEndpointOutput"
 						}
 					}
 				},
