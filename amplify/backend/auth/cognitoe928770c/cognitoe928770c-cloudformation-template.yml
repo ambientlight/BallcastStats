@@ -11,8 +11,6 @@ Parameters:
     Type: String
   unauthRoleArn:
     Type: String
-
-    
   identityPoolName:
     Type: String
               

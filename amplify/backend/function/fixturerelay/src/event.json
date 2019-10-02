@@ -1,0 +1,231 @@
+{
+	"Records": [{
+		"eventID": "ec0a1ffca35cc70d79cd94b9eceba483",
+		"eventName": "MODIFY",
+		"eventVersion": "1.1",
+		"eventSource": "aws:dynamodb",
+		"awsRegion": "eu-central-1",
+		"dynamodb": {
+			"ApproximateCreationDateTime": 1570032562,
+			"Keys": {
+				"id": {
+					"S": "11875242"
+				}
+			},
+			"NewImage": {
+				"date": {
+					"S": "2019-10-02"
+				},
+				"status#competitionId#homeTeamId#awayTeamId": {
+					"S": "NS#274#6953#7466"
+				},
+				"competitionId": {
+					"S": "274"
+				},
+				"comments": {
+					"L": []
+				},
+				"scores": {
+					"M": {
+						"current": {
+							"M": {
+								"away": {
+									"N": "0"
+								},
+								"home": {
+									"N": "0"
+								}
+							}
+						}
+					}
+				},
+				"modelVersion": {
+					"N": "1"
+				},
+				"__typename": {
+					"S": "Fixture"
+				},
+				"competitionName": {
+					"S": "First Division"
+				},
+				"competitionCountryId": {
+					"S": "320"
+				},
+				"startTs": {
+					"N": "1570035600"
+				},
+				"createdAt": {
+					"S": "2019-10-02T15:57:33.565Z"
+				},
+				"dumpSportmonks": {
+					"M": {
+						"bucket": {
+							"S": "tracereplay_spdumps"
+						},
+						"region": {
+							"S": "ap-southeast-1"
+						},
+						"key": {
+							"S": "11875242"
+						}
+					}
+				},
+				"awayTeamName": {
+					"S": "Vejle"
+				},
+				"idSportmonks": {
+					"N": "11875242"
+				},
+				"startTime": {
+					"S": "2019-10-02T17:00:00.000Z"
+				},
+				"homeTeamName": {
+					"S": "HB Køge"
+				},
+				"id": {
+					"S": "11875242"
+				},
+				"time": {
+					"M": {
+						"sec": {
+							"N": "0"
+						},
+						"ht_added": {
+							"N": "0"
+						},
+						"min": {
+							"N": "0"
+						},
+						"ft_added": {
+							"N": "0"
+						}
+					}
+				},
+				"homeTeamId": {
+					"S": "6953"
+				},
+				"awayTeamId": {
+					"S": "7466"
+				},
+				"events": {
+					"L": []
+				},
+				"status": {
+					"S": "NS"
+				},
+				"updatedAt": {
+					"S": "2019-10-02T15:57:33.565Z"
+				}
+			},
+			"OldImage": {
+				"date": {
+					"S": "2019-10-02"
+				},
+				"status#competitionId#homeTeamId#awayTeamId": {
+					"S": "NS#274#6953#7466"
+				},
+				"competitionId": {
+					"S": "274"
+				},
+				"comments": {
+					"L": []
+				},
+				"scores": {
+					"M": {
+						"current": {
+							"M": {
+								"away": {
+									"N": "0"
+								},
+								"home": {
+									"N": "0"
+								}
+							}
+						}
+					}
+				},
+				"modelVersion": {
+					"N": "1"
+				},
+				"__typename": {
+					"S": "Fixture"
+				},
+				"competitionName": {
+					"S": "First Division"
+				},
+				"competitionCountryId": {
+					"S": "320"
+				},
+				"startTs": {
+					"N": "1570035600"
+				},
+				"createdAt": {
+					"S": "2019-10-02T15:54:42.161Z"
+				},
+				"dumpSportmonks": {
+					"M": {
+						"bucket": {
+							"S": "tracereplay_spdumps"
+						},
+						"region": {
+							"S": "ap-southeast-1"
+						},
+						"key": {
+							"S": "11875242"
+						}
+					}
+				},
+				"awayTeamName": {
+					"S": "Vejle"
+				},
+				"idSportmonks": {
+					"N": "11875242"
+				},
+				"startTime": {
+					"S": "2019-10-02T17:00:00.000Z"
+				},
+				"homeTeamName": {
+					"S": "HB Køge"
+				},
+				"id": {
+					"S": "11875242"
+				},
+				"time": {
+					"M": {
+						"sec": {
+							"N": "0"
+						},
+						"ht_added": {
+							"N": "0"
+						},
+						"min": {
+							"N": "0"
+						},
+						"ft_added": {
+							"N": "0"
+						}
+					}
+				},
+				"homeTeamId": {
+					"S": "6953"
+				},
+				"awayTeamId": {
+					"S": "7466"
+				},
+				"events": {
+					"L": []
+				},
+				"status": {
+					"S": "NS"
+				},
+				"updatedAt": {
+					"S": "2019-10-02T15:54:42.177Z"
+				}
+			},
+			"SequenceNumber": "39867500000000011096495555",
+			"SizeBytes": 1104,
+			"StreamViewType": "NEW_AND_OLD_IMAGES"
+		},
+		"eventSourceARN": "arn:aws:dynamodb:eu-central-1:229321913319:table/Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod/stream/2019-09-25T07:11:12.059"
+	}]
+}

@@ -102,7 +102,11 @@ type GameComment {
 }
 
 
-type Fixture @model 
+type Fixture 
+  @model(
+    queries: { get: "getFixture", list: "listFixtures" }, 
+    mutations: null
+    subscriptions: { onCreate: ["onCreateFixture"], onUpdate: ["onUpdateFixture"], onDelete: ["onDeleteFixture"] }) 
   @key(fields: ["id"])
   @key(
     name: "byDateAndComponents", 
@@ -112,6 +116,10 @@ type Fixture @model
     name: "byDateAndTimestamp",
     fields: ["date", "startTs"],
     queryField: "fixturesByDateAndTimestamp")
+  @auth(rules: [
+    {allow: private, provider: iam, operations: [read]},
+    {allow: private, provider: userPools, operations: [read]}
+  ])
 {
   id: ID!
   modelVersion: Int!
@@ -140,5 +148,5 @@ type Fixture @model
 
   # sportmonks specific (for simplicity we will just throw more external datasource fields here)
   idSportmonks: ID
-  dumpSportmonks: S3Object
+  dumpSportmonks: S3Object  
 }
