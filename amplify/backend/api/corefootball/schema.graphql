@@ -21,6 +21,45 @@ enum SportmonksGameStatus {
   Deleted
 }
 
+enum GameStatus {
+  NS,
+  # game in play, could be at any live state (usually regular time)
+  LIVE,
+  LIVEHT,
+  LIVEET,
+  LIVEPEN,
+  # we don't have corresponding state to BREAK in sportmonks since it is a confusing state
+
+  FINFT,
+  FINAET,
+  FINPEN,
+  # cancelled
+  FINCANCL,
+  # postponed
+  FINPOSTP,
+
+  # SET OF RATE STATUSES
+  # these can be still in play, so we prefix them as live still
+  # it is especially important for these interrupted games since they should still keep updating in real-time
+  # the game has been interrupted. Can be due to bad weather.
+  LIVEINT,
+  # the game has abandoned and will continue at a later time or day.
+  LIVEABAN,
+  # the game has suspended and will continue at a later time or day.
+  LIVESUSP,
+  # the game is delayed so it wil start later
+  LIVEDELAYED,
+  # winner is beeing decided externally, whatever it means
+  LIVEAWARDED,
+  # awarding of a victory to a contestant because there are no other contestants, whatever it means
+  LIVEWO,
+
+  # fixture is yet to be updated or status is unavailable (TBA, AU)
+  UNKNOWN,
+  # this implies this fixture has been deleted from original datasource (sportmonks, and should be removed from db)
+  DELETED
+}
+
 enum SportmonksGameEventType {
   goal,
   penalty,
@@ -30,15 +69,16 @@ enum SportmonksGameEventType {
   redcard,
   substitution,
   pen_shootout_goal
-  pen_shootout_miss
+  pen_shootout_miss,
+  # own_goal = "own-goal"
 }
 
-type Score {
+type Score @aws_iam @aws_cognito_user_pools {
   home: Int!
   away: Int!
 }
 
-type Scores {
+type Scores @aws_iam @aws_cognito_user_pools {
   current: Score!
   ht: Score
   ft: Score
@@ -46,7 +86,7 @@ type Scores {
   pen: Score
 }
 
-type GameTime {
+type GameTime @aws_iam @aws_cognito_user_pools {
   min: Int!
   sec: Int!
   ht_added: Int!
@@ -55,14 +95,15 @@ type GameTime {
   set_added: Int
 }
 
-type S3Object {
+type S3Object @aws_iam @aws_cognito_user_pools {
   bucket: String
   key: String
   region: String
 }
 
-type FormationElement {
+type FormationElement @aws_iam @aws_cognito_user_pools {
   playerId: ID!
+  teamId: ID!
   playerName: String!
   number: Int!
   position: String!
@@ -76,8 +117,8 @@ type FormationElement {
   playerIdSportmonks: ID
 }
 
-type GameEvent {
-  eventType: SportmonksGameEventType!
+type GameEvent @aws_iam @aws_cognito_user_pools {
+  eventType: String! # SportmonksGameEventType
   playerId: ID!
   playerName: String!
   relatedPlayerId: ID
@@ -92,7 +133,7 @@ type GameEvent {
   idSportmonks: ID
 }
 
-type GameComment {
+type GameComment @aws_iam @aws_cognito_user_pools{
   important: Boolean!,
   order: Int!,
   goal: Boolean!,
@@ -101,12 +142,110 @@ type GameComment {
   comment: String!
 }
 
+input ScoresInput {
+  current: ScoreInput!
+  ht: ScoreInput
+  ft: ScoreInput
+  et: ScoreInput
+  pen: ScoreInput
+}
 
-type Fixture 
+input ScoreInput {
+  home: Int!
+  away: Int!
+}
+
+input GameTimeInput {
+  min: Int!
+  sec: Int!
+  ht_added: Int!
+  ft_added: Int!
+  fet_added: Int
+  set_added: Int
+}
+
+input FormationElementInput {
+  playerId: ID!
+  teamId: ID!
+  playerName: String!
+  number: Int!
+  position: String!
+  formationIdx: Int!
+  captain: Boolean!
+  stats: AWSJSON
+  posx: Int
+  posy: Int
+  playerIdSportmonks: ID
+}
+
+input GameEventInput {
+  eventType: String! # SportmonksGameEventType
+  playerId: ID!
+  playerName: String!
+  relatedPlayerId: ID
+  relatedPlayerName: String
+  minute: Int!
+  extraMinute: Int
+  reason: String
+  result: ScoreInput
+  idSportmonks: ID
+}
+
+input GameCommentInput {
+  important: Boolean!
+  order: Int!
+  goal: Boolean!
+  minute: Int!
+  extraMinute: Int
+  comment: String!
+}
+
+input S3ObjectInput {
+  bucket: String
+  key: String
+  region: String
+}
+
+
+input FixtureInput {
+  id: ID!
+  modelVersion: Int!
+  
+  date: AWSDate!
+  competitionId: ID!
+  homeTeamId: ID!
+  awayTeamId: ID!
+
+  startTs: AWSTimestamp!
+  startTime: AWSDateTime!
+  status: GameStatus!
+  scores: ScoresInput
+  time: GameTimeInput
+
+  homeTeamName: String!
+  awayTeamName: String!
+  competitionName: String!
+  competitionCountryId: ID
+  homeTeamFormation: String
+  awayTeamFormation: String
+  homeTeamLineup: [FormationElementInput!]
+  awayTeamLineup: [FormationElementInput!]
+
+  events: [GameEventInput!]
+  comments: [GameCommentInput!]
+
+  # sportmonks specific (for simplicity we will just throw more external datasource fields here)
+  idSportmonks: ID
+  dumpSportmonks: S3ObjectInput 
+}
+
+type Fixture   
   @model(
     queries: { get: "getFixture", list: "listFixtures" }, 
-    mutations: null
-    subscriptions: { onCreate: ["onCreateFixture"], onUpdate: ["onUpdateFixture"], onDelete: ["onDeleteFixture"] }) 
+    # disable generated model mutations
+    mutations: null,
+    # also disable above mutation-linked subs, no away anyway when no mutations
+    subscriptions: null) 
   @key(fields: ["id"])
   @key(
     name: "byDateAndComponents", 
@@ -131,13 +270,14 @@ type Fixture
 
   startTs: AWSTimestamp!
   startTime: AWSDateTime!
-  status: SportmonksGameStatus!
+  status: GameStatus!
   scores: Scores
   time: GameTime
 
   homeTeamName: String!
   awayTeamName: String!
   competitionName: String!
+  competitionCountryId: ID
   homeTeamFormation: String
   awayTeamFormation: String
   homeTeamLineup: [FormationElement!]
@@ -154,3 +294,11 @@ type Fixture
 # type Query {
 #   relay(msg: String): String @function(name: "relay-${env}") @aws_iam @aws_cognito_user_pools
 # }
+
+type Mutation {
+  fixturesUpdated(fixtures: [FixtureInput!]): [Fixture!] @aws_iam @aws_cognito_user_pools
+}
+
+type Subscription {
+  onUpdatedFixtures: [Fixture!] @aws_subscribe(mutations:["fixturesUpdated"]) @aws_cognito_user_pools
+}
