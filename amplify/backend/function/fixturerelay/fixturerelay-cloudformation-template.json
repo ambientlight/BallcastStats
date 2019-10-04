@@ -81,7 +81,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
-					"S3Key": "amplify-builds/fixturerelay-4c6148726a5466363542-build.zip"
+					"S3Key": "amplify-builds/fixturerelay-395a706d774e70713953-build.zip"
 				}
 			}
 		},
@@ -234,7 +234,7 @@
 			],
 			"Properties": {
 				"BatchSize": 100,
-				"MaximumBatchingWindowInSeconds": 2,
+				"MaximumBatchingWindowInSeconds": 1,
 				"Enabled": true,
 				"EventSourceArn": {
 					"Ref": "apicorefootballNGetAttFixtureTableStreamArn"

@@ -7,62 +7,57 @@ var apiCorefootballGraphQLAPIEndpointOutput = process.env.API_COREFOOTBALL_GRAPH
 
 Amplify Params - DO NOT EDIT */
 
-global.WebSocket = require('ws');
-const fs = require('fs');
+const path = require('path');
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
-const awsExports = require('./aws-exports');
-const AUTH_TYPE = require('aws-appsync/lib/link/auth-link').AUTH_TYPE;
 const AWSAppSyncClient = require('aws-appsync').default;
 const AWS = require('aws-sdk');
+if (!('AWS_EXECUTION_ENV' in process.env && process.env.AWS_EXECUTION_ENV.startsWith('AWS_Lambda_'))){
+  require('dotenv').config({ path: path.resolve(__dirname, '..', '.env')})
+}
 
-const url = awsExports.aws_appsync_graphqlEndpoint;
-const region = awsExports.aws_project_region;
-const type = awsExports.aws_appsync_authenticationType;
-const client = new AWSAppSyncClient({
-  url,
-  region,
-  auth: {
-    type: "AWS_IAM",
-    credentials: AWS.config.credentials
-  },
-  disableOffline: true
-});
-
+let client;
 const fixturesUpdatedMutation = require('./fixtureUpdated.mutation')
 
+const removeNonAPIFields = record => {
+  delete record['__typename'];
+  delete record['createdAt'];
+  delete record['updatedAt'];
+  delete record['status#competitionId#homeTeamId#awayTeamId'];
+  delete record['homeTeamLineup'];
+  delete record['awayTeamLineup'];
+  return record
+}
+
 exports.handler = (event, context) => {
+  if(!client){
+    client = new AWSAppSyncClient({
+      url: process.env.API_COREFOOTBALL_GRAPHQLAPIENDPOINTOUTPUT,
+      region: process.env.REGION,
+      auth: {
+        type: "AWS_IAM",
+        credentials: AWS.config.credentials
+      },
+      disableOffline: true
+    });
+  }
+
   const records = event.Records.map(record => ({
     new: AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage),
     old: AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage)
   }));
 
-  //console.log(process.env.ENV)
-  //console.log(process.env.REGION)
-
   return client.mutate({ 
     mutation: fixturesUpdatedMutation,
-    variables: {
-      fixtures: records.map(record => {
-        delete record.new['__typename']
-        delete record.new['createdAt']
-        delete record.new['updatedAt']
-        delete record.new['status#competitionId#homeTeamId#awayTeamId']
-        delete record.new['homeTeamLineup']
-        delete record.new['awayTeamLineup']
-        return record.new
-      })
-    },
+    variables: { fixtures: records.map(record => removeNonAPIFields(record.new)) },
     fetchPolicy: 'no-cache'
   })
     .then(
-      ({data: { fixturesUpdated }}) => {
+      ({data: { fixturesUpdated }}) => 
         console.log(JSON.stringify(
           fixturesUpdated.map(fx => 
             `${fx.homeTeamName} ${fx.scores.current.home} : ${fx.awayTeamName} ${fx.scores.current.away} (min: ${fx.time.min}, sec: ${fx.time.sec}, id: ${fx.id})`
           )
-        ))
-      },
-      console.error
-    )
+        )),
+      console.error)
 }
