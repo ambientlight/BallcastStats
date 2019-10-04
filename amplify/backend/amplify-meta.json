@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
 				"logicalId": "authcognitoe928770c"
 			},
-			"lastPushTimeStamp": "2019-10-04T07:04:25.596Z",
+			"lastPushTimeStamp": "2019-10-04T20:03:20.494Z",
 			"output": {
 				"AppClientSecret": "1lmerkohv7c79u868cdd2pdj09i8e2c080jlpoahgbs9qinh7oai",
 				"UserPoolId": "eu-central-1_9ILsWqTTc",
@@ -40,7 +40,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2019-10-04T07:04:25.598Z",
+			"lastPushTimeStamp": "2019-10-04T20:03:20.495Z",
 			"output": {
 				"CloudFrontSecureURL": "https://d29raqdmbf7apv.cloudfront.net",
 				"S3BucketSecureURL": "https://ballcaststats-euprod.s3.amazonaws.com",
@@ -81,8 +81,8 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apicorefootball"
 			},
-			"lastPushTimeStamp": "2019-10-04T07:04:25.598Z",
-			"lastPushDirHash": "AzY1yg6Irn9PHF6miibwwEepUKQ="
+			"lastPushTimeStamp": "2019-10-04T20:03:20.499Z",
+			"lastPushDirHash": "IqRcvEtXSYqx+DAoAgD7XvocfOo="
 		}
 	},
 	"function": {
@@ -108,7 +108,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/fixturerelay-cloudformation-template.json",
 				"logicalId": "functionfixturerelay"
 			},
-			"lastPushTimeStamp": "2019-10-04T07:04:25.604Z",
+			"lastPushTimeStamp": "2019-10-04T20:03:20.497Z",
 			"output": {
 				"Region": "eu-central-1",
 				"Arn": "arn:aws:lambda:eu-central-1:229321913319:function:fixturerelay-euprod",
@@ -128,7 +128,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/relay-cloudformation-template.json",
 				"logicalId": "functionrelay"
 			},
-			"lastPushTimeStamp": "2019-10-04T07:04:25.601Z",
+			"lastPushTimeStamp": "2019-10-04T20:03:20.497Z",
 			"output": {
 				"Region": "eu-central-1",
 				"Arn": "arn:aws:lambda:eu-central-1:229321913319:function:relay-euprod",

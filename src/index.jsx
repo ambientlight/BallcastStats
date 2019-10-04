@@ -27,40 +27,38 @@ const root = document.createElement('div')
 document.body.appendChild(root)
 render(<Root />, root)
 
-/*
 // example to have subscriptions working
-const client = new AWSAppSyncClient({
-  url: awsmobile.aws_appsync_graphqlEndpoint,
-  region: awsmobile.aws_appsync_region,
-  auth: {
-    type: awsmobile.aws_appsync_authenticationType,
-    jwtToken: async () => (await Auth.currentSession()).getAccessToken().getJwtToken()
-  },
-  disableOffline: true
-});
+// const client = new AWSAppSyncClient({
+//   url: awsmobile.aws_appsync_graphqlEndpoint,
+//   region: awsmobile.aws_appsync_region,
+//   auth: {
+//     type: awsmobile.aws_appsync_authenticationType,
+//     jwtToken: async () => (await Auth.currentSession()).getAccessToken().getJwtToken()
+//   },
+//   disableOffline: true
+// });
 
-client.subscribe({
-  query: gql`
-    subscription ON_UPDATED_FIXTURES {
-      onUpdatedFixtures {
-        id,
-        status,
-        scores {
-          current {
-            home,
-            away
-          }
-        },
-        time {
-          min,
-          sec
-        },
-        homeTeamName,
-        awayTeamName
-      }
-    }
-  `
-}).subscribe({
-  next: value => console.log(value)
-})
-*/
+// client.subscribe({
+//   query: gql`
+//     subscription ON_UPDATED_FIXTURES {
+//       onUpdatedFixtures {
+//         id,
+//         status,
+//         time {
+//           min,
+//           sec
+//         },
+//         homeTeamName,
+//         awayTeamName
+//       }
+//     }
+//   `
+// }).subscribe({
+//   next: ({data: { onUpdatedFixtures }}) => onUpdatedFixtures.forEach(fx => console.log(fx))
+// })
+
+// {
+//   summary: `${fx.homeTeamName}  ${fx.awayTeamName}`,
+//   time: `${fx.time.min < 10 ? '0' : ''}${fx.time.min}:${fx.time.sec < 10 ? '0' : ''}${fx.time.sec}`,
+//   status: fx.status
+// })

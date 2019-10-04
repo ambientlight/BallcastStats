@@ -120,7 +120,7 @@ type FormationElement @aws_iam @aws_cognito_user_pools {
 type GameEvent @aws_iam @aws_cognito_user_pools {
   eventType: String! # SportmonksGameEventType
   playerId: ID!
-  playerName: String!
+  playerName: String
   relatedPlayerId: ID
   relatedPlayerName: String
   minute: Int!
@@ -135,7 +135,7 @@ type GameEvent @aws_iam @aws_cognito_user_pools {
 
 type GameComment @aws_iam @aws_cognito_user_pools{
   important: Boolean!,
-  order: Int!,
+  order: Int,
   goal: Boolean!,
   minute: Int!
   extraMinute: Int
@@ -244,7 +244,7 @@ type Fixture
     queries: { get: "getFixture", list: "listFixtures" }, 
     # disable generated model mutations
     mutations: null,
-    # also disable above mutation-linked subs, no away anyway when no mutations
+    # also disable above mutation-linked subs, no use anyway when no mutations
     subscriptions: null) 
   @key(fields: ["id"])
   @key(
