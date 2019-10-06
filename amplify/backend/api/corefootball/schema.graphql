@@ -108,7 +108,7 @@ type FormationElement @aws_iam @aws_cognito_user_pools {
   number: Int!
   position: String!
   formationIdx: Int!
-  captain: Boolean!
+  captain: Boolean
   stats: AWSJSON
 
   posx: Int
@@ -171,7 +171,7 @@ input FormationElementInput {
   number: Int!
   position: String!
   formationIdx: Int!
-  captain: Boolean!
+  captain: Boolean
   stats: AWSJSON
   posx: Int
   posy: Int
@@ -181,7 +181,7 @@ input FormationElementInput {
 input GameEventInput {
   eventType: String! # SportmonksGameEventType
   playerId: ID!
-  playerName: String!
+  playerName: String
   relatedPlayerId: ID
   relatedPlayerName: String
   minute: Int!
@@ -193,7 +193,7 @@ input GameEventInput {
 
 input GameCommentInput {
   important: Boolean!
-  order: Int!
+  order: Int
   goal: Boolean!
   minute: Int!
   extraMinute: Int
@@ -205,7 +205,6 @@ input S3ObjectInput {
   key: String
   region: String
 }
-
 
 input FixtureInput {
   id: ID!

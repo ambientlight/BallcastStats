@@ -55,5 +55,10 @@
 			"build": true
 		}
 	},
-	"storage": {}
+	"storage": {
+		"tracereplayspdumps": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
+	}
 }
