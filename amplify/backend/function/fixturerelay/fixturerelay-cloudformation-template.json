@@ -5,17 +5,17 @@
 		"env": {
 			"Type": "String"
 		},
-		"apicorefootballNGetAttFixtureTableStreamArn": {
+		"pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn": {
 			"Type": "String",
-			"Default": "arn:aws:dynamodb:eu-central-1:229321913319:table/Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod/stream/2019-09-25T07:11:12.059"
+			"Default": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
 		},
 		"apicorefootballGraphQLAPIIdOutput": {
 			"Type": "String",
-			"Default": "pm6xpu3ilvfb5ozt37kkpj26ka"
+			"Default": "apicorefootballGraphQLAPIIdOutput"
 		},
 		"apicorefootballGraphQLAPIEndpointOutput": {
 			"Type": "String",
-			"Default": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql"
+			"Default": "apicorefootballGraphQLAPIEndpointOutput"
 		}
 	},
 	"Conditions": {
@@ -81,7 +81,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
-					"S3Key": "amplify-builds/fixturerelay-512b335958462b4b7057-build.zip"
+					"S3Key": "amplify-builds/fixturerelay-58446266735a6331506f-build.zip"
 				}
 			}
 		},
@@ -191,7 +191,7 @@
 								"dynamodb:ListStreams"
 							],
 							"Resource": {
-								"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
+								"Ref": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
 							}
 						},
 						{
@@ -237,7 +237,7 @@
 				"MaximumBatchingWindowInSeconds": 1,
 				"Enabled": true,
 				"EventSourceArn": {
-					"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
+					"Ref": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
 				},
 				"FunctionName": {
 					"Fn::GetAtt": [

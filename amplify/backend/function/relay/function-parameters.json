@@ -1,9 +1,0 @@
-{
-    "permissions": {
-        "analytics": {
-            "ballcaststats": [
-                "read"
-            ]
-        }
-    }
-}

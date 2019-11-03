@@ -47,34 +47,6 @@
 					]
 				}
 			]
-		},
-		"relay": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": [
-				{
-					"category": "analytics",
-					"resourceName": "ballcaststats",
-					"attributes": [
-						"kinesisStreamArn"
-					]
-				}
-			]
-		},
-		"testkinesis": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": [
-				{
-					"category": "analytics",
-					"resourceName": "ballcaststats",
-					"attributes": [
-						"kinesisStreamArn"
-					]
-				}
-			]
 		}
 	},
 	"storage": {
@@ -83,10 +55,5 @@
 			"providerPlugin": "awscloudformation"
 		}
 	},
-	"analytics": {
-		"ballcaststats": {
-			"service": "Kinesis",
-			"providerPlugin": "awscloudformation"
-		}
-	}
+	"analytics": {}
 }
