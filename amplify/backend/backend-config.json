@@ -42,7 +42,6 @@
 					"category": "api",
 					"resourceName": "corefootball",
 					"attributes": [
-						"NGetAttFixtureTableStreamArn",
 						"GraphQLAPIIdOutput",
 						"GraphQLAPIEndpointOutput"
 					]
@@ -52,12 +51,41 @@
 		"relay": {
 			"service": "Lambda",
 			"providerPlugin": "awscloudformation",
-			"build": true
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "analytics",
+					"resourceName": "ballcaststats",
+					"attributes": [
+						"kinesisStreamArn"
+					]
+				}
+			]
+		},
+		"testkinesis": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "analytics",
+					"resourceName": "ballcaststats",
+					"attributes": [
+						"kinesisStreamArn"
+					]
+				}
+			]
 		}
 	},
 	"storage": {
 		"tracereplayspdumps": {
 			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
+	},
+	"analytics": {
+		"ballcaststats": {
+			"service": "Kinesis",
 			"providerPlugin": "awscloudformation"
 		}
 	}

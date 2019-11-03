@@ -4,6 +4,10 @@
 	"Parameters": {
 		"env": {
 			"Type": "String"
+		},
+		"analyticsballcaststatskinesisStreamArn": {
+			"Type": "String",
+			"Default": "analyticsballcaststatskinesisStreamArn"
 		}
 	},
 	"Conditions": {
@@ -50,6 +54,9 @@
 						},
 						"REGION": {
 							"Ref": "AWS::Region"
+						},
+						"ANALYTICS_BALLCASTSTATS_KINESISSTREAMARN": {
+							"Ref": "analyticsballcaststatskinesisStreamArn"
 						}
 					}
 				},
@@ -63,7 +70,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
-					"S3Key": "amplify-builds/relay-6c79554f5575784f7456-build.zip"
+					"S3Key": "amplify-builds/relay-4361382b3843557a3453-build.zip"
 				}
 			}
 		},
@@ -143,6 +150,40 @@
 										}
 									}
 								]
+							}
+						}
+					]
+				}
+			}
+		},
+		"AmplifyResourcesPolicy": {
+			"DependsOn": [
+				"LambdaExecutionRole"
+			],
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": "amplify-lambda-execution-policy",
+				"Roles": [
+					{
+						"Ref": "LambdaExecutionRole"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": [
+								"kinesis:DescribeStream",
+								"kinesis:DescribeStreamSummary",
+								"kinesis:GetRecords",
+								"kinesis:GetShardIterator",
+								"kinesis:ListShards",
+								"kinesis:ListStreams",
+								"kinesis:SubscribeToShard"
+							],
+							"Resource": {
+								"Ref": "analyticsballcaststatskinesisStreamArn"
 							}
 						}
 					]

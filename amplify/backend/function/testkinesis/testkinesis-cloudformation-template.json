@@ -5,17 +5,9 @@
 		"env": {
 			"Type": "String"
 		},
-		"apicorefootballNGetAttFixtureTableStreamArn": {
+		"analyticsballcaststatskinesisStreamArn": {
 			"Type": "String",
-			"Default": "arn:aws:dynamodb:eu-central-1:229321913319:table/Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod/stream/2019-09-25T07:11:12.059"
-		},
-		"apicorefootballGraphQLAPIIdOutput": {
-			"Type": "String",
-			"Default": "pm6xpu3ilvfb5ozt37kkpj26ka"
-		},
-		"apicorefootballGraphQLAPIEndpointOutput": {
-			"Type": "String",
-			"Default": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql"
+			"Default": "analyticsballcaststatskinesisStreamArn"
 		}
 	},
 	"Conditions": {
@@ -40,12 +32,12 @@
 				"FunctionName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"fixturerelay",
+						"testkinesis",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"fixturerelay",
+									"testkinesis",
 									"-",
 									{
 										"Ref": "env"
@@ -62,12 +54,6 @@
 						},
 						"REGION": {
 							"Ref": "AWS::Region"
-						},
-						"API_COREFOOTBALL_GRAPHQLAPIIDOUTPUT": {
-							"Ref": "apicorefootballGraphQLAPIIdOutput"
-						},
-						"API_COREFOOTBALL_GRAPHQLAPIENDPOINTOUTPUT": {
-							"Ref": "apicorefootballGraphQLAPIEndpointOutput"
 						}
 					}
 				},
@@ -81,7 +67,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
-					"S3Key": "amplify-builds/fixturerelay-512b335958462b4b7057-build.zip"
+					"S3Key": "amplify-builds/testkinesis-56356c647a2f644b797a-build.zip"
 				}
 			}
 		},
@@ -91,12 +77,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"ballcaststatsLambdaRole08451386",
+						"ballcaststatsLambdaRole85656539",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"ballcaststatsLambdaRole08451386",
+									"ballcaststatsLambdaRole85656539",
 									"-",
 									{
 										"Ref": "env"
@@ -185,42 +171,17 @@
 						{
 							"Effect": "Allow",
 							"Action": [
-								"dynamodb:DescribeStream",
-								"dynamodb:GetRecords",
-								"dynamodb:GetShardIterator",
-								"dynamodb:ListStreams"
+								"kinesis:DescribeStream",
+								"kinesis:DescribeStreamSummary",
+								"kinesis:GetRecords",
+								"kinesis:GetShardIterator",
+								"kinesis:ListShards",
+								"kinesis:ListStreams",
+								"kinesis:SubscribeToShard"
 							],
 							"Resource": {
-								"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
+								"Ref": "analyticsballcaststatskinesisStreamArn"
 							}
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"appsync:GraphQL"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:appsync:",
-											{
-												"Ref": "AWS::Region"
-											},
-											":",
-											{
-												"Ref": "AWS::AccountId"
-											},
-											":apis/",
-											{
-												"Ref": "apicorefootballGraphQLAPIIdOutput"
-											},
-											"/*"
-										]
-									]
-								}
-							]
 						}
 					]
 				}
@@ -234,10 +195,9 @@
 			],
 			"Properties": {
 				"BatchSize": 100,
-				"MaximumBatchingWindowInSeconds": 1,
 				"Enabled": true,
 				"EventSourceArn": {
-					"Ref": "apicorefootballNGetAttFixtureTableStreamArn"
+					"Ref": "analyticsballcaststatskinesisStreamArn"
 				},
 				"FunctionName": {
 					"Fn::GetAtt": [
