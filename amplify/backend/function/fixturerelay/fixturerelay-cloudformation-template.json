@@ -186,7 +186,11 @@
 								"dynamodb:GetShardIterator",
 								"dynamodb:ListStreams"
 							],
-							"Resource": {"Fn::ImportValue":{"Fn::Sub":"${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"}}
+							"Resource": {
+								"Fn::ImportValue": {
+									"Fn::Sub": "${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"
+								}
+							}
 						},
 						{
 							"Effect": "Allow",
@@ -230,7 +234,11 @@
 				"BatchSize": 100,
 				"MaximumBatchingWindowInSeconds": 1,
 				"Enabled": true,
-				"EventSourceArn": {"Fn::ImportValue":{"Fn::Sub":"${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"}},
+				"EventSourceArn": {
+					"Fn::ImportValue": {
+						"Fn::Sub": "${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"
+					}
+				},
 				"FunctionName": {
 					"Fn::GetAtt": [
 						"LambdaFunction",
