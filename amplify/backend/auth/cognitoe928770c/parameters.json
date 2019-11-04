@@ -1,6 +1,6 @@
 {
     "identityPoolName": "cognitoe928770c_identitypool_e928770c",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "cognit78e1bba0",
     "userPoolName": "cognitoe928770c_userpool_e928770c",
     "autoVerifiedAttributes": [

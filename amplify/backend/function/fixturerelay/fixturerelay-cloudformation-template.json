@@ -5,10 +5,6 @@
 		"env": {
 			"Type": "String"
 		},
-		"pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn": {
-			"Type": "String",
-			"Default": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
-		},
 		"apicorefootballGraphQLAPIIdOutput": {
 			"Type": "String",
 			"Default": "apicorefootballGraphQLAPIIdOutput"
@@ -190,9 +186,7 @@
 								"dynamodb:GetShardIterator",
 								"dynamodb:ListStreams"
 							],
-							"Resource": {
-								"Ref": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
-							}
+							"Resource": {"Fn::ImportValue":{"Fn::Sub":"${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"}}
 						},
 						{
 							"Effect": "Allow",
@@ -236,9 +230,7 @@
 				"BatchSize": 100,
 				"MaximumBatchingWindowInSeconds": 1,
 				"Enabled": true,
-				"EventSourceArn": {
-					"Ref": "pm6xpu3ilvfb5ozt37kkpj26kaGetAttFixtureTableStreamArn"
-				},
+				"EventSourceArn": {"Fn::ImportValue":{"Fn::Sub":"${apicorefootballGraphQLAPIIdOutput}:GetAtt:FixtureTable:StreamArn"}},
 				"FunctionName": {
 					"Fn::GetAtt": [
 						"LambdaFunction",

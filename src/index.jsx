@@ -12,7 +12,7 @@ import ruLocaleData from 'react-intl/locale-data/ru'
 addLocaleData(enLocaleData);
 addLocaleData(ruLocaleData);
 
-import Amplify, { Auth } from 'aws-amplify';
+import Amplify, { Auth, Analytics, AWSKinesisProvider } from 'aws-amplify';
 import awsmobile from './aws-exports';
 import Root from './Root'
 
@@ -28,37 +28,67 @@ document.body.appendChild(root)
 render(<Root />, root)
 
 // example to have subscriptions working
-// const client = new AWSAppSyncClient({
-//   url: awsmobile.aws_appsync_graphqlEndpoint,
-//   region: awsmobile.aws_appsync_region,
-//   auth: {
-//     type: awsmobile.aws_appsync_authenticationType,
-//     jwtToken: async () => (await Auth.currentSession()).getAccessToken().getJwtToken()
-//   },
-//   disableOffline: true
+const client = new AWSAppSyncClient({
+  url: awsmobile.aws_appsync_graphqlEndpoint,
+  region: awsmobile.aws_appsync_region,
+  auth: {
+    type: awsmobile.aws_appsync_authenticationType,
+    jwtToken: async () => (await Auth.currentSession()).getAccessToken().getJwtToken()
+  },
+  disableOffline: true
+});
+
+client.subscribe({
+  query: gql`
+    subscription ON_UPDATED_FIXTURES {
+      onUpdatedFixtures {
+        id,
+        status,
+        time {
+          min,
+          sec
+        },
+        scores {
+          current {
+            home, 
+            away
+          }
+        }
+        homeTeamName,
+        awayTeamName,
+        homeTeamId,
+        awayTeamId
+      }
+    }
+  `
+}).subscribe({
+  next: ({data: { onUpdatedFixtures }}) => {
+    // onUpdatedFixtures.forEach(fx => console.log({
+    //   summary: `${fx.homeTeamName} ${fx.scores.current.home} : ${fx.scores.current.away} ${fx.awayTeamName}`,
+    //   time: `${fx.time.min < 10 ? '0' : ''}${fx.time.min}:${fx.time.sec < 10 ? '0' : ''}${fx.time.sec}`,
+    //   status: fx.status
+    // }))
+
+    onUpdatedFixtures.forEach(fx => console.log(fx))
+  }
+});
+
+// Analytics.record({ name: 'albumVisit' });
+
+// const kinesisProvider = new AWSKinesisProvider({ region: 'eu-central-1' });
+// Analytics.addPluggable(kinesisProvider);
+// Analytics.record({
+//   data: {},
+//   partitionKey: '0', 
+//   streamName: 'testkinesis-euprod'
+// }, 'AWSKinesis');
+
+// kinesisProvider.record({
+//   event: {
+//     data: {},
+//     partitionKey: '0', 
+//     streamName: 'testkinesis-euprod'
+//   }
+// }).then(res => { 
+//   console.log("GOT HERE");
 // });
-
-// client.subscribe({
-//   query: gql`
-//     subscription ON_UPDATED_FIXTURES {
-//       onUpdatedFixtures {
-//         id,
-//         status,
-//         time {
-//           min,
-//           sec
-//         },
-//         homeTeamName,
-//         awayTeamName
-//       }
-//     }
-//   `
-// }).subscribe({
-//   next: ({data: { onUpdatedFixtures }}) => onUpdatedFixtures.forEach(fx => console.log(fx))
-// })
-
-// {
-//   summary: `${fx.homeTeamName}  ${fx.awayTeamName}`,
-//   time: `${fx.time.min < 10 ? '0' : ''}${fx.time.min}:${fx.time.sec < 10 ? '0' : ''}${fx.time.sec}`,
-//   status: fx.status
-// })

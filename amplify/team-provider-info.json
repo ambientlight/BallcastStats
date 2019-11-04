@@ -47,6 +47,9 @@
         "categories": {
             "auth": {
                 "cognitoe928770c": {}
+            },
+            "function": {
+                "fixturerelay": {}
             }
         }
     }
