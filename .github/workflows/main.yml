@@ -16,9 +16,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        should_skip_npm_install: true
     - name: test amplify-cli-action
       uses: ambientlight/amplify-deploy-action@master
+      with:
+        should_skip_npm_install: true
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
