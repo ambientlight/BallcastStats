@@ -17,7 +17,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: test amplify-cli-action
-      uses: ambientlight/amplify-deploy-action@1
+      uses: ambientlight/amplify-deploy-action@v1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
