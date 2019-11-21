@@ -16,12 +16,45 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: test amplify-cli-action
+    - run: npm install
+    - name: set test environment
       uses: ambientlight/amplify-cli-action@master
       with:
-        should_skip_npm_install: false
-        amplify_env: euprod
+        amplify_command: configure
+        amplify_env: pull_test
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: eu-central-1
+        AWS_REGION: ap-southeast-1
+    - name: set test environment
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: configure
+        amplify_env: pull_test
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-southeast-1
+    - name: set test environment
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: push
+        amplify_env: pull_test
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-southeast-1
+    - name: npm install, build, test
+      run: |
+        npm run build
+        npm run test
+    - name: undeploy test environment
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: delete
+        delete_lock: false
+        amplify_env: pull_test
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-southeast-1

@@ -1,144 +1,144 @@
 {
-    "providers": {
-        "awscloudformation": {
-            "AuthRoleName": "ballcaststats-euprod-20190922212331-authRole",
-            "UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-euprod-20190922212331-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-euprod-20190922212331-authRole",
-            "Region": "eu-central-1",
-            "DeploymentBucketName": "ballcaststats-euprod-20190922212331-deployment",
-            "UnauthRoleName": "ballcaststats-euprod-20190922212331-unauthRole",
-            "StackName": "ballcaststats-euprod-20190922212331",
-            "StackId": "arn:aws:cloudformation:eu-central-1:229321913319:stack/ballcaststats-euprod-20190922212331/2ca751d0-dd3c-11e9-a5d9-0a4de0a8f3d8"
-        },
-        "categories": {
-            "auth": {
-                "cognitoe928770c": {}
-            }
-        }
-    },
-    "auth": {
-        "cognitoe928770c": {
-            "service": "Cognito",
-            "providerPlugin": "awscloudformation",
-            "output": {
-                "AppClientSecret": "1lmerkohv7c79u868cdd2pdj09i8e2c080jlpoahgbs9qinh7oai",
-                "UserPoolId": "eu-central-1_9ILsWqTTc",
-                "AppClientIDWeb": "231644c3vp7bjd11gh53v54gqg",
-                "AppClientID": "109nlfeafe1cvfhjbuf1sf6rgb",
-                "IdentityPoolId": "eu-central-1:1dba0f7e-f5cc-4d3d-9f63-7eeb3ccdb952",
-                "IdentityPoolName": "cognitoe928770c_identitypool_e928770c__euprod",
-                "UserPoolName": "cognitoe928770c_userpool_e928770c"
-            },
-            "lastPushTimeStamp": "2019-11-21T07:20:23.580Z",
-            "providerMetadata": {
-                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
-                "logicalId": "authcognitoe928770c"
-            },
-            "lastPushDirHash": "n00IB6TUORI5lV2S6wEF27Sk99w="
-        }
-    },
-    "hosting": {
-        "S3AndCloudFront": {
-            "service": "S3AndCloudFront",
-            "providerPlugin": "awscloudformation",
-            "output": {
-                "CloudFrontSecureURL": "https://d29raqdmbf7apv.cloudfront.net",
-                "S3BucketSecureURL": "https://ballcaststats-euprod.s3.amazonaws.com",
-                "WebsiteURL": "http://ballcaststats-euprod.s3-website.eu-central-1.amazonaws.com",
-                "CloudFrontDistributionID": "E3Q8F87JEV1P32",
-                "Region": "eu-central-1",
-                "HostingBucketName": "ballcaststats-euprod",
-                "CloudFrontDomainName": "d29raqdmbf7apv.cloudfront.net"
-            },
-            "lastPushTimeStamp": "2019-11-21T07:20:23.581Z",
-            "providerMetadata": {
-                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/hosting/template.json",
-                "logicalId": "hostingS3AndCloudFront"
-            }
-        }
-    },
-    "api": {
-        "corefootball": {
-            "service": "AppSync",
-            "providerPlugin": "awscloudformation",
-            "output": {
-                "authConfig": {
-                    "additionalAuthenticationProviders": [
-                        {
-                            "authenticationType": "AWS_IAM"
-                        }
-                    ],
-                    "defaultAuthentication": {
-                        "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-                        "userPoolConfig": {
-                            "userPoolId": "authcognitoe928770c"
-                        }
-                    }
-                },
-                "GraphQLAPIIdOutput": "pm6xpu3ilvfb5ozt37kkpj26ka",
-                "GraphQLAPIEndpointOutput": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql"
-            },
-            "lastPushTimeStamp": "2019-11-21T07:20:23.582Z",
-            "exports": {
-                "ballcaststats-euprod-20190922212331-apicorefootball-Y57ANBEIAU5X:GraphQLApiEndpoint": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql",
-                "ballcaststats-euprod-20190922212331-apicorefootball-Y57ANBEIAU5X:GraphQLApiId": "pm6xpu3ilvfb5ozt37kkpj26ka",
-                "pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureDataSource:Name": "FixtureTable",
-                "pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureTable:Name": "Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod",
-                "pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureTable:StreamArn": "arn:aws:dynamodb:eu-central-1:229321913319:table/Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod/stream/2019-09-25T07:11:12.059"
-            },
-            "providerMetadata": {
-                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/api/cloudformation-template.json",
-                "logicalId": "apicorefootball"
-            },
-            "lastPushDirHash": "pZ1wTQ99vA/BesaCLWZ17LC0LA0="
-        }
-    },
-    "function": {
-        "fixturerelay": {
-            "service": "Lambda",
-            "providerPlugin": "awscloudformation",
-            "build": true,
-            "dependsOn": [
-                {
-                    "category": "api",
-                    "resourceName": "corefootball",
-                    "attributes": [
-                        "GraphQLAPIIdOutput",
-                        "GraphQLAPIEndpointOutput"
-                    ]
-                }
-            ],
-            "output": {
-                "Region": "eu-central-1",
-                "Arn": "arn:aws:lambda:eu-central-1:229321913319:function:fixturerelay-euprod",
-                "Name": "fixturerelay-euprod",
-                "LambdaExecutionRole": "ballcaststatsLambdaRole08451386-euprod"
-            },
-            "lastPushTimeStamp": "2019-11-21T07:20:23.582Z",
-            "providerMetadata": {
-                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/fixturerelay-cloudformation-template.json",
-                "logicalId": "functionfixturerelay"
-            },
-            "lastBuildTimeStamp": "2019-11-03T16:56:27.710Z",
-            "lastPackageTimeStamp": "2019-11-03T16:56:38.098Z",
-            "distZipFilename": "fixturerelay-58446266735a6331506f-build.zip",
-            "lastPushDirHash": "iDVC6VEl99JExMo6SfOJrcVgZ0g="
-        }
-    },
-    "storage": {
-        "tracereplayspdumps": {
-            "service": "S3",
-            "providerPlugin": "awscloudformation",
-            "output": {
-                "BucketName": "tracereplay-spdumps-euprod",
-                "Region": "eu-central-1"
-            },
-            "lastPushTimeStamp": "2019-11-21T07:20:23.583Z",
-            "providerMetadata": {
-                "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
-                "logicalId": "storagetracereplayspdumps"
-            }
-        }
-    },
-    "analytics": {}
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "ballcaststats-euprod-20190922212331-authRole",
+			"UnauthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-euprod-20190922212331-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::229321913319:role/ballcaststats-euprod-20190922212331-authRole",
+			"Region": "eu-central-1",
+			"DeploymentBucketName": "ballcaststats-euprod-20190922212331-deployment",
+			"UnauthRoleName": "ballcaststats-euprod-20190922212331-unauthRole",
+			"StackName": "ballcaststats-euprod-20190922212331",
+			"StackId": "arn:aws:cloudformation:eu-central-1:229321913319:stack/ballcaststats-euprod-20190922212331/2ca751d0-dd3c-11e9-a5d9-0a4de0a8f3d8"
+		},
+		"categories": {
+			"auth": {
+				"cognitoe928770c": {}
+			}
+		}
+	},
+	"auth": {
+		"cognitoe928770c": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"AppClientSecret": "1lmerkohv7c79u868cdd2pdj09i8e2c080jlpoahgbs9qinh7oai",
+				"UserPoolId": "eu-central-1_9ILsWqTTc",
+				"AppClientIDWeb": "231644c3vp7bjd11gh53v54gqg",
+				"AppClientID": "109nlfeafe1cvfhjbuf1sf6rgb",
+				"IdentityPoolId": "eu-central-1:1dba0f7e-f5cc-4d3d-9f63-7eeb3ccdb952",
+				"IdentityPoolName": "cognitoe928770c_identitypool_e928770c__euprod",
+				"UserPoolName": "cognitoe928770c_userpool_e928770c"
+			},
+			"lastPushTimeStamp": "2019-11-21T09:15:21.699Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
+				"logicalId": "authcognitoe928770c"
+			},
+			"lastPushDirHash": "n00IB6TUORI5lV2S6wEF27Sk99w="
+		}
+	},
+	"hosting": {
+		"S3AndCloudFront": {
+			"service": "S3AndCloudFront",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"CloudFrontSecureURL": "https://d29raqdmbf7apv.cloudfront.net",
+				"S3BucketSecureURL": "https://ballcaststats-euprod.s3.amazonaws.com",
+				"WebsiteURL": "http://ballcaststats-euprod.s3-website.eu-central-1.amazonaws.com",
+				"CloudFrontDistributionID": "E3Q8F87JEV1P32",
+				"Region": "eu-central-1",
+				"HostingBucketName": "ballcaststats-euprod",
+				"CloudFrontDomainName": "d29raqdmbf7apv.cloudfront.net"
+			},
+			"lastPushTimeStamp": "2019-11-21T09:15:21.701Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/hosting/template.json",
+				"logicalId": "hostingS3AndCloudFront"
+			}
+		}
+	},
+	"api": {
+		"corefootball": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"additionalAuthenticationProviders": [
+						{
+							"authenticationType": "AWS_IAM"
+						}
+					],
+					"defaultAuthentication": {
+						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
+						"userPoolConfig": {
+							"userPoolId": "authcognitoe928770c"
+						}
+					}
+				},
+				"GraphQLAPIIdOutput": "pm6xpu3ilvfb5ozt37kkpj26ka",
+				"GraphQLAPIEndpointOutput": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql"
+			},
+			"lastPushTimeStamp": "2019-11-21T09:15:21.705Z",
+			"exports": {
+				"ballcaststats-euprod-20190922212331-apicorefootball-Y57ANBEIAU5X:GraphQLApiEndpoint": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql",
+				"ballcaststats-euprod-20190922212331-apicorefootball-Y57ANBEIAU5X:GraphQLApiId": "pm6xpu3ilvfb5ozt37kkpj26ka",
+				"pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureDataSource:Name": "FixtureTable",
+				"pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureTable:Name": "Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod",
+				"pm6xpu3ilvfb5ozt37kkpj26ka:GetAtt:FixtureTable:StreamArn": "arn:aws:dynamodb:eu-central-1:229321913319:table/Fixture-pm6xpu3ilvfb5ozt37kkpj26ka-euprod/stream/2019-09-25T07:11:12.059"
+			},
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"logicalId": "apicorefootball"
+			},
+			"lastPushDirHash": "ZIt79dXAdfvmME+lSx3Q5ftATAg="
+		}
+	},
+	"function": {
+		"fixturerelay": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "api",
+					"resourceName": "corefootball",
+					"attributes": [
+						"GraphQLAPIIdOutput",
+						"GraphQLAPIEndpointOutput"
+					]
+				}
+			],
+			"output": {
+				"Region": "eu-central-1",
+				"Arn": "arn:aws:lambda:eu-central-1:229321913319:function:fixturerelay-euprod",
+				"Name": "fixturerelay-euprod",
+				"LambdaExecutionRole": "ballcaststatsLambdaRole08451386-euprod"
+			},
+			"lastPushTimeStamp": "2019-11-21T09:15:21.702Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/fixturerelay-cloudformation-template.json",
+				"logicalId": "functionfixturerelay"
+			},
+			"lastBuildTimeStamp": "2019-11-03T16:56:27.710Z",
+			"lastPackageTimeStamp": "2019-11-03T16:56:38.098Z",
+			"distZipFilename": "fixturerelay-58446266735a6331506f-build.zip",
+			"lastPushDirHash": "iDVC6VEl99JExMo6SfOJrcVgZ0g="
+		}
+	},
+	"storage": {
+		"tracereplayspdumps": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"BucketName": "tracereplay-spdumps-euprod",
+				"Region": "eu-central-1"
+			},
+			"lastPushTimeStamp": "2019-11-21T09:15:21.703Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"logicalId": "storagetracereplayspdumps"
+			}
+		}
+	},
+	"analytics": {}
 }
