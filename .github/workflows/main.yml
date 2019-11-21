@@ -26,16 +26,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-southeast-1
-    - name: set test environment
-      uses: ambientlight/amplify-cli-action@master
-      with:
-        amplify_command: configure
-        amplify_env: pull_test
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-southeast-1
-    - name: set test environment
+    - name: push test environment
       uses: ambientlight/amplify-cli-action@master
       with:
         amplify_command: push
@@ -44,7 +35,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-southeast-1
-    - name: npm install, build, test
+    - name: build and test
       run: |
         npm run build
         npm run test
