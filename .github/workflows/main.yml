@@ -12,11 +12,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
     - name: use node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
     - run: npm install
+
     - name: set test environment
       uses: ambientlight/amplify-cli-action@master
       with:
@@ -26,6 +29,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-southeast-1
+
     - name: push test environment
       uses: ambientlight/amplify-cli-action@master
       with:
@@ -35,10 +39,12 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-southeast-1
+        
     - name: build and test
       run: |
         npm run build
         npm run test
+        
     - name: undeploy test environment
       uses: ambientlight/amplify-cli-action@master
       with:
