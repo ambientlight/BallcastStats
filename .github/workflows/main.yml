@@ -17,7 +17,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: test amplify-cli-action
-      uses: ambientlight/amplify-deploy-action@master
+      uses: ambientlight/amplify-cli-action@master
       with:
         should_skip_npm_install: false
         amplify_env: euprod
