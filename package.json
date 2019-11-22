@@ -20,7 +20,7 @@
   ],
   "author": "Ballcast",
   "devDependencies": {
-    "@aws-amplify/cli": "git+https://github.com/ambientlight/amplify-cli.git#lambda-custom-event-source",
+    "@aws-amplify/cli": "git+https://github.com/ambientlight/amplify-cli.git#ambientlight",
     "@babel/core": "^7.2.2",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.3.1",
