@@ -28,6 +28,9 @@ jobs:
           echo "amplify not available"
         fi
 
+        MAGIC=Release
+        if [[ ${MAGIC,,} =~ prod|release|master ]] ; then echo "yeah" ; else echo "not found" ; fi
+
     # - name: add test environment
     #   uses: ambientlight/amplify-cli-action@master
     #   with:
