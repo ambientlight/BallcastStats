@@ -20,7 +20,6 @@
   ],
   "author": "Ballcast",
   "devDependencies": {
-    "@aws-amplify/cli": "3.17.0",
     "@babel/core": "^7.2.2",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.3.1",
