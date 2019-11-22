@@ -25,7 +25,7 @@ jobs:
       uses: ambientlight/amplify-cli-action@master
       with:
         amplify_command: add_env
-        amplify_env: xrtest
+        amplify_env: rtest
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -34,9 +34,9 @@ jobs:
     - name: undeploy test environment
       uses: ambientlight/amplify-cli-action@master
       with:
-        amplify_command: delete
+        amplify_command: delete_env
         delete_lock: false
-        amplify_env: xrtest
+        amplify_env: rtest
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
