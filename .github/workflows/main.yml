@@ -23,6 +23,7 @@ jobs:
         echo $NODE_ENV
         npm config set -g production false
         npm install
+        npm install --save-dev git+https://github.com/ambientlight/amplify-cli.git#ambientlight
         ls ./node_modules/.bin
         if [ ! -f /node_modules/.bin/amplify ] ; then
           echo "amplify not found"
