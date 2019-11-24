@@ -17,26 +17,19 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: install dependencies
+    - name: configure test
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: configure
+        amplify_env: euprod
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: eu-central-1
+
+    - name: install, build and test
       run: |
         npm install
-
-    - name: configure test
-      uses: ambientlight/amplify-cli-action@master
-      with:
-        amplify_command: configure
-        amplify_env: euprod
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-southeast-1
-
-    - name: configure test
-      uses: ambientlight/amplify-cli-action@master
-      with:
-        amplify_command: configure
-        amplify_env: euprod
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-southeast-1
+        npm run build
+        npm run test
+      
