@@ -21,31 +21,25 @@ jobs:
     - name: install dependencies
       run: |
         npm install
-        npm install -g @aws-amplify/cli
-        which amplify
 
-    - name: test path
-      run: which amplify
+    - name: configure test
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: configure
+        amplify_env: euprod
+        amplify_cli_version: '3.17.1-alpha.35'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-southeast-1
 
-    # - name: add test environment
-    #   uses: ambientlight/amplify-cli-action@master
-    #   with:
-    #     amplify_command: add_env
-    #     amplify_env: prodtest
-    #     amplify_cli_version: '3.17.1-alpha.35'
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: ap-southeast-1
-        
-    # - name: undeploy test environment
-    #   uses: ambientlight/amplify-cli-action@master
-    #   with:
-    #     amplify_command: delete_env
-    #     delete_lock: false
-    #     amplify_env: prodtest
-    #     amplify_cli_version: '3.17.1-alpha.35'
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: ap-southeast-1
+    - name: configure test
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: configure
+        amplify_env: euprod
+        amplify_cli_version: '3.17.1-alpha.35'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-southeast-1
