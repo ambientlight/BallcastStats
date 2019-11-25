@@ -21,6 +21,7 @@ jobs:
     - name: set amplify env name
       id: setenvname
       run: |
+        echo $(echo ${GITHUB_REF//[-_]/} | cut -c12-)
         echo "##[set-output name=amplifyenvname;]$(echo ${GITHUB_REF//[-_]/} | cut -c12-)"
     - name: deploy test environment
       uses: ambientlight/amplify-cli-action@master
