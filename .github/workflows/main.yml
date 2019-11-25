@@ -18,6 +18,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+    - name: test head ref
+      run: |
+        echo $GITHUB_HEAD_REF
+
     # - name: install dependencies
     #   run: |
     #     npm install
