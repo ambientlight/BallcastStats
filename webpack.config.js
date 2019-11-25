@@ -33,7 +33,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 			src: path.resolve(__dirname, "src"),
 			assets: path.resolve(__dirname, "assets")
 		},
-		extensions: [".js", ".jsx", ".json"]
+		extensions: [".webpack.js", ".web.js", ".mjs", ".js", ".jsx", ".json"]
 	},
 	
 	module: {
@@ -52,7 +52,8 @@ const config = (env, ifProduction, ifNotProduction) => ({
 				limit: 8192,
 				fallback: 'file-loader'
 			}
-		}}]
+		}}, 
+		{ test: /\.mjs$/, include: /node_modules/, type: "javascript/auto" }]
 	},
 	plugins: removeEmpty([
 		new webpack.DefinePlugin({
