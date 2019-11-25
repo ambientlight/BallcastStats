@@ -28,17 +28,16 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: eu-central-1
 
-    - name: install, build and test
+    - name: npm install
       run: |
         npm install
-        npm run build
-        npm run test
-
+        
     - name: deploy
       uses: ambientlight/amplify-cli-action@v0.1.1
       with:
         amplify_command: publish
         amplify_env: euprod
+        build_command: 'npm run build && npm run test'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
