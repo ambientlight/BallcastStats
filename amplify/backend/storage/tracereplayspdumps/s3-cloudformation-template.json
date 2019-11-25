@@ -149,9 +149,9 @@
 	},
 	"Resources": {
 		"S3Bucket": {
+			
 			"Type": "AWS::S3::Bucket",
-		    
-			"DeletionPolicy" : "Retain",
+			"DeletionPolicy" : "Delete",
 			"Properties": {
 				"BucketName": {
                     "Fn::If": [
