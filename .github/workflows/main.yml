@@ -21,6 +21,7 @@ jobs:
     - name: test head ref
       run: |
         echo $GITHUB_HEAD_REF
+        echo $GITHUB_BASE_REF
 
     # - name: install dependencies
     #   run: |
