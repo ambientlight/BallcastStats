@@ -45,7 +45,7 @@ jobs:
     - name: undeploy test environment
       uses: ambientlight/amplify-cli-action@master
       # run even if previous step fails
-      if: ${{ failure() || success() }}
+      if: failure() || success()
       with:
         amplify_command: delete_env
         amplify_env: ${{ steps.setenvname.outputs.amplifyenvname }}
