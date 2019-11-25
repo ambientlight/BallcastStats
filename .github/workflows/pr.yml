@@ -21,17 +21,9 @@ jobs:
     - name: set amplify env name
       id: setenvname
       run: |
-        echo $GITHUB_REF
-        echo $GITHUB_WORKFLOW
-        echo $GITHUB_HEAD_REF
-        echo $GITHUB_BASE_REF
-        echo $GITHUB_EVENT_NAME
-        echo $GITHUB_WORKSPACE
-        echo $GITHUB_ACTION
-        echo $GITHUB_EVENT_PATH
-
-        echo $(echo ${GITHUB_REF//[-_]/} | cut -c12-)
-        echo "##[set-output name=amplifyenvname;]$(echo ${GITHUB_REF//[-_]/} | cut -c12-)"
+        # use GITHUB_HEAD_REF that is set to PR source branch
+        # also remove -_ from branch name and limit kength to 10 for amplify env restriction
+        echo "##[set-output name=amplifyenvname;]$(echo ${GITHUB_HEAD_REF//[-_]/} | cut -c-10)"
     - name: deploy test environment
       uses: ambientlight/amplify-cli-action@master
       with:
@@ -49,7 +41,7 @@ jobs:
         # npm run build
         # npm run test
     
-    - name: deploy
+    - name: undeploy test environment
       uses: ambientlight/amplify-cli-action@master
       with:
         amplify_command: delete_env
