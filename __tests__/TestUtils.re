@@ -1,3 +1,5 @@
+open ReactIntl;
+
 let fullfillIn = (callback, observable) => 
   observable 
   |> Rx.Observable.subscribe(
@@ -39,7 +41,7 @@ let observableActionRecordingStore = middleware => {
  * <IntlProvider> needs to exist in the component ancestry. 
  */
 let withIntl = element => 
-  <ReactIntl.IntlProvider locale="en">element</ReactIntl.IntlProvider>
+  <IntlProvider locale="en">element</IntlProvider>
 
 let getById = (id, ~options=?, result) =>
   ReactTestingLibrary.getByText(~matcher=`Func((_text, node) => 

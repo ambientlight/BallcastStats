@@ -32,7 +32,7 @@
                 "IdentityPoolName": "cognitoe928770c_identitypool_e928770c__euprod",
                 "UserPoolName": "cognitoe928770c_userpool_e928770c"
             },
-            "lastPushTimeStamp": "2019-11-25T10:47:31.546Z",
+            "lastPushTimeStamp": "2019-11-27T18:19:43.514Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/auth/cognitoe928770c-cloudformation-template.yml",
                 "logicalId": "authcognitoe928770c"
@@ -52,7 +52,7 @@
                 "HostingBucketName": "ballcaststats-euprod",
                 "CloudFrontDomainName": "d29raqdmbf7apv.cloudfront.net"
             },
-            "lastPushTimeStamp": "2019-11-25T10:47:31.548Z",
+            "lastPushTimeStamp": "2019-11-27T18:19:43.515Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/hosting/template.json",
                 "logicalId": "hostingS3AndCloudFront"
@@ -80,7 +80,7 @@
                 "GraphQLAPIIdOutput": "pm6xpu3ilvfb5ozt37kkpj26ka",
                 "GraphQLAPIEndpointOutput": "https://5limzl6a2rdd7jn6bqyiqsgzyu.appsync-api.eu-central-1.amazonaws.com/graphql"
             },
-            "lastPushTimeStamp": "2019-11-25T10:47:31.550Z",
+            "lastPushTimeStamp": "2019-11-27T18:19:43.515Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/api/cloudformation-template.json",
                 "logicalId": "apicorefootball"
@@ -108,7 +108,7 @@
                 "Name": "fixturerelay-euprod",
                 "LambdaExecutionRole": "ballcaststatsLambdaRole08451386-euprod"
             },
-            "lastPushTimeStamp": "2019-11-25T10:47:31.552Z",
+            "lastPushTimeStamp": "2019-11-27T18:19:43.516Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/function/fixturerelay-cloudformation-template.json",
                 "logicalId": "functionfixturerelay"
@@ -123,7 +123,7 @@
                 "BucketName": "tracereplay-spdumps-euprod",
                 "Region": "eu-central-1"
             },
-            "lastPushTimeStamp": "2019-11-25T10:47:31.552Z",
+            "lastPushTimeStamp": "2019-11-27T18:19:43.516Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/ballcaststats-euprod-20190922212331-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
                 "logicalId": "storagetracereplayspdumps"
