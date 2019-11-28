@@ -1,3 +1,5 @@
+[@bs.config {jsx: 3}];
+
 open Operators;
 open Css;
 open NavHeaderLocale;
@@ -24,36 +26,34 @@ module Styles {
   ]);
 }
 
-let component = ReasonReact.statelessComponent(__MODULE__);
-let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?, _children) => {
-  ...component,
-  render: _self =>
-    <div className=([Styles.root, className |? ""] >|< " ")>
-      <Logo.WithCaption dispatch caption=title/>
-      <FlexOne/>
-      <MaterialUi.Button 
-        className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
-        onClick=(_event => dispatch(`SetLocale(locale == Locale.En ? Locale.Ru : Locale.En)))
-        >
-        {locale == Locale.En 
-          ? <ReactIntl.DefinedMessage message=strings##inRussian/>
-          : <ReactIntl.DefinedMessage message=strings##inEnglish/>
-        }
-      </MaterialUi.Button>
-      <MaterialUi.Button 
-        className=Styles.button
-        onClick=((_event) => dispatch(`RouterPushRoute(Routes.formationTest)))>
-        <ReactIntl.DefinedMessage message=strings##pricing/>
-      </MaterialUi.Button>
-      <MaterialUi.Button
-        className=([Styles.button, Media.Classes.atLeastTablet, "test-navheader-signup-button"] >|< " ")
-        onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))>
-        <ReactIntl.DefinedMessage message=CommonLocale.strings##signUp/>
-      </MaterialUi.Button>
-      <MaterialUi.Button 
-        className=(Styles.button |. withTestClass("test-navheader-signin-button"))
-        onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
-        <ReactIntl.DefinedMessage message=CommonLocale.strings##signIn/>
-      </MaterialUi.Button>
-    </div>
+[@react.component]
+let make = (~title, ~locale, ~dispatch: 'action => unit, ~className=?) => {
+  <div className=([Styles.root, className |? ""] >|< " ")>
+    <Logo.WithCaption dispatch caption=title/>
+    <FlexOne/>
+    <MaterialUi.Button 
+      className=([Styles.button, Media.Classes.atLeastTablet] >|< " ")
+      onClick=(_event => dispatch(`SetLocale(locale == Locale.En ? Locale.Ru : Locale.En)))
+      >
+      {locale == Locale.En 
+        ? <DefinedMessage message=strings##inRussian/>
+        : <DefinedMessage message=strings##inEnglish/>
+      }
+    </MaterialUi.Button>
+    // <MaterialUi.Button 
+    //   className=Styles.button
+    //   onClick=((_event) => dispatch(`RouterPushRoute(Routes.formationTest)))>
+    //   <ReactIntl.DefinedMessage message=strings##pricing/>
+    // </MaterialUi.Button>
+    <MaterialUi.Button
+      className=([Styles.button, Media.Classes.atLeastTablet, "test-navheader-signup-button"] >|< " ")
+      onClick=((_event) => dispatch(`RouterPushRoute(Routes.signUp)))>
+      <DefinedMessage message=CommonLocale.strings##signUp/>
+    </MaterialUi.Button>
+    <MaterialUi.Button 
+      className=(Styles.button |. withTestClass("test-navheader-signin-button"))
+      onClick=((_event) => dispatch(`RouterPushRoute(Routes.signIn)))>
+      <DefinedMessage message=CommonLocale.strings##signIn/>
+    </MaterialUi.Button>
+  </div>
 };

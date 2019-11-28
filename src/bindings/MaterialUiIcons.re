@@ -1,12 +1,6 @@
 open MaterialUi.SvgIcon;
 
-module type IconRef = {
-  let reactClass: ReasonReact.reactClass
-};
-
-module BuildIcon = (Base: IconRef) => {
-  let reactClass = Base.reactClass;
-  
+module BaseIcon = {
   [@bs.deriving jsConverter]
   type color = [
     | [@bs.as "inherit"] `Inherit
@@ -49,39 +43,38 @@ module BuildIcon = (Base: IconRef) => {
       | FontSizeSmall(_) => "fontSizeSmall"
       | FontSizeLarge(_) => "fontSizeLarge";
     let to_obj = listOfClasses =>
-      listOfClasses|.(
-        Belt.List.reduce(
-          Js.Dict.empty(),
-          (obj, classType) => {
-            switch (classType) {
-            | Root(className)
-            | ColorPrimary(className)
-            | ColorSecondary(className)
-            | ColorAction(className)
-            | ColorError(className)
-            | ColorDisabled(className)
-            | FontSizeInherit(className)
-            | FontSizeSmall(className)
-            | FontSizeLarge(className) =>
-              Js.Dict.set(obj, to_string(classType), className)
-            };
-            obj;
-          },
-        )
-      );
+      listOfClasses->(
+                      Belt.List.reduce(
+                        Js.Dict.empty(),
+                        (obj, classType) => {
+                          switch (classType) {
+                          | Root(className)
+                          | ColorPrimary(className)
+                          | ColorSecondary(className)
+                          | ColorAction(className)
+                          | ColorError(className)
+                          | ColorDisabled(className)
+                          | FontSizeInherit(className)
+                          | FontSizeSmall(className)
+                          | FontSizeLarge(className) =>
+                            Js.Dict.set(obj, to_string(classType), className)
+                          };
+                          obj;
+                        },
+                      )
+                    );
   };
 
   [@bs.obj]
-  external makeProps:
+  external makePropsMui:
     (
+      ~children: 'children=?,
       ~className: string=?,
       ~color: string=?,
-      ~component: 'union_rpwt=?,
+      ~component: 'union_rdy3=?,
       ~fontSize: string=?,
-      ~nativeColor: string=?,
-      ~shapeRendering: string=?,
-      ~titleAccess: string=?,
-      ~viewBox: string=?,
+      ~key: string=?,
+      ~ref: ReactDOMRe.domRef=?,
       ~classes: Js.Dict.t(string)=?,
       ~style: ReactDOMRe.Style.t=?,
       unit
@@ -89,65 +82,57 @@ module BuildIcon = (Base: IconRef) => {
     _ =
     "";
 
-  let make =
-      (
-        ~className: option(string)=?,
-        ~color: option(color)=?,
-        ~component:
-          option(
-            [
-              | `String(string)
-              | `Callback('genericCallback)
-              | `ObjectGeneric(Js.t({..}))
-            ],
-          )=?,
-        ~fontSize: option(fontSize)=?,
-        ~nativeColor: option(string)=?,
-        ~shapeRendering: option(string)=?,
-        ~titleAccess: option(string)=?,
-        ~viewBox: option(string)=?,
-        ~classes: option(Classes.t)=?,
-        ~style: option(ReactDOMRe.Style.t)=?,
-        children,
-      ) =>
-    ReasonReact.wrapJsForReason(
-      ~reactClass,
-      ~props=
-        makeProps(
-          ~className?,
-          ~color=?color|.(Belt.Option.map(v => colorToJs(v))),
-          ~component=?
-            component|.(
-                        Belt.Option.map(v => MaterialUi_Helpers.unwrapValue(v))
-                      ),
-          ~fontSize=?fontSize|.(Belt.Option.map(v => fontSizeToJs(v))),
-          ~nativeColor?,
-          ~shapeRendering?,
-          ~titleAccess?,
-          ~viewBox?,
-          ~classes=?Belt.Option.map(classes, v => Classes.to_obj(v)),
-          ~style?,
-          (),
-        ),
-      children,
-    );
+  let makeProps =
+    (
+      ~children: option('children)=?,
+      ~className: option(string)=?,
+      ~color: option(color)=?,
+      ~component:
+        option(
+          [
+            | `String(string)
+            | `Callback(unit => React.element)
+            | `Element(React.element)
+          ],
+        )=?,
+      ~fontSize: option(fontSize)=?,
+      ~key: option(string)=?,
+      ~ref: option(ReactDOMRe.domRef)=?,
+      ~classes: option(Classes.t)=?,
+      ~style: option(ReactDOMRe.Style.t)=?,
+      (),
+    ) =>
+  makePropsMui(
+    ~children?,
+    ~className?,
+    ~color=?color->(Belt.Option.map(v => colorToJs(v))),
+    ~component=?
+      component->(Belt.Option.map(v => MaterialUi_Helpers.unwrapValue(v))),
+    ~fontSize=?fontSize->(Belt.Option.map(v => fontSizeToJs(v))),
+    ~key?,
+    ~ref?,
+    ~classes=?Belt.Option.map(classes, v => Classes.to_obj(v)),
+    ~style?,
+    (),
+  );
 };
 
-module Edit_ = {
+module Edit = {
+  include BaseIcon;
   [@bs.module "@material-ui/icons/Edit"]
-  external reactClass: ReasonReact.reactClass = "default";
+  external make: React.component('a) = "default";
 };
 
-module Warning_ = {
+module Warning = {
+  include BaseIcon;
+
   [@bs.module "@material-ui/icons/Warning"]
-  external reactClass: ReasonReact.reactClass = "default";
+  external make: React.component('a) = "default";
 };
 
-module Close_ = {
+module Close = {
+  include BaseIcon;
+
   [@bs.module "@material-ui/icons/Close"]
-  external reactClass: ReasonReact.reactClass = "default";
+  external make: React.component('a) = "default";
 };
-
-module Edit = BuildIcon(Edit_);
-module Warning = BuildIcon(Warning_);
-module Close = BuildIcon(Close_);

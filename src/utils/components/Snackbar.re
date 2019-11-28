@@ -1,3 +1,5 @@
+[@bs.config {jsx: 3}];
+
 open Css;
 open Operators;
 
@@ -56,45 +58,43 @@ type state = {
 
 type action = | SetOpen(bool);
 
-let make = (~key=?, ~isOpen, ~message="", ~type_=Success, ~onExited, _children) => {
-  ...ReasonReact.reducerComponent(__MODULE__),
-  
-  initialState: () => {
-    open_: isOpen
-  },
+[@react.component]
+let make = (~isOpen, ~message="", ~type_=Success, ~onExited) => {
+  let (state, send) = React.useReducer(
+    (_state: state, action) =>
+      switch(action){
+      | SetOpen(open_) => { open_: open_ }
+      },
+    {
+      open_: isOpen
+    }
+  );
 
-  reducer: (action, _state: state) =>
-    switch(action){
-    | SetOpen(open_) => ReasonReact.Update({ open_: open_ })
-    },
+  <MaterialUi.Snackbar
+    className=Styles.root
+    anchorOrigin=MaterialUi.Snackbar.AnchorOrigin.t(~horizontal=`Center, ~vertical=`Bottom)
+    autoHideDuration=`Int(5000)
+    open_=state.open_
+    onClose=((_event, _reason) => send(SetOpen(false)))
+    onExited>
 
-  render: ({ state, send }) => 
-    <MaterialUi.Snackbar
-      ?key 
-      className=Styles.root
-      anchorOrigin=MaterialUi.Snackbar.AnchorOrigin.t(~horizontal=`Center, ~vertical=`Bottom)
-      autoHideDuration=`Int(5000)
-      open_=state.open_
-      onClose=((_event, _reason) => send(SetOpen(false)))
-      onExited>
-
-      <MaterialUi.SnackbarContent 
-        className=(switch(type_){
-        | Success => Styles.success
-        | Warning => Styles.warning
-        | Error => Styles.error
-        })
-        message=(
-          <div className=Styles.message>
-            <MaterialUiIcons.Warning/>
-            <MaterialUi.Typography color=`Inherit className=Styles.messageText>{ReasonReact.string(message)}</MaterialUi.Typography>
-          </div>)
-        
-        action=(
-          <MaterialUi.IconButton color=`Inherit key="close" onClick=(_event => send(SetOpen(false)))>
-            <MaterialUiIcons.Close/>
-          </MaterialUi.IconButton>
-        )>
-      </MaterialUi.SnackbarContent>
-    </MaterialUi.Snackbar>
-}
+    <MaterialUi.SnackbarContent 
+      className=(switch(type_){
+      | Success => Styles.success
+      | Warning => Styles.warning
+      | Error => Styles.error
+      })
+      message=(
+        <div className=Styles.message>
+          <MaterialUiIcons.Warning/>
+          <MaterialUi.Typography color=`Inherit className=Styles.messageText>{ReasonReact.string(message)}</MaterialUi.Typography>
+        </div>)
+      
+      action=(
+        <MaterialUi.IconButton color=`Inherit key="close" onClick=(_event => send(SetOpen(false)))>
+          <MaterialUiIcons.Close/>
+        </MaterialUi.IconButton>
+      )>
+    </MaterialUi.SnackbarContent>
+  </MaterialUi.Snackbar>
+};

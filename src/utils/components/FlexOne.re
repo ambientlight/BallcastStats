@@ -1,7 +1,7 @@
+[@bs.config {jsx: 3}];
+
 open Css;
-let make = _children => {
-  ...ReasonReact.statelessComponent(__MODULE__),
-  render: _self => 
-    <div className=style([flex(1)])>
-    </div>
-}
+[@react.component]
+let make = () => 
+  <div className=style([flex(1)])>
+  </div>;

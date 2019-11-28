@@ -1,3 +1,5 @@
+[@bs.config {jsx: 3}];
+
 open Operators;
 open Rx.Observable.Operators;
 open ReductiveObservable.Utils;
@@ -9,7 +11,7 @@ open Utils.Rx;
  */
 
 /* ASSUMED TO BE ATTACHED ONCE */
-module Context {
+module Context = {
   type action =
     | SetWarningMessage(option(string))
     | SetErrorMessage(option(string))
@@ -19,67 +21,49 @@ module Context {
     message: option((string, Snackbar.notificationType)),
   };
 
-  let dispatch = ref(None);
-
-  let component = ReasonReact.reducerComponent(__MODULE__);
-  let make = _children => {
-    ...component,
-
-    initialState: () => {
-      message: None
-    },
-
-    reducer: (action, _state: state) => 
-      switch(action){
-      | SetWarningMessage(warningMessage) => { 
-        ReasonReact.Update({ 
-          message: warningMessage |. Belt.Option.map(message => (message, Snackbar.Warning)) 
-        })}
-      | SetErrorMessage(errorMessage) => {
-        ReasonReact.Update({
-          message: errorMessage |. Belt.Option.map(message => (message, Snackbar.Error))
-        })}
-      | SetSuccessMessage(successMessage) => {
-        ReasonReact.Update({
-          message: successMessage |. Belt.Option.map(message => (message, Snackbar.Success))
-        })
+  [@react.component]
+  let make = () => {
+    let (state, send) = React.useReducer(
+      (_state: state, action) => 
+        switch(action){
+        | SetWarningMessage(warningMessage) => { 
+          { 
+            message: warningMessage |. Belt.Option.map(message => (message, Snackbar.Warning)) 
+          }}
+        | SetErrorMessage(errorMessage) => {
+          {
+            message: errorMessage |. Belt.Option.map(message => (message, Snackbar.Error))
+          }}
+        | SetSuccessMessage(successMessage) => {
+          {
+            message: successMessage |. Belt.Option.map(message => (message, Snackbar.Success))
+          }
+        }
+      },
+      {
+        message: None
       }
-    },
+    );
 
-    /**
-     * we expose dispatch to epics which are external to this component
-     * this also assumes there is only a single instance of this component attached at any given time
-     */
-    didMount: self => dispatch := Some(self.send),
-    willUnmount: _self => dispatch := None,
+    
+    // didMount: self => dispatch := Some(self.send),
+    // willUnmount: _self => dispatch := None,
 
-    render: ({ state, send }) => {
-      let message = state.message |. Belt.Option.map(((message, _messageType)) => message);
-      let type_ = state.message |. Belt.Option.map(((_message, messageType)) => messageType);
+    let message = state.message |. Belt.Option.map(((message, _messageType)) => message);
+    let type_ = state.message |. Belt.Option.map(((_message, messageType)) => messageType);
 
-      <Fragment> 
-        <Snackbar 
-          ?type_
-          key=(message |? "message") 
-          isOpen=(!?state.message)
-          ?message
-          onExited=(_event => {
-            send(SetSuccessMessage(None));
-          })/>
-      </Fragment>
-    }
-  };
-
-  module Jsx3 = {
-    [@bs.obj] external makeProps: (~dummy: string, unit) => _ = "";
-    let make =
-      ReasonReactCompat.wrapReasonReactForReact(
-        ~component, (reactProps: {. "dummy": string}) =>
-        make([||])
-      );
+    <Snackbar 
+      ?type_
+      key=(message |? "message") 
+      isOpen=(!?state.message)
+      ?message
+      onExited=(_event => {
+        send(SetSuccessMessage(None));
+      })/>
   };
 }
 
+/*
 let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
   reduxObservable
   |> optMap(fun 
@@ -117,9 +101,10 @@ let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => 
     dispatch(Context.SetSuccessMessage(Some(message))))
   |> empty;
 };
+*/
 
 let epic = reduxObservable => 
   Rx.Observable.merge([|
-    reduxObservable |. cognitoErrors,
-    reduxObservable |. cognitoSuccesses
+    //reduxObservable |. cognitoErrors,
+    //reduxObservable |. cognitoSuccesses
   |]);

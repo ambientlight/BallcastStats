@@ -202,8 +202,7 @@ let typography = Typography.make(
 		~lineHeight="2.66",
 		()
 	),
-
-	~useNextVariants=true, 
+ 
 	()
 );
 

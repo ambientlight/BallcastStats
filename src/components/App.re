@@ -25,13 +25,13 @@ module Shell = {
     let dispatch = AppStore.useDispatch();
 
     switch(route.path){
-      | ["sign-in", ..._] => <Auth.Jsx3 state=user dispatch title mode=SignIn/>
-      | ["sign-up", ..._] => <Auth.Jsx3 state=user dispatch title mode=SignUp/>
-      | ["forgot", ..._] => <Auth.Jsx3 state=user dispatch title mode=ForgotPassword/>
-      | ["verify-sign-up", ..._] => <Auth.Jsx3 state=user dispatch title mode=VerifySignUp/>
+      | ["sign-in", ..._] => <Auth state=user dispatch title mode=SignIn/>
+      | ["sign-up", ..._] => <Auth state=user dispatch title mode=SignUp/>
+      | ["forgot", ..._] => <Auth state=user dispatch title mode=ForgotPassword/>
+      | ["verify-sign-up", ..._] => <Auth state=user dispatch title mode=VerifySignUp/>
       // | ["typography-test", ..._] => <TypographyTest/>
       // | ["formation-test", ..._] => <FormationTest/>
-      | _ => <Landing.Jsx3 dispatch title locale/>
+      | _ => <Landing dispatch title locale/>
     };
   }
 };
@@ -75,7 +75,7 @@ module Root = {
 
         <ThemeProvider theme=AppTheme.theme> 
           <Shell title locale/>
-          <NotificationEpics.Context.Jsx3 dummy=""/>
+          <NotificationEpics.Context/>
         </ThemeProvider>
 
     </IntlProvider>
