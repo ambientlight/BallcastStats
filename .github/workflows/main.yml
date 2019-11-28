@@ -18,35 +18,29 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: test head ref
+    - name: configure amplify
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: configure
+        amplify_env: euprod
+        amplify_cli_version: '3.17.0'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: eu-central-1
+
+    - name: npm install
       run: |
-        echo $GITHUB_HEAD_REF
-        echo $GITHUB_BASE_REF
-
-    # - name: install dependencies
-    #   run: |
-    #     npm install
-
-    # - name: add test environment
-    #   uses: ambientlight/amplify-cli-action@master
-    #   with:
-    #     amplify_command: add_env
-    #     amplify_env: prodtest
-    #     amplify_cli_version: '3.17.1-alpha.35'
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: ap-southeast-1
+        npm install
         
-    # - name: undeploy test environment
-    #   uses: ambientlight/amplify-cli-action@master
-    #   with:
-    #     amplify_command: delete_env
-    #     delete_lock: false
-    #     amplify_env: prodtest
-    #     amplify_cli_version: '3.17.1-alpha.35'
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: ap-southeast-1
-
+    - name: deploy
+      uses: ambientlight/amplify-cli-action@master
+      with:
+        amplify_command: publish
+        amplify_env: euprod
+        amplify_cli_version: '3.17.0'
+        build_command: 'npm run build && npm run test'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: eu-central-1
