@@ -7,19 +7,33 @@ module AppStore = {
   });
 };
 
+let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
+let routeSelector = (state: Store.state) => 
+  Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => true })
+    ? forceSignInUrl
+    : state.state.state.route;
+
+let localeSelector = (state: Store.state) => state.locale;
+let authSelector = (state: Store.state) => state.state.user;
+
 /** Base routing login goes here */
 module Shell = {
   [@react.component]
-  let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, ~locale) => 
-    switch(state.path){
-      | ["sign-in", ..._] => <Auth.Jsx3 title mode=SignIn/>
-      | ["sign-up", ..._] => <Auth.Jsx3 title mode=SignUp/>
-      | ["forgot", ..._] => <Auth.Jsx3 title mode=ForgotPassword/>
-      | ["verify-sign-up", ..._] => <Auth.Jsx3 title mode=VerifySignUp/>
+  let make = (~title, ~locale) => {
+    let user = AppStore.useSelector(authSelector);
+    let route = AppStore.useSelector(routeSelector);
+    let dispatch = AppStore.useDispatch();
+
+    switch(route.path){
+      | ["sign-in", ..._] => <Auth.Jsx3 state=user dispatch title mode=SignIn/>
+      | ["sign-up", ..._] => <Auth.Jsx3 state=user dispatch title mode=SignUp/>
+      | ["forgot", ..._] => <Auth.Jsx3 state=user dispatch title mode=ForgotPassword/>
+      | ["verify-sign-up", ..._] => <Auth.Jsx3 state=user dispatch title mode=VerifySignUp/>
       // | ["typography-test", ..._] => <TypographyTest/>
       // | ["formation-test", ..._] => <FormationTest/>
       | _ => <Landing.Jsx3 dispatch title locale/>
     };
+  }
 };
 
 //FIXME: bs-react-intl is not on jsx3 yet
@@ -50,29 +64,20 @@ module ThemeProvider = {
   ) => React.element = "MuiThemeProvider"
 };
 
-let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
-
-
-let routeSelector = (state: Store.state) => 
-  Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => false })
-    ? forceSignInUrl
-    : state.state.state.route;
-
-let localeSelector = (state: Store.state) => state.locale;
-
 module Root = {
   [@react.component]
   let make = (~title: string) => {
-    let route = AppStore.useSelector(routeSelector);
     let locale = AppStore.useSelector(localeSelector);
 
     <IntlProvider 
       locale=(locale|.Locale.toString)
       messages=(locale|.Locale.toMessages|.ReactIntl.messagesArrayToDict)>
+
         <ThemeProvider theme=AppTheme.theme> 
-          <Shell state=route dispatch=AppStore.useDispatch() title locale/>
+          <Shell title locale/>
           <NotificationEpics.Context.Jsx3 dummy=""/>
         </ThemeProvider>
+
     </IntlProvider>
   };
 };
