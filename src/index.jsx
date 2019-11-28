@@ -27,6 +27,7 @@ const root = document.createElement('div')
 document.body.appendChild(root)
 render(<Root />, root)
 
+
 // Analytics.record({ name: 'albumVisit' });
 
 // const kinesisProvider = new AWSKinesisProvider({ region: 'eu-central-1' });
