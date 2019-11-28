@@ -9,7 +9,8 @@ import { getIfUtils, removeEmpty } from 'webpack-config-utils'
 const config = (env, ifProduction, ifNotProduction) => ({
   	entry: {
     	main: [
-    		'./src/index.jsx'
+    		'react-hot-loader/patch',
+      		'./lib/js/src/Index.bs.js',
     	]
  	},
   	output: {

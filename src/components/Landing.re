@@ -47,3 +47,12 @@ let make = (~title, ~locale, ~dispatch: 'action => unit, _children) => {
       <TopPreview className=Styles.topPreview/>
     </div>
 };
+
+module Jsx3 = {
+  [@bs.obj] external makeProps: (~title: string, ~locale: Locale.locale, ~dispatch: 'action => unit, unit) => _ = "";
+  let make =
+    ReasonReactCompat.wrapReasonReactForReact(
+      ~component, (reactProps: {. "title": string, "locale": Locale.locale, "dispatch": 'action => unit}) =>
+      make(~title=reactProps##title, ~locale=reactProps##locale, ~dispatch=reactProps##dispatch, [||])
+    );
+};

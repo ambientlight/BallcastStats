@@ -44,3 +44,6 @@ awsconfiguration.json
 graphql_schema.json
 .graphql_ppx_cache
 amplify/mock-data
+package-lock.json
+yarn.lock
+yarn-error.log

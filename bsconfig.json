@@ -7,9 +7,6 @@
   "sources": [{
     "dir" : "src",
     "subdirs" : true
-  }, {
-    "dir": "__tests__",
-    "type": "dev"
   }],
   "package-specs": {
     "module": "commonjs"
@@ -23,7 +20,9 @@
     "bs-webapi",
     "@jsiebern/bs-material-ui",
     "bs-react-intl",
-    "reason-apollo"
+    "reason-apollo",
+    "@ambientlight/bs-aws-amplify",
+    "@ambientlight/bs-aws-appsync"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",

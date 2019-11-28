@@ -1,76 +1,97 @@
+[@bs.config {jsx: 3}];
+
 open Operators;
 
 GlobalCss.inject();
 
-module RouterProvider = {
-  let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
-  let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => 
-      Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => false })
-        ? forceSignInUrl
-        : state.state.state.route,
-      Store.store);
-};
+// module RouterProvider = {
+//   let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
+//   let make = Reductive.Lense.createMake(
+//     ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => 
+//       Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => false })
+//         ? forceSignInUrl
+//         : state.state.state.route,
+//       Store.store);
+// };
 
-module LocaleProvider = {
-  let make = Reductive.Lense.createMake(
-    ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => state.locale, 
-    Store.store);
-};
+// module LocaleProvider = {
+//   let make = Reductive.Lense.createMake(
+//     ~lense=(state: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) => state.locale, 
+//     Store.store);
+// };
 
 /** Base routing login goes here */
 module Shell = {
-  let component = ReasonReact.statelessComponent(__MODULE__);
-  let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, ~locale, _children) => {
-    ...component,
-    render: _self => Routes.({
+  [@react.component]
+  let make = (~state: ReasonReact.Router.url, ~dispatch, ~title, ~locale) => {
+    Routes.({
       switch(state.path){
-      | ["sign-in", ..._] => <Auth title mode=SignIn/>
-      | ["sign-up", ..._] => <Auth title mode=SignUp/>
-      | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
-      | ["verify-sign-up", ..._] => <Auth title mode=VerifySignUp/>
-      | ["typography-test", ..._] => <TypographyTest/>
-      | ["formation-test", ..._] => <FormationTest/>
-      | _ => <Landing dispatch title locale/>
+      | ["sign-in", ..._] => <Auth.Jsx3 title mode=SignIn/>
+      | ["sign-up", ..._] => <Auth.Jsx3 title mode=SignUp/>
+      | ["forgot", ..._] => <Auth.Jsx3 title mode=ForgotPassword/>
+      | ["verify-sign-up", ..._] => <Auth.Jsx3 title mode=VerifySignUp/>
+      // | ["typography-test", ..._] => <TypographyTest/>
+      // | ["formation-test", ..._] => <FormationTest/>
+      | _ => <Landing.Jsx3 dispatch title locale/>
       }
     })
   };
 };
 
-module Inner = {
-  let component = ReasonReact.statelessComponent(__MODULE__)
-  let make = (~state as locale: Locale.locale, ~dispatch as _dispatch: Store.Action.t => unit, ~title: string, _children) => {
-    ...component,
-    render: _self =>
-      <ReactIntl.IntlProvider 
-        locale=(locale|.Locale.toString)
-        messages=(locale|.Locale.toMessages|.ReactIntl.messagesArrayToDict)>
+//FIXME: bs-react-intl is not on jsx3 yet
+module IntlProvider = {
+  [@bs.module "react-intl"][@react.component]
+  external make: (
+    ~locale: string=?,
+    ~formats: option(Js.t({..}))=?, /* TODO */
+    ~messages: Js.Dict.t(string)=?,
+    ~defaultLocale: option(string)=?,
+    ~defaultFormats: option(Js.t({..}))=?, /* TODO */
+    //~textComponent: option(textComponent)=?,
+    ~initialNow: option(int)=?,
+    //~onError: option(errorHandler)=?,
+    ~children: 'children
+  ) => React.element = "IntlProvider"
+}
 
-        <MaterialUi.ThemeProvider theme=AppTheme.theme> 
+//FIXME: seems there jsx3 for bs-material-ui but we still have tons of logic with gsx2 underneath
+module ThemeProvider = {
+  [@bs.module "@material-ui/core"][@react.component]
+  external make: (
+    ~disableStylesGeneration: bool=?,
+    ~sheetsCache: Js.t({..})=?,
+    ~sheetsManager: Js.t({..})=?,
+    ~theme: MaterialUi_Theme.t,
+    ~children: 'children
+  ) => React.element = "MuiThemeProvider"
+};
+
+module Inner = {
+  [@react.component]
+  let make = (~state as locale: Locale.locale, ~dispatch as _dispatch: Store.Action.t => unit, ~title: string) => {
+    let route: ReasonReact.Router.url = {
+      path: [],
+      hash: "",
+      search: ""
+    };
+    
+    <IntlProvider 
+      locale=(locale|.Locale.toString)
+      messages=(locale|.Locale.toMessages|.ReactIntl.messagesArrayToDict)>
+        <ThemeProvider theme=AppTheme.theme> 
+          <Shell state=route dispatch=_dispatch title locale>
+          </Shell>
           /* connect app shell with reductive router state */
-          <RouterProvider component=Shell.make(~title, ~locale)/>
+          // <RouterProvider component=Shell.make(~title, ~locale)/>
           /* notification epics manages snackbars displayed based on actions dispatched */
-          <NotificationEpics.Context/>
-        </MaterialUi.ThemeProvider>
-        
-      </ReactIntl.IntlProvider>
+          // <NotificationEpics.Context/>
+        </ThemeProvider>
+    </IntlProvider>
   };
 };
 
 module Root = {
-  let component = ReasonReact.statelessComponent(__MODULE__)
-  let make = (~title: string, _children) => {
-    ...component,
-    render: _self =>
-      <LocaleProvider component=Inner.make(~title)/>
-  };
-
-  [@bs.deriving abstract]
-  type jsProps = {
-    title: string
-  };
-
-  let jsComponent = ReasonReact.wrapReasonForJs(~component, jsProps => 
-    make(~title=jsProps|.titleGet, [||])
-  );
+  [@react.component]
+  let make = () => 
+    <Inner state=Locale.En dispatch=((_action) => ()) title="tracereplay"/>
 };

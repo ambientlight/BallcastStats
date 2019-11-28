@@ -490,8 +490,18 @@ module UserProvider = {
     Store.store);
 };
 
+let component = ReasonReact.statelessComponent(__MODULE__);
 let make = (~mode, ~title, _children) => {
-  ...ReasonReact.statelessComponent(__MODULE__),
+  ...component,
   render: _self => 
     <UserProvider component=Inner.make(~mode, ~title)/>
+};
+
+module Jsx3 = {
+  [@bs.obj] external makeProps: (~mode: mode, ~title: string, unit) => _ = "";
+  let make =
+    ReasonReactCompat.wrapReasonReactForReact(
+      ~component, (reactProps: {. "mode": mode, "title": string}) =>
+      make(~mode=reactProps##mode, ~title=reactProps##title, [||])
+    );
 };
