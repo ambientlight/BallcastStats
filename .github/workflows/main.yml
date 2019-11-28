@@ -1,5 +1,5 @@
 name: 'Amplify Deploy'
-on: [push]
+on: []
 
 jobs:
   test:
