@@ -22,7 +22,7 @@ let localeReducer = reducer => (state, action) =>
   | _ => {...state, state: reducer(state.state, action)}
   };
 
-let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
+let enhancer = (storeCreator: ReductiveT.storeCreator('action, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
   let store = storeCreator(~reducer, ~preloadedState, ~enhancer?, ());
   Reductive.Store.replaceReducer(store, localeReducer(Obj.magic(store).reducer));
   store

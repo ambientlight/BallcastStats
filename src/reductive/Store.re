@@ -7,9 +7,17 @@ module Action = {
     | ReductiveCognito.cognitoAction
     | ReductiveLocale.localeActions
   ];
-}
+};
 
-let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t)))) = 
+type state = ReductiveLocale.withLocale(
+  ReductiveCognito.withAuth(
+    ReductiveRouter.withRouter(
+      State.t
+    )
+  )
+);
+
+let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, state) = 
   ReductiveDevTools.Connectors.reductiveEnhancer(
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="reductive",
@@ -19,7 +27,7 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
       ())
   );
 
-let initial: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRouter.withRouter(State.t))) = {
+let initial: state = {
   locale: Locale.En,
   state: {
     user: SignedOut(),
@@ -33,7 +41,7 @@ let initial: ReductiveLocale.withLocale(ReductiveCognito.withAuth(ReductiveRoute
 };
 
 /*TODO: fix the type system back around storeCreator('action, 'origin, 'state) */
-let storeCreator = devToolsEnhancer @@ ReductiveLocale.enhancer @@ !!ReductiveCognito.enhancer @@ ReductiveRouter.enhancer @@ Reductive.Store.create;
+let storeCreator = devToolsEnhancer @@ !!ReductiveLocale.enhancer @@ ReductiveCognito.enhancer @@ !!ReductiveRouter.enhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
   ~reducer=Reducers.root, 

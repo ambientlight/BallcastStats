@@ -35,7 +35,7 @@ let routerReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }};
 
-let enhancer = (storeCreator: Reductive.storeCreator('action, 'origin, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
+let enhancer = (storeCreator: ReductiveT.storeCreator('action, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
   let interceptPushRoute = (store, next, action) => {
     switch(enhancer){
     | Some(enhancer) => enhancer(store, next, action)

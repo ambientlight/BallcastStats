@@ -81,7 +81,7 @@
     "react-intl": "^2.8.0",
     "reason-apollo": "^0.15.2",
     "reason-react": "^0.7.0",
-    "reductive": "git+https://github.com/ambientlight/reductive.git",
+    "reductive": "^2.0.1",
     "rxjs": "^6.4.0",
     "whatwg-fetch": "^3.0.0"
   },

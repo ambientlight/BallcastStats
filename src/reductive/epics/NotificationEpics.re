@@ -21,8 +21,9 @@ module Context {
 
   let dispatch = ref(None);
 
+  let component = ReasonReact.reducerComponent(__MODULE__);
   let make = _children => {
-    ...ReasonReact.reducerComponent(__MODULE__),
+    ...component,
 
     initialState: () => {
       message: None
@@ -67,7 +68,16 @@ module Context {
           })/>
       </Fragment>
     }
-  }
+  };
+
+  module Jsx3 = {
+    [@bs.obj] external makeProps: (~dummy: string, unit) => _ = "";
+    let make =
+      ReasonReactCompat.wrapReasonReactForReact(
+        ~component, (reactProps: {. "dummy": string}) =>
+        make([||])
+      );
+  };
 }
 
 let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {

@@ -24,8 +24,14 @@ module ReactHotLoader {
 
 module Hot {
   let makeProps = ReactHotLoader.makeProps;
-  let make = ReactHotLoader.make(App.Root.make);
+  let make = ReactHotLoader.make(App.make);
 };
+
+[@bs.module] external euLocaleData: ReactIntl.localeData({. "locale": string}) = "react-intl/locale-data/en";
+[@bs.module] external ruLocaleData: ReactIntl.localeData({. "locale": string}) = "react-intl/locale-data/ru";
+
+ReactIntl.addLocaleData(euLocaleData);
+ReactIntl.addLocaleData(ruLocaleData);
 
 // entry setup
 Amplify.amplify |. Amplify.configure(AWSExports.config);

@@ -62,7 +62,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 			ENVIRONMENT: JSON.stringify({
 				isDev: !env.production,
 				shouldHotReloadEpics: env.hotEpics !== undefined,
-				signInRequired: false
+				signInRequired: true
 			})
 		}),
 		

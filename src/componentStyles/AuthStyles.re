@@ -65,6 +65,11 @@ let card = MaterialUi.Theme.(style([
     unsafe("box-shadow", "0 0 0 0 transparent !important")
   ]),
 
+  selector("::-webkit-scrollbar", [
+    width(`zero),
+    background(`transparent)
+  ]),
+
   ...Media.property2SplitOn(Media.Breakpoint.Tablet, ~rule=(Css.width, Css.height), 
     ~lower=(`percent(100.0), `percent(100.0)), 
     ~upper=(`px(500), `px(450))
