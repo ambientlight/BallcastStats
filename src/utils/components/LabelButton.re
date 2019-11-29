@@ -43,10 +43,9 @@ module Styles {
   ]));
 }
 
-let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~color: option(color)=?, ~className: option(string)=?, children) => {
-  ...ReasonReact.statelessComponent(__MODULE__),
-  render: _self =>
-    <span
+[@react.component]
+let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~color: option(color)=?, ~className: option(string)=?, ~children) => 
+  <span
     className=([
       Styles.base, 
       emphasized ? Styles.emphasized : Styles.normal,
@@ -62,7 +61,5 @@ let make = (~onClick: option(ReactEvent.Mouse.t => unit)=?, ~emphasized=false, ~
       className |? "",
     ] >|< " ")
     ?onClick>
-      ...children
-    </span>
-}
-  
+      children
+  </span>;

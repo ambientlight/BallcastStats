@@ -15,5 +15,9 @@ let toopt = Js.toOption;
 let utoopt = Js.Undefined.toOption;
 let withdef = Belt.Option.getWithDefault;
 let getext = Belt.Option.getExn;
+let optmap = Belt.Option.map;
+let optfmap = Belt.Option.flatMap;
 
 let sstartswith = Js.String.startsWith;
+
+let refc = React.Ref.current;

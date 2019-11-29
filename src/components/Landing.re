@@ -1,5 +1,3 @@
-[@bs.config {jsx: 3}];
-
 open Operators;
 open LandingLocale;
 
@@ -9,7 +7,7 @@ module TopCTA {
   [@react.component]
   let make = (~className=?) => {
     <div className=([Styles.root, className |? ""] >|< " ")>
-      <MaterialUi.Typography variant=`H3 className=Styles.title>
+      <MaterialUi.Typography variant=`Button className=Styles.title>
         <DefinedMessage message=strings##ctaMessageP1/>
         <br/>
         <DefinedMessage message=strings##ctaMessageP2/>

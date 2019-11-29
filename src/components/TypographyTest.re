@@ -1,5 +1,3 @@
-[@bs.config {jsx: 3}];
-
 open Operators;
 open Css;
 
@@ -24,7 +22,7 @@ module Styles {
 };
 
 [@react.component]
-let make = (_children) => {
+let make = () => {
   <div className=Styles.root>
     <MaterialUi.Typography variant=`H1>"H1"</MaterialUi.Typography>
     <MaterialUi.Typography variant=`H2>"H2"</MaterialUi.Typography>

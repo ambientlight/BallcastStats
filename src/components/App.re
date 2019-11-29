@@ -1,5 +1,3 @@
-[@bs.config {jsx: 3}];
-
 module AppStore = {
   include ReductiveContext.Make({
     type action = Store.Action.t;
@@ -29,8 +27,7 @@ module Shell = {
       | ["sign-up", ..._] => <Auth state=user dispatch title mode=SignUp/>
       | ["forgot", ..._] => <Auth state=user dispatch title mode=ForgotPassword/>
       | ["verify-sign-up", ..._] => <Auth state=user dispatch title mode=VerifySignUp/>
-      // | ["typography-test", ..._] => <TypographyTest/>
-      // | ["formation-test", ..._] => <FormationTest/>
+      | ["typography-test", ..._] => <TypographyTest/>
       | _ => <Landing dispatch title locale/>
     };
   }
