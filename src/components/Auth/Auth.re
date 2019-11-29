@@ -39,28 +39,39 @@ let didAutofillObservable = retained => Rx.Observable.Operators.(
   |> take(1));
 */
 
-let authReducer = (dispatch, state, action) =>
+let authReducer = (state, action) =>
   switch (action) {
   | `EmailChanged(email) => ({ ...state, email, showsAutofillInSignIn: false })
   | `PasswordChanged(password) => ({ ...state, password, showsAutofillInSignIn: false })
   | `PasswordConfirmationChanged(passwordConfirmation) => ({ ...state, passwordConfirmation })
   | `DevToolStateUpdate(devToolsState) => (devToolsState)
   | `StaySignedInChanged(staySignedIn) => ({ ...state, staySignedIn })
+  | `VerificationCodeChanged(verificationCode, _username) => {
+    { ...state, verificationCode }
+  }
+  | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ({ ...state, showsAutofillInSignIn })
+  | _ => state
+};
+
+/**
+  wraps an auth reducer 
+  with side-effect of propagating auth action to global reductive store
+ */
+let withPropagate = (dispatch, reducer) => (state, action) => {
+  switch(action){
   | `SubmitVerificationCode(username) => {
     String.length(state.verificationCode) == 6 
       ? dispatch(`ConfirmSignUpRequest(state.verificationCode, username))
       : ();
-
     state 
   }
   | `VerificationCodeChanged(verificationCode, username) => {
     String.length(verificationCode) == 6
       ? dispatch(`ConfirmSignUpRequest(verificationCode, username))
       : ();
-
-    { ...state, verificationCode }
+    // reducer also VerificationCodeChanged (not a pure side effect)
+    reducer(state, action)
   }
-  | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ({ ...state, showsAutofillInSignIn })
   | `RouterPushRoute(route) => {
     dispatch(`RouterPushRoute(route));
     state
@@ -83,19 +94,21 @@ let authReducer = (dispatch, state, action) =>
   }
   | `SignUpRequest() => {
     state.password == state.passwordConfirmation 
-        ? dispatch(`SignUpRequest(state.email, state.password))
-        : dispatch(`SignUpRequestRejected(Amplify.Error.t(
-          ~code="PasswordAndConfirmationDoNotMatchException", 
-          ~name="PasswordAndConfirmationDoNotMatchException", 
-          ~message="Password and confirmation do not match")));
+      ? dispatch(`SignUpRequest(state.email, state.password))
+      : dispatch(`SignUpRequestRejected(Amplify.Error.t(
+        ~code="PasswordAndConfirmationDoNotMatchException", 
+        ~name="PasswordAndConfirmationDoNotMatchException", 
+        ~message="Password and confirmation do not match")));
     state
-  }    
+  }
+  | _ => reducer(state, action)
+  };
 };
 
 [@react.component]
 let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode: mode, ~title) => {
   let (state, send) = React.useReducer(
-    authReducer(dispatch),
+    withPropagate(dispatch, authReducer),
     {
       email: "",
       password: "",
