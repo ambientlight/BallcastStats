@@ -118,10 +118,6 @@ let cognitoReducer = reducer => (state, action) =>
     user: SignedOut(),
     state: reducer(state.state, action)
   }
-  | `ForceVerificationRequired(code, username) => {
-    user: AccountVerificationRequired(code, username),
-    state: reducer(state.state, action)
-  }
   | `ResendVerificationStarted(username) => {
     user: ResendingVerification(username),
     state: reducer(state.state, action)

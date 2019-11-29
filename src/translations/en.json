@@ -203,5 +203,10 @@
     "id": "staySignedIn",
     "defaultMessage": "Stay signed in",
     "message": ""
+  },
+  {
+    "id": "Auth,attemptLimitExceeded",
+    "defaultMessage": "Attempt limit exceeded, please try after some time",
+    "message": ""
   }
 ]

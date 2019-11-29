@@ -32,7 +32,6 @@ type actionsToPropagate = [
   | `SignUpRequest(unit)
   | `CompleteNewPasswordRequest(unit)
   | `RouterPushRoute(string)
-  | `ForceVerificationRequired(string as 'code, string as 'username)
   | `ResendVerificationRequest(string as 'username)
   | `SignOutRequest(unit)
 ];
@@ -296,48 +295,41 @@ module Forms {
     [@react.component]
     let make = (~username, ~signInState: ReductiveCognito.signInState, ~state, ~retained: retained, ~dispatch: action => unit) => {
       let verifying = switch(signInState){ | Verifying(_code, _username) => true | _ => false };
-      let codeIncorrect = switch(signInState){ | AccountVerificationError(error, _code, _username) => error|.Amplify.Error.codeGet == "CodeMismatchException" | _ => false };
-      let codeExpired = switch(signInState){ | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "ExpiredCodeException" | _ => false };
+      let codeIncorrect = switch(signInState){ 
+        | AccountVerificationError(error, _code, _username) => error|.Amplify.Error.codeGet == "CodeMismatchException" 
+        | _ => false };
+      let codeExpired = switch(signInState){ 
+        | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "ExpiredCodeException" 
+        | _ => false };
+      let attemptLimitExceeded = switch(signInState){
+        | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "LimitExceededException"
+        | _ => false };
+      
       let resendingCode = switch(signInState){ | ResendingVerification(_) => true | _ => false };
       let formRef: React.Ref.t(Js.Nullable.t(Dom.Element.t)) = React.useRef(Js.Nullable.null);
       let codeInputRef: React.Ref.t(Js.Nullable.t(Dom.Element.t)) = React.useRef(Js.Nullable.null);
+      let shouldHighlightErrorCodeInput = (codeIncorrect || codeExpired || attemptLimitExceeded) && String.length(state.verificationCode) == 6;
 
       React.useEffect(() => {
         codeInputRef
         |> refc
         |. toopt
         |. optmap(element => {
-          let jsReset: Dom.Element.t => unit = [%bs.raw {|
+          let resetAndFocus: Dom.Element.t => unit = [%bs.raw {|
             function (element) {
               if(element.state.value.length < 6){
                 return
               }
 
-              element.state.input[0] = ""
-              element.state.input[1] = ""
-              element.state.input[2] = ""
-              element.state.input[3] = ""
-              element.state.input[4] = ""
-              element.state.input[5] = ""
+              for(let i = 0; i < 6; i++){
+                element.state.input[i] = "";  
+              }
+              
+              element.textInput[0].focus();
             }
           |}];
 
-          jsReset(element);
-        })
-        |> ignore;
-
-        formRef 
-        |> refc 
-        |. toopt
-        |. optmap(element => {
-          let focusIdx = String.length(state.verificationCode);
-          let inputs = element
-            |> ElementRe.querySelectorAll("input")
-            |. NodeListRe.toArray;
-          
-          if(focusIdx < Array.length(inputs)){
-            Dom.HtmlElement.focus(!!(inputs[focusIdx]));
-          }
+          resetAndFocus(element);
         })
         |> ignore;
 
@@ -362,29 +354,20 @@ module Forms {
           ref=ReactDOMRe.Ref.domRef(codeInputRef)
           disabled=(verifying || codeExpired)
           value=state.verificationCode
-          className=([Styles.codeInputBase, codeIncorrect || codeExpired ? Styles.errorCodeInput : Styles.normalCodeInput, verifying ? Styles.disabledCodeInput : ""] >|< " ")
+          className=([
+            Styles.codeInputBase, 
+            shouldHighlightErrorCodeInput ? Styles.errorCodeInput : Styles.normalCodeInput, 
+            verifying ? Styles.disabledCodeInput : ""
+            ] >|< " ")
           type_="number"
           fields=6
-          onChange=(event => {
-            dispatch(`VerificationCodeChanged(event, username))
-
-            /*
-            if(codeIncorrect || codeExpired && state.verificationCode|.length == 6){
-              let idxs = Array.init(min(event|.length, state.verificationCode|.length), x => x) |> Array.to_list;
-              switch(
-                idxs 
-                |> List.find(idx => (event|.get(idx)) != (state.verificationCode|.get(idx)))){
-              | exception Not_found => dispatch(`ForceVerificationRequired(make(0, event|.get(0)), username))
-              | result => dispatch(`ForceVerificationRequired(make(0, event|.get(result)), username))
-              }        
-            } else {
-              dispatch(`VerificationCodeChanged(event, username))
-            }*/
-          })/>
+          onChange=(event => dispatch(`VerificationCodeChanged(event, username)))
+          />
         <MaterialUi.Typography color=`Error variant=`Subtitle1 style=ReactDOMRe.Style.make(~height="24px", ())>
           {
-            codeExpired ? <DefinedMessage message=strings##codeExpiredPleaseResend/> :
-            codeIncorrect ? <DefinedMessage message=strings##verificationCodeIncorrect/> : ReasonReact.string("")
+            codeExpired && String.length(state.verificationCode) == 6 ? <DefinedMessage message=strings##codeExpiredPleaseResend/> :
+            codeIncorrect && String.length(state.verificationCode) == 6 ? <DefinedMessage message=strings##verificationCodeIncorrect/> : 
+            attemptLimitExceeded ? <DefinedMessage message=strings##attemptLimitExceeded/> : ReasonReact.string("")
           }
         </MaterialUi.Typography>
 
@@ -453,10 +436,6 @@ let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mod
       { ...state, verificationCode }
     }
     | `ShowsAutofillInSignIn(showsAutofillInSignIn) => ({ ...state, showsAutofillInSignIn })
-    | `ForceVerificationRequired(code, username) => {
-      dispatch(`ForceVerificationRequired(code, username));
-      state
-    } 
     | `RouterPushRoute(route) => {
       dispatch(`RouterPushRoute(route));
       state

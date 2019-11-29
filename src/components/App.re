@@ -7,7 +7,7 @@ module AppStore = {
 
 let forceSignInUrl: ReasonReact.Router.url = { path: ["sign-in"], hash: "", search: "" };
 let routeSelector = (state: Store.state) => 
-  Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => true })
+  Env.signInRequired && !(switch(state.state.user){ | SignedIn(_user) => true | _ => false })
     ? forceSignInUrl
     : state.state.state.route;
 

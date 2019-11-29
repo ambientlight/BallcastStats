@@ -102,7 +102,7 @@
   {
     "id": "Auth.verifyYourAccountDetail",
     "defaultMessage": "We have send a verification code to your email address",
-    "message": "Мы отправили проверочный код на ваш адрес электронной почты"
+    "message": "Мы отправили код активации на ваш адрес электронной почты"
   },
   {
     "id": "Auth.verifyingThreeDots",
@@ -203,5 +203,10 @@
     "id": "staySignedIn",
     "defaultMessage": "Stay signed in",
     "message": "Оставаться в системе"
+  },
+  {
+    "id": "Auth.attemptLimitExceeded",
+    "defaultMessage": "Attempt limit exceeded, please try after some time",
+    "message": "Превышен лимит попыток, попробуйте через некоторое время"
   }
 ]

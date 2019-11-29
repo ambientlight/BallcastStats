@@ -22,7 +22,8 @@ let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State
     ReductiveDevTools.Extension.enhancerOptions(
       ~name="reductive",
       ~actionCreators=Js.Dict.fromList([
-        ("forceVerification", (username) => `ForceVerificationRequired("", username)),
+        ("setLocaleEn", () => `SetLocale(Locale.En)),
+        ("setLocaleRu", () => `SetLocale(Locale.Ru))
       ]),
       ())
   );

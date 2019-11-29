@@ -92,5 +92,9 @@ let strings =
     "beenHereBefore": {
       "id": "Auth.beenHereBefore",
       "defaultMessage": "How did you get here?"
+    },
+    "attemptLimitExceeded": {
+      "id": "Auth.attemptLimitExceeded",
+      "defaultMessage": "Attempt limit exceeded, please try after some time"
     }
   };
