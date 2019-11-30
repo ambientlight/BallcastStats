@@ -158,6 +158,7 @@ let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mod
 
     Some(() => {
       //FIXME: cleanup(rerenders), should not happen, DEBUG PLEASE 
+      refc(retained).mounted = false;
       ~~"cleanup(rerenders), should not happen, DEBUG PLEASE";
       // Rx.Subject.next(refc(retained).willUnmount, true) 
     })

@@ -33,34 +33,6 @@ module Shell = {
   }
 };
 
-//FIXME: bs-react-intl is not on jsx3 yet
-module IntlProvider = {
-  [@bs.module "react-intl"][@react.component]
-  external make: (
-    ~locale: string=?,
-    ~formats: option(Js.t({..}))=?, /* TODO */
-    ~messages: Js.Dict.t(string)=?,
-    ~defaultLocale: option(string)=?,
-    ~defaultFormats: option(Js.t({..}))=?, /* TODO */
-    //~textComponent: option(textComponent)=?,
-    ~initialNow: option(int)=?,
-    //~onError: option(errorHandler)=?,
-    ~children: 'children
-  ) => React.element = "IntlProvider"
-}
-
-//FIXME: seems there jsx3 for bs-material-ui but we still have tons of logic with gsx2 underneath
-module ThemeProvider = {
-  [@bs.module "@material-ui/core"][@react.component]
-  external make: (
-    ~disableStylesGeneration: bool=?,
-    ~sheetsCache: Js.t({..})=?,
-    ~sheetsManager: Js.t({..})=?,
-    ~theme: MaterialUi_Theme.t,
-    ~children: 'children
-  ) => React.element = "MuiThemeProvider"
-};
-
 module Root = {
   [@react.component]
   let make = (~title: string) => {
@@ -70,10 +42,10 @@ module Root = {
       locale=(locale|.Locale.toString)
       messages=(locale|.Locale.toMessages|.ReactIntl.messagesArrayToDict)>
 
-        <ThemeProvider theme=AppTheme.theme> 
+        <MaterialUi.ThemeProvider theme=AppTheme.theme> 
           <Shell title locale/>
           <NotificationEpics.Context/>
-        </ThemeProvider>
+        </MaterialUi.ThemeProvider>
 
     </IntlProvider>
   };
