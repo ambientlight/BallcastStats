@@ -8,7 +8,10 @@ open Utils.Rx;
  * captured from dispatched actions
  */
 
-/* ASSUMED TO BE ATTACHED ONCE */
+/** 
+  ASSUMED TO BE ATTACHED ONLY ONCE
+  as we hack with stealing the reducer dispatch and setting it to a global context
+ */
 module Context = {
   type action =
     | SetWarningMessage(option(string))
@@ -19,33 +22,32 @@ module Context = {
     message: option((string, Snackbar.notificationType)),
   };
 
+  /** 
+    dispatch reference exposed globally (kinda hacky)
+   */
+  let dispatch = ref(None);
+
+  let snackbarReducer = (_state: state, action) => 
+    switch(action){
+    | SetWarningMessage(warningMessage) => { 
+      message: warningMessage |. Belt.Option.map(message => (message, Snackbar.Warning)) 
+    }
+    | SetErrorMessage(errorMessage) => {
+      message: errorMessage |. Belt.Option.map(message => (message, Snackbar.Error))
+    }
+    | SetSuccessMessage(successMessage) => {
+      message: successMessage |. Belt.Option.map(message => (message, Snackbar.Success))
+    }
+  };
+
   [@react.component]
   let make = () => {
-    let (state, send) = React.useReducer(
-      (_state: state, action) => 
-        switch(action){
-        | SetWarningMessage(warningMessage) => { 
-          { 
-            message: warningMessage |. Belt.Option.map(message => (message, Snackbar.Warning)) 
-          }}
-        | SetErrorMessage(errorMessage) => {
-          {
-            message: errorMessage |. Belt.Option.map(message => (message, Snackbar.Error))
-          }}
-        | SetSuccessMessage(successMessage) => {
-          {
-            message: successMessage |. Belt.Option.map(message => (message, Snackbar.Success))
-          }
-        }
-      },
-      {
-        message: None
-      }
-    );
-
-    
-    // didMount: self => dispatch := Some(self.send),
-    // willUnmount: _self => dispatch := None,
+    let (state, send) = React.useReducer(snackbarReducer, { message: None });
+    /** hack: expose reducer dispatch globally */
+    React.useEffect(() => {
+      dispatch := Some(send);
+      Some(() => { dispatch := None })
+    })
 
     let message = state.message |. Belt.Option.map(((message, _messageType)) => message);
     let type_ = state.message |. Belt.Option.map(((_message, messageType)) => messageType);
@@ -61,7 +63,6 @@ module Context = {
   };
 }
 
-/*
 let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
   reduxObservable
   |> optMap(fun 
@@ -99,10 +100,9 @@ let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => 
     dispatch(Context.SetSuccessMessage(Some(message))))
   |> empty;
 };
-*/
 
 let epic = reduxObservable => 
   Rx.Observable.merge([|
-    //reduxObservable |. cognitoErrors,
-    //reduxObservable |. cognitoSuccesses
+    reduxObservable |. cognitoErrors,
+    reduxObservable |. cognitoSuccesses
   |]);
