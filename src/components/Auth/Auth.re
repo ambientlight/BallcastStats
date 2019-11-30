@@ -41,10 +41,14 @@ let didAutofillObservable = retained => Rx.Observable.Operators.(
 
 let authReducer = (state, action) =>
   switch (action) {
+  | `Increment(()) => ({...state, accumulator: state.accumulator + 1})
   | `EmailChanged(email) => ({ ...state, email, showsAutofillInSignIn: false })
   | `PasswordChanged(password) => ({ ...state, password, showsAutofillInSignIn: false })
   | `PasswordConfirmationChanged(passwordConfirmation) => ({ ...state, passwordConfirmation })
-  | `DevToolStateUpdate(devToolsState) => (devToolsState)
+  | `DevToolStateUpdate(devToolsState) => { 
+    ~~"updated with devtool state";
+    devToolsState 
+  }
   | `StaySignedInChanged(staySignedIn) => ({ ...state, staySignedIn })
   | `VerificationCodeChanged(verificationCode, _username) => {
     { ...state, verificationCode }
@@ -105,107 +109,119 @@ let withPropagate = (dispatch, reducer) => (state, action) => {
   };
 };
 
-[@react.component]
-let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode: mode, ~title) => {
-  let (state, send) = React.useReducer(
-    withPropagate(dispatch, authReducer),
-    {
-      email: "",
-      password: "",
-      passwordConfirmation: "",
-      staySignedIn: false,
-      verificationCode: 
-        switch(signInState){
-        | AccountVerificationRequired(code, _)
-        | Verifying(code, _)
-        | AccountVerificationError(_, code, _) => code
-        | _ => ""
-        },
+module Inner {
+  [@react.component]
+  let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode: mode, ~title) => {
 
-      showsAutofillInSignIn: false
-    }
-  );
+    let (state, send) = ReductiveDevTools.Connectors.useReducer(
+      __MODULE__,
+      withPropagate(dispatch) @@ authReducer,
+      {
+        accumulator: 0,
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+        staySignedIn: false,
+        verificationCode: 
+          switch(signInState){
+          | AccountVerificationRequired(code, _)
+          | Verifying(code, _)
+          | AccountVerificationError(_, code, _) => code
+          | _ => ""
+          },
 
-  let retained = React.useRef({
-    mounted: false,
-    formRef: None,
-    emailRef: None,
-    passwordRef: None,
-    willUnmount: Rx.Subject.make()
-  });
-
-  /** 
-    used to synchronize component lifecycle with retained.willUnmount
-    that will be passed to inner components and used there to clean up their side-effects observables 
-    (on this component unmount)
-   */
-  React.useEffect(() => {
-    if(!refc(retained).mounted){
-      // used to circumvent a glitch where a form button is needed to be double-clicked
-      // (kept here in case we find this glitch somewhere else)
-      /*
-      Rx.Observable.Operators.({
-        didAutofillObservable(refc(retained))
-        |> filter(value => value)
-        |> takeUntil(refc(retained).willUnmount |. Rx.Subject.asObservable)
-        |> Rx.Observable.subscribe(~next=_value => send(`ShowsAutofillInSignIn(true)))
-        |> ignore
+        showsAutofillInSignIn: false
       });
-      */
 
-      refc(retained).mounted = true;
-    };
+    let retained = React.useRef({
+      mounted: false,
+      formRef: None,
+      emailRef: None,
+      passwordRef: None,
+      willUnmount: Rx.Subject.make()
+    });
 
-    Some(() => {
-      //FIXME: cleanup(rerenders), should not happen, DEBUG PLEASE 
-      refc(retained).mounted = false;
-      ~~"cleanup(rerenders), should not happen, DEBUG PLEASE";
-      // Rx.Subject.next(refc(retained).willUnmount, true) 
-    })
-  });
+    /** 
+      used to synchronize component lifecycle with retained.willUnmount
+      that will be passed to inner components and used there to clean up their side-effects observables 
+      (on this component unmount)
+    */
+    React.useEffect(() => {
+      if(!refc(retained).mounted){
+        // used to circumvent a glitch where a form button is needed to be double-clicked
+        // (kept here in case we find this glitch somewhere else)
+        /*
+        Rx.Observable.Operators.({
+          didAutofillObservable(refc(retained))
+          |> filter(value => value)
+          |> takeUntil(refc(retained).willUnmount |. Rx.Subject.asObservable)
+          |> Rx.Observable.subscribe(~next=_value => send(`ShowsAutofillInSignIn(true)))
+          |> ignore
+        });
+        */
 
-  <div className=Styles.root>
-    <Logo.WithCaption 
-      dispatch
-      className=([Styles.logo, Styles.hideLogoHackOnNarrowLayout] >|< " ") 
-      caption=title
-      hideCaptionOnSmall=false/>
-    
-    <MaterialUi.Card className=Styles.card>
-      {switch((mode, signInState)){
-      | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
-      | (SignIn, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
-        <NewPassword state dispatch=send/>
+        refc(retained).mounted = true;
+      };
 
-      | (VerifySignUp, AccountVerificationRequired(_, username))
-      | (VerifySignUp, Verifying(_, username))
-      | (VerifySignUp, ResendingVerification(username))
-      | (VerifySignUp, AccountVerificationError(_, _, username)) => 
-        <AccountVerification username retained=refc(retained) signInState state dispatch=send/>
+      Some(() => {
+        //FIXME: cleanup(rerenders), should not happen, DEBUG PLEASE 
+        refc(retained).mounted = false;
+        ~~"cleanup(rerenders), should not happen, DEBUG PLEASE";
+        // Rx.Subject.next(refc(retained).willUnmount, true) 
+      })
+    });
 
-      | (VerifySignUp, _) => 
-        <div id="AuthVerifySignInForm">
-          <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
-            <DefinedMessage message=strings##verificationIsNotNeeded/>
-          </MaterialUi.Typography>
-        </div>
+    <div className=Styles.root>
+      <Logo.WithCaption 
+        dispatch
+        className=([Styles.logo, Styles.hideLogoHackOnNarrowLayout] >|< " ") 
+        caption=title
+        hideCaptionOnSmall=false/>
+      
+      <MaterialUi.Card className=Styles.card>
+        {switch((mode, signInState)){
+        | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
+        | (SignIn, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
+          <NewPassword state dispatch=send/>
 
-      | (SignIn, SignedIn(_user)) => 
-        <>
-          <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
-            <DefinedMessage message=strings##youAreSignedIn/>
-          </MaterialUi.Typography>
-          <MaterialUi.Button variant=`Outlined 
-            className=Styles.button
-            onClick=(_event => send(`SignOutRequest(())))>
-            <DefinedMessage message=CommonLocale.strings##logout/>
-          </MaterialUi.Button>
-        </>
+        | (VerifySignUp, AccountVerificationRequired(_, username))
+        | (VerifySignUp, Verifying(_, username))
+        | (VerifySignUp, ResendingVerification(username))
+        | (VerifySignUp, AccountVerificationError(_, _, username)) => 
+          <AccountVerification username retained=refc(retained) signInState state dispatch=send/>
 
-      | (SignIn, _) => <SignIn state retained=refc(retained) dispatch=send/>
-      | (SignUp, _) => <SignUp retained=refc(retained) dispatch=send/>
-      | (ForgotPassword, _) => <ForgotPassword state dispatch=send/>
-      }}
-    </MaterialUi.Card>
-  </div>
+        | (VerifySignUp, _) => 
+          <div id="AuthVerifySignInForm">
+            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+              <DefinedMessage message=strings##verificationIsNotNeeded/>
+            </MaterialUi.Typography>
+          </div>
+
+        | (SignIn, SignedIn(_user)) => 
+          <>
+            <MaterialUi.Typography variant=`H4 className=Styles.welcomeTitle>
+              <DefinedMessage message=strings##youAreSignedIn/>
+            </MaterialUi.Typography>
+            <MaterialUi.Button variant=`Outlined 
+              className=Styles.button
+              onClick=(_event => send(`SignOutRequest(())))>
+              <DefinedMessage message=CommonLocale.strings##logout/>
+            </MaterialUi.Button>
+          </>
+
+        | (SignIn, _) => <SignIn state retained=refc(retained) dispatch=send/>
+        | (SignUp, _) => <SignUp retained=refc(retained) dispatch=send/>
+        | (ForgotPassword, _) => <ForgotPassword state dispatch=send/>
+        }}
+      </MaterialUi.Card>
+    </div>
+  };
 };
+
+let authSelector = (state: Store.state) => state.state.user;
+
+[@react.component]
+let make = (~mode: mode, ~title) => {
+  let user = AppStore.useSelector(authSelector);
+  <Inner state=user dispatch=AppStore.useDispatch() mode title/>
+}

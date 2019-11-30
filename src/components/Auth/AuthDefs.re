@@ -11,6 +11,7 @@ type retained = {
 };
 
 type state = {
+  accumulator: int,
   email: string,
   password: string,
   passwordConfirmation: string,
@@ -31,6 +32,7 @@ type actionsToPropagate = [
 ];
 
 type action = [ 
+  | `Increment(unit)
   | `EmailChanged(string)
   | `PasswordChanged(string)
   | `PasswordConfirmationChanged(string)

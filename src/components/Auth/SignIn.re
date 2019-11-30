@@ -90,6 +90,13 @@ let make = (~state, ~retained: retained, ~dispatch: action => unit) => {
         : <DefinedMessage message=CommonLocale.strings##signIn/>
       }
     </MaterialUi.Button>
+    <MaterialUi.Button variant=`Outlined
+      className=(Styles.button|.withTestClass("test-sign-in-button"))
+      onClick=(_event => { 
+        dispatch(`Increment(()));
+      })>
+      {state.accumulator}
+    </MaterialUi.Button>
     
     /** hides link to sign up in a restricted mode */
     (!Env.signInRequired
