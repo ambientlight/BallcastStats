@@ -43,7 +43,7 @@ module Root = {
 };
 
 [@react.component]
-let make = () => 
+let make = () =>
   <AppStore.Provider store=Store.store>
     <Root title="tracereplay"/>
-  </AppStore.Provider>
+  </AppStore.Provider>;

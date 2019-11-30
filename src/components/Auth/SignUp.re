@@ -14,7 +14,7 @@ let make = (~retained: retained, ~dispatch: action => unit) => {
   /**
     adds support for 'Hit Return to send' in confirm password input
    */
-  React.useEffect(() => {
+  React.useEffect0(() => {
     confirmPasswordRef |> refc |. toopt
     |. optfmap(element => element |> Webapi.Dom.Element.querySelector("input"))
     |. optmap(element => Rx.Observable.Operators.({

@@ -41,14 +41,10 @@ let didAutofillObservable = retained => Rx.Observable.Operators.(
 
 let authReducer = (state, action) =>
   switch (action) {
-  | `Increment(()) => ({...state, accumulator: state.accumulator + 1})
   | `EmailChanged(email) => ({ ...state, email, showsAutofillInSignIn: false })
   | `PasswordChanged(password) => ({ ...state, password, showsAutofillInSignIn: false })
   | `PasswordConfirmationChanged(passwordConfirmation) => ({ ...state, passwordConfirmation })
-  | `DevToolStateUpdate(devToolsState) => { 
-    ~~"updated with devtool state";
-    devToolsState 
-  }
+  | `DevToolStateUpdate(devToolsState) => devToolsState
   | `StaySignedInChanged(staySignedIn) => ({ ...state, staySignedIn })
   | `VerificationCodeChanged(verificationCode, _username) => {
     { ...state, verificationCode }
@@ -112,10 +108,10 @@ let withPropagate = (dispatch, reducer) => (state, action) => {
 module Inner {
   [@react.component]
   let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode: mode, ~title) => {
-
+    let reducer = React.useMemo1(() => withPropagate(dispatch) @@ authReducer, [|dispatch|]);
     let (state, send) = ReductiveDevTools.Connectors.useReducer(
-      __MODULE__,
-      withPropagate(dispatch) @@ authReducer,
+      ReductiveDevTools.Extension.enhancerOptions(~name=__MODULE__, ()),
+      reducer,
       {
         accumulator: 0,
         email: "",
@@ -146,7 +142,7 @@ module Inner {
       that will be passed to inner components and used there to clean up their side-effects observables 
       (on this component unmount)
     */
-    React.useEffect(() => {
+    React.useEffect0(() => {
       if(!refc(retained).mounted){
         // used to circumvent a glitch where a form button is needed to be double-clicked
         // (kept here in case we find this glitch somewhere else)
@@ -164,10 +160,8 @@ module Inner {
       };
 
       Some(() => {
-        //FIXME: cleanup(rerenders), should not happen, DEBUG PLEASE 
         refc(retained).mounted = false;
-        ~~"cleanup(rerenders), should not happen, DEBUG PLEASE";
-        // Rx.Subject.next(refc(retained).willUnmount, true) 
+        Rx.Subject.next(refc(retained).willUnmount, true) 
       })
     });
 

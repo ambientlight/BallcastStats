@@ -44,7 +44,7 @@ module Context = {
   let make = () => {
     let (state, send) = React.useReducer(snackbarReducer, { message: None });
     /** hack: expose reducer dispatch globally */
-    React.useEffect(() => {
+    React.useEffect0(() => {
       dispatch := Some(send);
       Some(() => { dispatch := None })
     })

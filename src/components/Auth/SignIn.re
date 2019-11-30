@@ -17,7 +17,7 @@ let make = (~state, ~retained: retained, ~dispatch: action => unit) => {
     1. saves form/email/password element references, so that root component can check if autofill was applied
     2. adds support for 'Hit Return to send' in password input
    */
-  React.useEffect(() => {
+  React.useEffect0(() => {
     retained.formRef = formRef |> refc |. toopt;
 
     retained.emailRef = emailRef |> refc |. toopt
@@ -90,14 +90,7 @@ let make = (~state, ~retained: retained, ~dispatch: action => unit) => {
         : <DefinedMessage message=CommonLocale.strings##signIn/>
       }
     </MaterialUi.Button>
-    <MaterialUi.Button variant=`Outlined
-      className=(Styles.button|.withTestClass("test-sign-in-button"))
-      onClick=(_event => { 
-        dispatch(`Increment(()));
-      })>
-      {state.accumulator}
-    </MaterialUi.Button>
-    
+        
     /** hides link to sign up in a restricted mode */
     (!Env.signInRequired
       ? <div className=Styles.signUpContainer>

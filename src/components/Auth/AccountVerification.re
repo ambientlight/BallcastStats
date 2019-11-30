@@ -28,7 +28,7 @@ let make = (~username, ~signInState: ReductiveCognito.signInState, ~state, ~reta
   /**
     as soon as we filled in all 6 inputs in code input, reset and refocus on first 
    */
-  React.useEffect(() => {
+  React.useEffect0(() => {
     codeInputRef
     |> refc
     |. toopt

@@ -32,7 +32,6 @@ type actionsToPropagate = [
 ];
 
 type action = [ 
-  | `Increment(unit)
   | `EmailChanged(string)
   | `PasswordChanged(string)
   | `PasswordConfirmationChanged(string)
