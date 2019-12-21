@@ -242,12 +242,13 @@ let enhancer = (storeCreator) => (~reducer, ~preloadedState, ~enhancer=?, ()) =>
   let store = storeCreator(
     ~reducer=cognitoReducer @@ reducer, 
     ~preloadedState, 
-    ~enhancer=?
+    ~enhancer=?Some(
       enhancer
-      |.Belt.Option.map(
+      |.Belt.Option.mapWithDefault(
+        ReductiveObservable.middleware(Rx.Observable.of1(Epics.root)),
         middleware => ((store, next) => 
           ReductiveObservable.middleware(Rx.Observable.of1(Epics.root), store) @@ middleware(store) @@ next)
-      ),
+      )),
     ());
   store
 };

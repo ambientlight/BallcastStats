@@ -44,7 +44,13 @@ let initial: state = {
   }
 };
 
-let storeCreator = ReductiveRouter.enhancer @@ ReductiveCognito.enhancer @@ ReductiveLocale.enhancer @@ devToolsEnhancer @@ Reductive.Store.create;
+let storeCreator = 
+  ReductiveRouter.enhancer 
+  @@ ReductiveCognito.enhancer 
+  @@ ReductiveLocale.enhancer 
+  @@ devToolsEnhancer 
+  @@ Reductive.Store.create;
+
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
   ~reducer=Reducers.root, 
@@ -53,7 +59,6 @@ let store = storeCreator(
   ());
 
 /* hot module reloading support for reductive */
-/*
 if(HMR.isAvailable(HMR.module_)){
   HMR.accept(HMR.module_, "./lib/js/src/reductive/epics/Epics.bs.js", () => {
     let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action)) = [%bs.raw "require('reason/reductive/epics/Epics.bs.js').epic"];
@@ -73,12 +78,11 @@ if(HMR.isAvailable(HMR.module_)){
     let hotReloadedRootReducer = [%bs.raw "require('reason/reductive/Reducers.bs.js').root"];
 
     /** MAKE SURE TO APPLY ALL HIGHER-ORDER REDUCERS introduced in storeCreator constructions */
-    // Reductive.Store.replaceReducer(store, 
-    //   ReductiveLocale.localeReducer @@ ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
-    // );
+    Reductive.Store.replaceReducer(store, 
+      ReductiveLocale.localeReducer @@ ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
+    );
     Console.info("[HMR] (Store) Reducers hot reloaded");
   });
 
   HMR.decline(HMR.module_);
 };
-*/

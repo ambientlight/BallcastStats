@@ -1,14 +1,5 @@
 open ReductiveDevTools.Utilities;
 
-/* naked store type so we can access the reducer */
-type _reductiveState('action, 'state) = {
-  mutable state: 'state,
-  mutable reducer: ('state, 'action) => 'state,
-  mutable listeners: list(unit => unit),
-  customDispatcher:
-    option((_reductiveState('action, 'state), 'action => unit, 'action) => unit),
-};
-
 type withRouter('state) = {
   route: ReasonReact.Router.url,
   state: 'state
@@ -47,18 +38,19 @@ let enhancer = storeCreator => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
   let store = storeCreator(
     ~reducer = routerReducer @@ reducer, 
     ~preloadedState, 
-    ~enhancer=?
+    ~enhancer=?Some(
       enhancer
-      |.Belt.Option.map(
+      |.Belt.Option.mapWithDefault(
+        interceptPushRoute,
         middleware => ((store, next) => interceptPushRoute(store) @@ middleware(store) @@ next)
-      ),
+      )),
     ());
 
-  let _watcherId = ReasonReact.Router.watchUrl(url => 
+  ReasonReact.Router.watchUrl(url => 
     Reductive.Store.dispatch(
       store, 
       `RouterLocationChanged({ ...url, path: url.path |. tagList } |. tagRecord([|"path", "hash", "search"|])
-  )));
+  ))) |> ignore;
   
   store
 };
