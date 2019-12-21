@@ -44,11 +44,10 @@ let initial: state = {
   }
 };
 
-/*TODO: fix the type system back around storeCreator('action, 'origin, 'state) */
-let storeCreator = devToolsEnhancer @@ !!ReductiveLocale.enhancer @@ ReductiveCognito.enhancer @@ !!ReductiveRouter.enhancer @@ Reductive.Store.create;
+let storeCreator = ReductiveRouter.enhancer @@ ReductiveCognito.enhancer @@ ReductiveLocale.enhancer @@ devToolsEnhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
-  ~reducer=(!!Reducers.root), 
+  ~reducer=Reducers.root, 
   ~preloadedState=initial, 
   ~enhancer=ReductiveObservable.middleware(epicFeeder |. Rx.BehaviorSubject.asObservable), 
   ());

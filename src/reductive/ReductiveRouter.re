@@ -35,31 +35,31 @@ let routerReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }};
 
-let enhancer = (storeCreator: ReductiveT.storeCreator('action, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
-  let interceptPushRoute = (store, next, action) => {
-    switch(enhancer){
-    | Some(enhancer) => enhancer(store, next, action)
-    | None => next(action)
-    };
-    
-    switch(action){
-    | `RouterPushRoute(path) => ReasonReact.Router.push(path)
-    | _ => ()
-    };
+let interceptPushRoute = (store, next, action) => {
+  next(action);
+  switch(action){
+  | `RouterPushRoute(path) => ReasonReact.Router.push(path)
+  | _ => ()
   };
-  
-  let store = storeCreator(~reducer, ~preloadedState, ~enhancer=interceptPushRoute, ());
+}
+
+let enhancer = storeCreator => (~reducer, ~preloadedState, ~enhancer=?, ()) => { 
+  let store = storeCreator(
+    ~reducer = routerReducer @@ reducer, 
+    ~preloadedState, 
+    ~enhancer=?
+      enhancer
+      |.Belt.Option.map(
+        middleware => ((store, next) => interceptPushRoute(store) @@ middleware(store) @@ next)
+      ),
+    ());
+
   let _watcherId = ReasonReact.Router.watchUrl(url => 
     Reductive.Store.dispatch(
       store, 
       `RouterLocationChanged({ ...url, path: url.path |. tagList } |. tagRecord([|"path", "hash", "search"|])
   )));
-
-  /* Webapi.Dom.window |> WindowRe.addEventListener("popstate", event => {
-    Js.log(event);
-  }); */
   
-  Reductive.Store.replaceReducer(store, routerReducer(Obj.magic(store).reducer));
   store
 };
 

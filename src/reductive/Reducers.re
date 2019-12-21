@@ -1,4 +1,8 @@
-let root = (state: State.t, action) => 
+
+let root = (
+  state: State.t, 
+  action
+) => 
   switch(action){
   | `DummySetSession(sessionDummy) => {
     ...state,

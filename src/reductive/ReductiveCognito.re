@@ -227,27 +227,27 @@ module Epics {
     )
   })
 
-  let root = reductiveObservable => Rx.Observable.Operators.({
+  let root = reductiveObservable =>
     Rx.Observable.merge([|
-      reductiveObservable|.signIn,
-      reductiveObservable|.completeNewPassword,
-      reductiveObservable|.signUp,
-      reductiveObservable|.confirmSignUp,
-      reductiveObservable|.resendSignUp,
-      reductiveObservable|.signOut
-    |])
-  });
+      // reductiveObservable|.signIn,
+      // reductiveObservable|.completeNewPassword,
+      // reductiveObservable|.signUp,
+      // reductiveObservable|.confirmSignUp,
+      // reductiveObservable|.resendSignUp,
+      // reductiveObservable|.signOut
+    |]);
 };
 
-let enhancer = (storeCreator: ReductiveT.storeCreator('action, 'state)) => (~reducer, ~preloadedState, ~enhancer, ()) => {
-  let withCognitoEpics = (store, next, action) =>
-    ReductiveObservable.middleware(
-      Rx.Observable.of1(Epics.root),
-      store, 
-      switch(enhancer){ | Some(enhancer) => enhancer(store, next) | None => next }, 
-      action);
-  
-  let store = storeCreator(~reducer, ~preloadedState, ~enhancer=withCognitoEpics, ());
-  Reductive.Store.replaceReducer(store, cognitoReducer(Obj.magic(store).reducer));
+let enhancer = (storeCreator) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
+  let store = storeCreator(
+    ~reducer=cognitoReducer @@ reducer, 
+    ~preloadedState, 
+    ~enhancer=?
+      enhancer
+      |.Belt.Option.map(
+        middleware => ((store, next) => 
+          ReductiveObservable.middleware(Rx.Observable.of1(Epics.root), store) @@ middleware(store) @@ next)
+      ),
+    ());
   store
 };

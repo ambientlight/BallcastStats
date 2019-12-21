@@ -22,8 +22,22 @@ let localeReducer = reducer => (state, action) =>
   | _ => {...state, state: reducer(state.state, action)}
   };
 
-let enhancer = (storeCreator: ReductiveT.storeCreator('action, 'state)) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
-  let store = storeCreator(~reducer, ~preloadedState, ~enhancer?, ());
-  Reductive.Store.replaceReducer(store, localeReducer(Obj.magic(store).reducer));
+let logger = (store, next, action) => {
+  Js.log(action);
+  next(action);
+  Js.log(Reductive.Store.getState(store));
+};
+
+
+let enhancer = (storeCreator) => (~reducer, ~preloadedState, ~enhancer=?, ()) => {
+  let store = storeCreator(
+    ~reducer=localeReducer @@ reducer, 
+    ~preloadedState, 
+    ~enhancer=? 
+      enhancer
+      |.Belt.Option.map(
+        middleware => ((store, next) => logger(store) @@ middleware(store) @@ next)
+      ),
+    ());
   store
 };
