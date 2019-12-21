@@ -8,7 +8,7 @@ open Utils.Tests;
 module Styles = AuthStyles;
 
 [@react.component]
-let make = (~retained: retained, ~dispatch: action => unit) => {
+let make = (~state, ~retained: retained, ~dispatch: action => unit) => {
   let confirmPasswordRef: React.Ref.t(Js.Nullable.t(Dom.Element.t)) = React.useRef(Js.Nullable.null);
 
   /**
@@ -35,7 +35,7 @@ let make = (~retained: retained, ~dispatch: action => unit) => {
       <DefinedMessage message=strings##createYourAccount/>
     </MaterialUi.Typography>
 
-    <MaterialUi.TextField
+    <MaterialUi.TextField value=`String(state.email)
       className=(Styles.textField|.withTestClass("test-sign-up-username-field"))
       /* 
         * FIXME: https://github.com/ambientlight/BallcastStats/issues/6
@@ -46,14 +46,14 @@ let make = (~retained: retained, ~dispatch: action => unit) => {
       label=<DefinedMessage message=CommonLocale.strings##email/>
       onChange=(event => dispatch(`EmailChanged(ReactEvent.Form.target(event)##value)))/>
 
-    <MaterialUi.TextField
+    <MaterialUi.TextField value=`String(state.password)
       className=(Styles.textField|.withTestClass("test-sign-up-password-field"))
       type_="password"
       autoComplete="new-password"
       label=<DefinedMessage message=CommonLocale.strings##password/>
       onChange=(event => dispatch(`PasswordChanged(ReactEvent.Form.target(event)##value)))/>
 
-    <MaterialUi.TextField
+    <MaterialUi.TextField value=`String(state.passwordConfirmation)
       className=(Styles.textField|.withTestClass("test-sign-up-confirmpassword-field"))
       type_="password"
       autoComplete="new-password"

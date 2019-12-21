@@ -35,6 +35,6 @@
   "refmt": 3,
   "bsc-flags": ["-bs-g"],
   "ppx-flags": [
-    "graphql_ppx/ppx"
+    "@baransu/graphql_ppx_re/ppx6"
   ] 
 }

@@ -35,3 +35,16 @@ ReactIntl.addLocaleData(ruLocaleData);
 Amplify.amplify |. Amplify.configure(AWSExports.config);
 GlobalCss.inject();
 ReactDOMRe.renderToElementWithId(<Hot/>, "root");
+
+// Reductive.Store.dispatch(TestStore.store, Increment(20));
+// Reductive.Store.dispatch(TestStore.store, Increment(30));
+// Reductive.Store.dispatch(TestStore.store, Increment(50));
+// Reductive.Store.dispatch(TestStore.store, Increment(10));
+// Reductive.Store.dispatch(TestStore.store, Increment(10));
+
+// Js.Global.setInterval(() => {
+//   Reductive.Store.dispatch(TestStore.store, `Increment(10));
+//   ()
+// }, 1000);
+
+// TestStore.store |. Reductive.Store.subscribe(() => Js.log(Reductive.Store.getState(TestStore.store))) |> ignore;

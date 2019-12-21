@@ -1,14 +1,5 @@
 open Operators;
 
-module Action = {
-  type t = [
-    | `DummySetSession(string) 
-    | ReductiveRouter.routerActions
-    | ReductiveCognito.cognitoAction
-    | ReductiveLocale.localeActions
-  ];
-};
-
 type state = ReductiveLocale.withLocale(
   ReductiveCognito.withAuth(
     ReductiveRouter.withRouter(
@@ -17,16 +8,28 @@ type state = ReductiveLocale.withLocale(
   )
 );
 
-let devToolsEnhancer: ReductiveDevTools.Connectors.storeEnhancer(Action.t, State.t, state) = 
-  ReductiveDevTools.Connectors.reductiveEnhancer(
-    ReductiveDevTools.Extension.enhancerOptions(
+module Action = {
+  type t = [
+    | `DummySetSession(string) 
+    | `DevToolsUpdate(state)
+    | ReductiveRouter.routerActions
+    | ReductiveCognito.cognitoAction
+    | ReductiveLocale.localeActions
+  ];
+};
+
+let devToolsEnhancer: ReductiveDevTools.Types.storeEnhancer([`DummySetSession(string) | `DevToolsUpdate(state)], State.t, Action.t, state) =
+  ReductiveDevTools.Connectors.enhancer(
+    ~options=ReductiveDevTools.Extension.enhancerOptions(
       ~name="reductive",
-      ~actionCreators=Js.Dict.fromList([
-        ("setLocaleEn", () => `SetLocale(Locale.En)),
-        ("setLocaleRu", () => `SetLocale(Locale.Ru))
-      ]),
-      ())
-  );
+      ~actionCreators={
+        "setLocaleEn": () => `SetLocale(Locale.En),
+        "setLocaleRu": () => `SetLocale(Locale.Ru)
+      },
+      ()),
+    ~devToolsUpdateActionCreator=(devToolsState: state) => `DevToolsUpdate(devToolsState),
+    ()
+  ) |> Obj.magic;
 
 let initial: state = {
   locale: Locale.En,
@@ -45,12 +48,13 @@ let initial: state = {
 let storeCreator = devToolsEnhancer @@ !!ReductiveLocale.enhancer @@ ReductiveCognito.enhancer @@ !!ReductiveRouter.enhancer @@ Reductive.Store.create;
 let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
 let store = storeCreator(
-  ~reducer=Reducers.root, 
+  ~reducer=(!!Reducers.root), 
   ~preloadedState=initial, 
   ~enhancer=ReductiveObservable.middleware(epicFeeder |. Rx.BehaviorSubject.asObservable), 
   ());
 
 /* hot module reloading support for reductive */
+/*
 if(HMR.isAvailable(HMR.module_)){
   HMR.accept(HMR.module_, "./lib/js/src/reductive/epics/Epics.bs.js", () => {
     let hotReloadedRootEpic: (Rx.Observable.t(('action, 'state))) => Rx.Observable.t(('action)) = [%bs.raw "require('reason/reductive/epics/Epics.bs.js').epic"];
@@ -70,11 +74,12 @@ if(HMR.isAvailable(HMR.module_)){
     let hotReloadedRootReducer = [%bs.raw "require('reason/reductive/Reducers.bs.js').root"];
 
     /** MAKE SURE TO APPLY ALL HIGHER-ORDER REDUCERS introduced in storeCreator constructions */
-    Reductive.Store.replaceReducer(store, 
-      ReductiveLocale.localeReducer @@ ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
-    );
+    // Reductive.Store.replaceReducer(store, 
+    //   ReductiveLocale.localeReducer @@ ReductiveCognito.cognitoReducer @@ ReductiveRouter.routerReducer @@ hotReloadedRootReducer
+    // );
     Console.info("[HMR] (Store) Reducers hot reloaded");
   });
 
   HMR.decline(HMR.module_);
 };
+*/

@@ -32,7 +32,8 @@ const config = (env, ifProduction, ifNotProduction) => ({
 		alias: {
 			reason: path.resolve(__dirname, "lib/js/src"),
 			src: path.resolve(__dirname, "src"),
-			assets: path.resolve(__dirname, "assets")
+			assets: path.resolve(__dirname, "assets"),
+			'react-dom': '@hot-loader/react-dom'
 		},
 		extensions: [".webpack.js", ".web.js", ".mjs", ".js", ".jsx", ".json"]
 	},
@@ -62,7 +63,7 @@ const config = (env, ifProduction, ifNotProduction) => ({
 			ENVIRONMENT: JSON.stringify({
 				isDev: !env.production,
 				shouldHotReloadEpics: env.hotEpics !== undefined,
-				signInRequired: true
+				signInRequired: false
 			})
 		}),
 		

@@ -1,3 +1,5 @@
+[%%debugger.chrome];
+
 open Operators;
 open Css;
 open Webapi;
@@ -44,7 +46,9 @@ let authReducer = (state, action) =>
   | `EmailChanged(email) => ({ ...state, email, showsAutofillInSignIn: false })
   | `PasswordChanged(password) => ({ ...state, password, showsAutofillInSignIn: false })
   | `PasswordConfirmationChanged(passwordConfirmation) => ({ ...state, passwordConfirmation })
-  | `DevToolStateUpdate(devToolsState) => devToolsState
+  | `DevToolStateUpdate(devToolsState) => { 
+    devToolsState
+  }
   | `StaySignedInChanged(staySignedIn) => ({ ...state, staySignedIn })
   | `VerificationCodeChanged(verificationCode, _username) => {
     { ...state, verificationCode }
@@ -110,9 +114,17 @@ module Inner {
   let make = (~state as signInState: ReductiveCognito.signInState, ~dispatch, ~mode: mode, ~title) => {
     let reducer = React.useMemo1(() => withPropagate(dispatch) @@ authReducer, [|dispatch|]);
     let (state, send) = ReductiveDevTools.Connectors.useReducer(
-      ReductiveDevTools.Extension.enhancerOptions(~name=__MODULE__, ()),
-      reducer,
-      {
+      ~options=ReductiveDevTools.Extension.enhancerOptions(
+        ~name=__MODULE__,
+        ~trace=true,
+        ~actionCreators={
+          "increment": () => `Increment(())
+          |. ReductiveDevTools.Utilities.Serializer.serializeAction
+        },
+        ()),
+      ~devToolsUpdateActionCreator=(state) => `DevToolStateUpdate(state),
+      ~reducer,
+      ~initial={
         accumulator: 0,
         email: "",
         password: "",
@@ -127,7 +139,7 @@ module Inner {
           },
 
         showsAutofillInSignIn: false
-      });
+      }, ());
 
     let retained = React.useRef({
       mounted: false,
@@ -161,7 +173,7 @@ module Inner {
 
       Some(() => {
         refc(retained).mounted = false;
-        Rx.Subject.next(refc(retained).willUnmount, true) 
+        Rx.Subject.next(refc(retained).willUnmount, true);
       })
     });
 
@@ -204,7 +216,7 @@ module Inner {
           </>
 
         | (SignIn, _) => <SignIn state retained=refc(retained) dispatch=send/>
-        | (SignUp, _) => <SignUp retained=refc(retained) dispatch=send/>
+        | (SignUp, _) => <SignUp state retained=refc(retained) dispatch=send/>
         | (ForgotPassword, _) => <ForgotPassword state dispatch=send/>
         }}
       </MaterialUi.Card>
@@ -218,4 +230,4 @@ let authSelector = (state: Store.state) => state.state.user;
 let make = (~mode: mode, ~title) => {
   let user = AppStore.useSelector(authSelector);
   <Inner state=user dispatch=AppStore.useDispatch() mode title/>
-}
+};
