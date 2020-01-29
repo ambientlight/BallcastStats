@@ -76,7 +76,7 @@
 				"Runtime": "nodejs10.x",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "ballcaststats-20190408230517-deployment",
+					"S3Bucket": "ballcaststats-euprod-20190922212331-deployment",
 					"S3Key": "amplify-builds/fixturerelay-58446266735a6331506f-build.zip"
 				}
 			}

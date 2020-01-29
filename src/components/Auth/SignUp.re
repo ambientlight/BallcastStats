@@ -17,10 +17,10 @@ let make = (~state, ~retained: retained, ~dispatch: action => unit) => {
   React.useEffect0(() => {
     confirmPasswordRef |> refc |. toopt
     |. optfmap(element => element |> Webapi.Dom.Element.querySelector("input"))
-    |. optmap(element => Rx.Observable.Operators.({
-      Rx.Observable.fromEvent(element, "keydown")
+    |. optmap(element => Rx.Operators.({
+      Rx.fromEvent(~target=element, ~eventName="keydown")
       |> takeUntil(retained.willUnmount |. Rx.Subject.asObservable)
-      |> filter((event: ReactEvent.Keyboard.t) => ReactEvent.Keyboard.keyCode(event) == 13)
+      |> filter((event: ReactEvent.Keyboard.t, _idx) => ReactEvent.Keyboard.keyCode(event) == 13)
       |> Rx.Observable.subscribe(~next=(_event => dispatch(`SignUpRequest())))
       |> ignore
       element 

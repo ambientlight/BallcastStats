@@ -146,7 +146,7 @@ module Inner {
       formRef: None,
       emailRef: None,
       passwordRef: None,
-      willUnmount: Rx.Subject.make()
+      willUnmount: Rx.Subject.create()
     });
 
     /** 
@@ -173,7 +173,7 @@ module Inner {
 
       Some(() => {
         refc(retained).mounted = false;
-        Rx.Subject.next(refc(retained).willUnmount, true);
+        Rx.Subject.next(true, refc(retained).willUnmount);
       })
     });
 

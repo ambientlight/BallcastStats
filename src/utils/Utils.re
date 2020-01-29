@@ -12,11 +12,11 @@ module Array {
 }
 
 module Rx {
-  let optMap = (project, observable) => Rx.Observable.Operators.({
+  let optMap = (project, observable) => Rx.Operators.({
     observable
-    |> map(project)
-    |> filter(entry => Belt.Option.isSome(entry))
-    |> map(entry => Belt.Option.getExn(entry))
+    |> map((x, _idx) => project(x))
+    |> filter((entry, _idx) => Belt.Option.isSome(entry))
+    |> map((entry, _idx) => Belt.Option.getExn(entry))
   });
 };
 

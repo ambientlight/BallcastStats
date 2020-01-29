@@ -22,13 +22,16 @@
     "bs-react-intl",
     "reason-apollo",
     "@ambientlight/bs-aws-amplify",
-    "@ambientlight/bs-aws-appsync"
+    "@ambientlight/bs-aws-appsync",
+    "@ambientlight/bs-rx",
+    "reductive-observable"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",
     "bs-jest-dom",
     "bs-react-testing-library",
-    "bs-dom-testing-library"
+    "bs-dom-testing-library",
+    "@ambientlight/bs-rx"
   ],
   "warnings": {
   },

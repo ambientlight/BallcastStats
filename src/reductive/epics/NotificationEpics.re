@@ -1,5 +1,5 @@
 open Operators;
-open Rx.Observable.Operators;
+open Rx.Operators;
 open ReductiveObservable.Utils;
 open Utils.Rx;
 
@@ -85,7 +85,7 @@ let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
         ? Context.SetErrorMessage(Some(error|.Amplify.Error.messageGet))
         : Context.SetWarningMessage(Some(error|.Amplify.Error.messageGet))
     ))
-  |> empty;
+  |> take(0);
 };
 
 let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
@@ -98,11 +98,11 @@ let cognitoSuccesses = (reduxObservable: Rx.Observable.t(('action, 'state))) => 
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
   |> tap(~next=((message, dispatch)) => 
     dispatch(Context.SetSuccessMessage(Some(message))))
-  |> empty;
+  |> take(0);
 };
 
 let epic = reduxObservable => 
-  Rx.Observable.merge([|
-    reduxObservable |. cognitoErrors,
-    reduxObservable |. cognitoSuccesses
+  Rx.merge([|
+    reduxObservable |> cognitoSuccesses,
+    reduxObservable |> cognitoErrors |> Obj.magic,
   |]);

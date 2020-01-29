@@ -301,3 +301,13 @@ type Mutation {
 type Subscription {
   onUpdatedFixtures: [Fixture!] @aws_subscribe(mutations:["fixturesUpdated"]) @aws_cognito_user_pools
 }
+
+type Foo 
+  @model 
+  @auth(rules: [
+    {allow: private, provider: iam, operations: [read]},
+    {allow: private, provider: userPools, operations: [read]}
+  ])
+{
+  id: String!
+}

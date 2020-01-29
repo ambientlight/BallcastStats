@@ -140,95 +140,91 @@ let cognitoReducer = reducer => (state, action) =>
   }};
 
 module Epics {
-  let signIn = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let signIn = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`SignInRequest(username, password), _) => Some((username, password)) | _ => None)
-    |> mergeMap(((username, password)) => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`SignInStarted(())),
-        Amplify.Auth.signIn(~username, ~password)
-        |> Rx.Observable.fromPromise
-        |> map(user => `SignInCompleted(user))
-        |> catchError(error => Rx.Observable.of1(`SignInError(error|.composeError, username)))
-      |]))
+    |> mergeMap(`Observable(((username, password), _idx) => 
+      Rx.merge([|
+        Rx.of1(`SignInStarted(())),
+        Rx.from(`Promise(Amplify.Auth.signIn(~username, ~password)), ())
+        |> map((user, _idx) => `SignInCompleted(user))
+        |> catchError((error, _not) => Rx.of1(`SignInError(error|.composeError, username)))
+      |])
+    ))
   });
 
-  let completeNewPassword = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let completeNewPassword = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`CompleteNewPasswordRequest(password), state) => Some((state.user, password)) | _ => None)
     |> Utils.Rx.optMap(fun | (SignedIn(user), password) => Some((user, password)) | _ => None)
-    |> mergeMap(((user, password)) => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`CompleteNewPasswordRequestStarted()),
-        Amplify.Auth.completeNewPassword(~user, ~password, ())
-        |> Rx.Observable.fromPromise
-        |> map(target => `CompleteNewPasswordRequestCompleted(target))
-        |> catchError(error => Rx.Observable.of1(`CompleteNewPasswordRequestError(error|.composeError)))
-      |]))
+    |> mergeMap(`Observable(((user, password), _idx) => 
+      Rx.merge([|
+        Rx.of1(`CompleteNewPasswordRequestStarted()),
+        Rx.from(`Promise(Amplify.Auth.completeNewPassword(~user, ~password, ())), ())
+        |> map((target, _idx) => `CompleteNewPasswordRequestCompleted(target))
+        |> catchError((error, _notif) => Rx.of1(`CompleteNewPasswordRequestError(error|.composeError)))
+      |])))
   });
 
-  let signUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let signUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`SignUpRequest(username, password), _state) => Some((username, password)) | _ => None)
-    |> mergeMap(((username, password)) => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`SignUpStarted(())),
-        Amplify.Auth.signUp(
+    |> mergeMap(`Observable(((username, password), _idx) => 
+      Rx.merge([|
+        Rx.of1(`SignUpStarted(())),
+        `Promise(Amplify.Auth.signUp(
           ~params=Amplify.Auth.SignUpParams.t(
             ~username, 
             ~password,
             /* next attribute is not needed when userPool allows emails as usernames */
             /* ~attributes=Js.Dict.fromList([("email", username)]),  */
-            ()))
-        |> Rx.Observable.fromPromise
-        |> map(signUpResult => `SignUpCompleted(signUpResult))
-        |> catchError(error => Rx.Observable.of1(`SignUpError(error|.composeError)))
-      |]))
+            ())))
+        |. Rx.from(())
+        |> map((signUpResult, _idx) => `SignUpCompleted(signUpResult))
+        |> catchError((error, _notif)  => Rx.of1(`SignUpError(error|.composeError)))
+      |])))
   });
 
-  let confirmSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let confirmSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`ConfirmSignUpRequest(code, username), _state) => Some((code, username)) | _ => None)
-    |> mergeMap(((code, username)) => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`ConfirmSignUpStarted(code, username)),
-        Amplify.Auth.confirmSignUp(~username, ~code, ())
-        |> Rx.Observable.fromPromise
-        |> map(result => `ConfirmSignUpCompleted(result))
-        |> catchError(error => Rx.Observable.of1(`ConfirmSignUpError(error|.composeError, code, username)))
-      |]))
+    |> mergeMap(`Observable(((code, username), _idx) => 
+      Rx.merge([|
+        Rx.of1(`ConfirmSignUpStarted(code, username)),
+        Rx.from(`Promise(Amplify.Auth.confirmSignUp(~username, ~code, ())), ())
+        |> map((result, _idx) => `ConfirmSignUpCompleted(result))
+        |> catchError((error, _notif) => Rx.of1(`ConfirmSignUpError(error|.composeError, code, username)))
+      |])))
   });
 
-  let resendSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let resendSignUp = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`ResendVerificationRequest(username), _state) => Some(username) | _ => None)
-    |> mergeMap(username =>
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`ResendVerificationStarted(username)),
-        Amplify.Auth.resendSignUp(~username)
-        |> Rx.Observable.fromPromise
-        |> map(result => `ResendVerificationCompleted(result, username))
-        |> catchError(error => Rx.Observable.of1(`ResendVerificationError(error|.composeError)))
+    |> mergeMap(`Observable((username, _idx) =>
+      Rx.merge([|
+        Rx.of1(`ResendVerificationStarted(username)),
+        Rx.from(`Promise(Amplify.Auth.resendSignUp(~username)), ())
+        |> map((result, _idx) => `ResendVerificationCompleted(result, username))
+        |> catchError((error, _notif) => Rx.of1(`ResendVerificationError(error|.composeError)))
       |])
-    )
+    ))
   })
 
-  let signOut = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Observable.Operators.({
+  let signOut = (reductiveObservable: Rx.Observable.t(('action, 'state))) => Rx.Operators.({
     reductiveObservable
     |> Utils.Rx.optMap(fun | (`SignOutRequest(()), _state) => Some(()) | _ => None)
-    |> mergeMap(_ => 
-      Rx.Observable.merge([|
-        Rx.Observable.of1(`SignOutStarted(())),
-        Amplify.Auth.signOut(())
-        |> Rx.Observable.fromPromise
-        |> map(_result => `SignOutCompleted(()))
-        |> catchError(error => Rx.Observable.of1(`SignOutError(error|.composeError)))
+    |> mergeMap(`Observable((_, _idx) => 
+      Rx.merge([|
+        Rx.of1(`SignOutStarted(())),
+        Rx.from(`Promise(Amplify.Auth.signOut(())), ())
+        |> map((_result, _idx) => `SignOutCompleted(()))
+        |> catchError((error, _notif) => Rx.of1(`SignOutError(error|.composeError)))
       |])
-    )
+    ))
   })
 
   let root = reductiveObservable =>
-    Rx.Observable.merge([|
+    Rx.merge([|
       // reductiveObservable|.signIn,
       // reductiveObservable|.completeNewPassword,
       // reductiveObservable|.signUp,
@@ -245,10 +241,12 @@ let enhancer = (storeCreator) => (~reducer, ~preloadedState, ~enhancer=?, ()) =>
     ~enhancer=?Some(
       enhancer
       |.Belt.Option.mapWithDefault(
-        ReductiveObservable.middleware(Rx.Observable.of1(Epics.root)),
+        ReductiveObservable.middleware(Rx.of1(Epics.root)),
         middleware => ((store, next) => 
-          ReductiveObservable.middleware(Rx.Observable.of1(Epics.root), store) @@ middleware(store) @@ next)
+          ReductiveObservable.middleware(Rx.of1(Epics.root), store) @@ middleware(store) @@ next)
       )),
     ());
   store
 };
+
+ReductiveObservable.middleware;

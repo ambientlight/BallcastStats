@@ -51,11 +51,11 @@ let storeCreator =
   @@ devToolsEnhancer 
   @@ Reductive.Store.create;
 
-let epicFeeder = Rx.BehaviorSubject.make(Epics.epic);
+let epicFeeder = Rx.BehaviorSubject.create(Epics.epic);
 let store = storeCreator(
   ~reducer=Reducers.root, 
   ~preloadedState=initial, 
-  ~enhancer=ReductiveObservable.middleware(epicFeeder |. Rx.BehaviorSubject.asObservable), 
+  ~enhancer=ReductiveObservable.middleware(epicFeeder |> Rx.BehaviorSubject.asObservable), 
   ());
 
 /* hot module reloading support for reductive */
@@ -70,7 +70,7 @@ if(HMR.isAvailable(HMR.module_)){
      * be VERY CAREFUL with it as it can lead to impredictable states when hot reloaded
      */
     epicFeeder 
-    |. Rx.BehaviorSubject.next(hotReloadedRootEpic);
+    |> Rx.BehaviorSubject.next(hotReloadedRootEpic);
     Console.info("[HMR] (Store) ReductiveObservable epics hot reloaded");
   });
 

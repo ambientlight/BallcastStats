@@ -1,9 +1,9 @@
 open Operators;
-open Rx.Observable.Operators;
+open Rx.Operators;
 open ReductiveObservable.Utils;
 
 let epic = (reduxObservable: Rx.Observable.t(('action, 'state))) =>
-  Rx.Observable.merge([|
-    reduxObservable |. NotificationEpics.epic,
-    reduxObservable |. RoutingEpics.epic
+  Rx.merge([|
+    reduxObservable |> RoutingEpics.epic,
+    reduxObservable |> NotificationEpics.epic |> Obj.magic
   |]);
