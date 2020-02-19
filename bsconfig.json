@@ -24,7 +24,9 @@
     "@ambientlight/bs-aws-amplify",
     "@ambientlight/bs-aws-appsync",
     "@ambientlight/bs-rx",
-    "reductive-observable"
+    "reductive-observable",
+    "bs-fetch",
+    "reason-promise"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",
