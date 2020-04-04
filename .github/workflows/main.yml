@@ -22,7 +22,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: configure amplify
-      uses: ambientlight/amplify-cli-action@master
+      uses: ambientlight/amplify-cli-action@amplify_command
       with:
         amplify_command: configure
         amplify_env: euprod
@@ -37,7 +37,7 @@ jobs:
         npm install
         
     - name: deploy
-      uses: ambientlight/amplify-cli-action@master
+      uses: ambientlight/amplify-cli-action@amplify_command
       with:
         amplify_command: publish
         amplify_env: euprod
