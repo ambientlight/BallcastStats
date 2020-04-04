@@ -2,6 +2,7 @@ name: 'Amplify Deploy'
 on:
   push:
     branches:
+      - dev
       - master
 
 jobs:
