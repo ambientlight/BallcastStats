@@ -26,6 +26,7 @@ jobs:
       uses: ambientlight/amplify-cli-action@amplify_command
       with:
         amplify_command: configure
+        amplify_arguments: '-c'
         amplify_env: euprod
         amplify_cli_version: '3.17.0'
       env:
