@@ -2,6 +2,7 @@ name: 'Amplify Deploy'
 on:
   push:
     branches:
+      - dev
       - master
 
 jobs:
@@ -22,7 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: configure amplify
-      uses: ambientlight/amplify-cli-action@master
+      uses: ambientlight/amplify-cli-action@0.2.1
       with:
         amplify_command: configure
         amplify_env: euprod
@@ -32,18 +33,30 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: eu-central-1
 
-    - name: npm install
-      run: |
-        npm install
-        
-    - name: deploy
-      uses: ambientlight/amplify-cli-action@master
+    - name: configure amplify
+      uses: ambientlight/amplify-cli-action@0.2.1
       with:
-        amplify_command: publish
+        amplify_command: status
+        amplify_arguments: '-whateverhere'
         amplify_env: euprod
         amplify_cli_version: '3.17.0'
-        build_command: 'npm run build && npm run test'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: eu-central-1
+
+#     - name: npm install
+#       run: |
+#         npm install
+        
+#     - name: deploy
+#       uses: ambientlight/amplify-cli-action@amplify_command
+#       with:
+#         amplify_command: publish
+#         amplify_env: euprod
+#         amplify_cli_version: '3.17.0'
+#         build_command: 'npm run build && npm run test'
+#       env:
+#         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         AWS_REGION: eu-central-1
