@@ -1,5 +1,6 @@
 {
-  "name": "ballcaststats",
+  "name": "tracereplay.com",
+  "namespace": false,
   "reason": {
     "react-jsx": 3
   },
@@ -26,7 +27,8 @@
     "@ambientlight/bs-rx",
     "reductive-observable",
     "bs-fetch",
-    "reason-promise"
+    "reason-promise",
+    "@ambientlight/reductive-renderer-core"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",
