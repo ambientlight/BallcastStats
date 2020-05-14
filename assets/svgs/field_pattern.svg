@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="fieldtexture" viewBox="0 0 80 80">
+        <rect width="40" height="40" fill="#095C22"/>
+        <rect y="40" width="40" height="40" fill="#11551C"/>
+        <rect x="40" y="40" width="40" height="40" fill="#114919"/>
+        <rect x="40" width="40" height="40" fill="#094C1D"/>
+    </pattern>
+  </defs>
+
+  <!-- overdragging will still get the field displayed -->
+  <rect x="-200%" y="-200%" width="400%" height="400%" fill="url(#fieldtexture)"/>
+</svg>

@@ -1,0 +1,16 @@
+<svg width="489" height="328" viewBox="0 0 489 328" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="field">
+        <rect id="R6y" x="488.177" y="206.512" width="26.0793" height="87.3567" transform="rotate(180 488.177 206.512)" stroke="white" stroke-width="1.31"/>
+        <rect id="L6y" x="26.9201" y="206.512" width="26.0793" height="87.3567" transform="rotate(180 26.9201 206.512)" stroke="white" stroke-width="1.31"/>
+        <rect id="R16y" x="410.155" y="66.655" width="78.19" height="193.69" stroke="white" stroke-width="1.31"/>
+        <path id="RPenpoint" fill-rule="evenodd" clip-rule="evenodd" d="M433 162C431.895 162 431 162.895 431 164C431 165.105 431.895 166 433 166C434.105 166 435 165.105 435 164C435 162.895 434.105 162 433 162Z" fill="white"/>
+        <path id="Cpoint" fill-rule="evenodd" clip-rule="evenodd" d="M243.5 162C242.395 162 241.5 162.895 241.5 164C241.5 165.105 242.395 166 243.5 166C244.605 166 245.5 165.105 245.5 164C245.5 162.895 244.605 162 243.5 162Z" fill="white"/>
+        <path id="LPenpoint" fill-rule="evenodd" clip-rule="evenodd" d="M53.4999 162C52.3954 162 51.4999 162.895 51.4999 164C51.4999 165.105 52.3954 166 53.4999 166C54.6045 166 55.4999 165.105 55.4999 164C55.4999 162.895 54.6045 162 53.4999 162Z" fill="white"/>
+        <path id="Cline" d="M243.5 326L243.5 2.00001" stroke="white" stroke-width="1.31" stroke-linecap="square"/>
+        <circle id="Ccircle" cx="244" cy="162" r="43.5" stroke="white"/>
+        <rect id="L16y" x="0.655" y="65.655" width="78.19" height="193.69" stroke="white" stroke-width="1.31"/>
+        <path id="RPenarc" d="M410.016 164.712L410.016 198.693C404.897 194.86 400.686 189.937 397.69 184.276C394.495 178.239 392.771 171.531 392.661 164.702C392.55 157.872 394.055 151.112 397.054 144.974C399.853 139.245 404.894 133.44 410.016 129.339V164.712Z" stroke="white" stroke-width="1.31"/>
+        <path id="LPenarc" d="M78.9843 162.288L78.9843 128.307C84.1027 132.14 88.3139 137.063 91.3102 142.724C94.5056 148.761 96.2288 155.469 96.3393 162.298C96.4499 169.128 94.9446 175.888 91.9463 182.026C89.1475 187.755 84.1059 193.56 78.9843 197.661V162.288Z" stroke="white" stroke-width="1.31"/>
+        <rect id="pitch" x="488.345" y="0.655" width="326.69" height="487.69" transform="rotate(90 488.345 0.655)" stroke="white" stroke-opacity="0.833135" stroke-width="1.31"/>
+    </g>
+</svg>

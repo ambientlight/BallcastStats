@@ -19,6 +19,7 @@ module Shell = {
       | ["forgot", ..._] => <Auth title mode=ForgotPassword/>
       | ["verify-sign-up", ..._] => <Auth title mode=VerifySignUp/>
       | ["typography-test", ..._] => <TypographyTest/>
+      | ["embed-test", ..._] => <EmbedTest/>
       | _ => <Landing dispatch title locale/>
     };
   }

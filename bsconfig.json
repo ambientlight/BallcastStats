@@ -28,7 +28,9 @@
     "reductive-observable",
     "bs-fetch",
     "reason-promise",
-    "@ambientlight/reductive-renderer-core"
+    "@ambientlight/reductive-renderer-core",
+    "bs-pixi",
+    "@ambientlight/reductive-renderer-pixi"
   ],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest",
