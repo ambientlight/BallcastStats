@@ -13,10 +13,10 @@ type signInState =
   | AccountVerificationRequired(string as 'code, string as 'username)
   | Verifying(string as 'code, string as 'username)
   | ResendingVerification(string as 'username)
-  | SignedIn(Amplify.Auth.CognitoUser.t)
-  | SignInError(Amplify.Error.t)
-  | SignUpError(Amplify.Error.t)
-  | AccountVerificationError(Amplify.Error.t, string as 'code, string as 'username);
+  | SignedIn(AWSAmplify.Auth.CognitoUser.t)
+  | SignInError(AWSAmplify.Error.t)
+  | SignUpError(AWSAmplify.Error.t)
+  | AccountVerificationError(AWSAmplify.Error.t, string as 'code, string as 'username);
 
 type withAuth('state) = {
   user: signInState,
@@ -26,51 +26,51 @@ type withAuth('state) = {
 type cognitoAction = [
   | `SignInRequest(string as 'username, string as 'password)
   | `SignInStarted(unit)
-  | `SignInCompleted(Amplify.Auth.CognitoUser.t)
-  | `SignInError(Amplify.Error.t, string as 'username)
+  | `SignInCompleted(AWSAmplify.Auth.CognitoUser.t)
+  | `SignInError(AWSAmplify.Error.t, string as 'username)
 
   | `CompleteNewPasswordRequest(string as 'password)
   | `CompleteNewPasswordRequestStarted(unit)
-  | `CompleteNewPasswordRequestCompleted(Amplify.Auth.CognitoUser.t)
-  | `CompleteNewPasswordRequestError(Amplify.Error.t)
+  | `CompleteNewPasswordRequestCompleted(AWSAmplify.Auth.CognitoUser.t)
+  | `CompleteNewPasswordRequestError(AWSAmplify.Error.t)
 
   | `SignUpRequest(string as 'username, string as 'password)
-  | `SignUpRequestRejected(Amplify.Error.t)
+  | `SignUpRequestRejected(AWSAmplify.Error.t)
   | `SignUpStarted(unit)
-  | `SignUpCompleted(Amplify.Auth.SignUpResult.t)
-  | `SignUpError(Amplify.Error.t)
+  | `SignUpCompleted(AWSAmplify.Auth.SignUpResult.t)
+  | `SignUpError(AWSAmplify.Error.t)
   
   | `ConfirmSignUpRequest(string as 'code, string as 'username)
   | `ConfirmSignUpStarted(string as 'code, string as 'username)
   | `ConfirmSignUpCompleted(Js.t({.}))
-  | `ConfirmSignUpError(Amplify.Error.t, string as 'code, string as 'username)
+  | `ConfirmSignUpError(AWSAmplify.Error.t, string as 'code, string as 'username)
 
   | `ResendVerificationRequest(string as 'username)
   | `ResendVerificationStarted(string as 'username)
   | `ResendVerificationCompleted(Js.t({.}), string as 'username)
-  | `ResendVerificationError(Amplify.Error.t) 
+  | `ResendVerificationError(AWSAmplify.Error.t) 
   
   | `SignOutRequest(unit)
   | `SignOutStarted(unit)
   | `SignOutCompleted(unit)
-  | `SignOutError(Amplify.Error.t)
+  | `SignOutError(AWSAmplify.Error.t)
   
   | `ForceVerificationRequired(string as 'code, string as 'username)
 ];
 
 /** 
- * misconfigured amplify will result in error not wrapping Amplify.Error.t, 
- * rather a string, convert it to expected Amplify.Error.t
+ * misconfigured amplify will result in error not wrapping AWSAmplify.Error.t, 
+ * rather a string, convert it to expected AWSAmplify.Error.t
  */
 let composeError = error => switch(Js.Types.classify(error)){
   | JSUndefined 
   | JSSymbol(_)
   | JSFunction(_)
-  | JSNull => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error", ~message="Unknown Error")
-  | JSTrue => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error(True)", ~message="Unknown Error(True)")
-  | JSFalse => Amplify.Error.t(~code="CRITICAL", ~name="Unknown Error(False)", ~message="Unknown Error(False)")
-  | JSString(value) => Amplify.Error.t(~code="CRITICAL",~name=value, ~message=value)
-  | JSNumber(value) => Amplify.Error.t(~code=string_of_float(value), ~name="Unknown Error", ~message="Unknown Error")
+  | JSNull => AWSAmplify.Error.t(~code="CRITICAL", ~name="Unknown Error", ~message="Unknown Error")
+  | JSTrue => AWSAmplify.Error.t(~code="CRITICAL", ~name="Unknown Error(True)", ~message="Unknown Error(True)")
+  | JSFalse => AWSAmplify.Error.t(~code="CRITICAL", ~name="Unknown Error(False)", ~message="Unknown Error(False)")
+  | JSString(value) => AWSAmplify.Error.t(~code="CRITICAL",~name=value, ~message=value)
+  | JSNumber(value) => AWSAmplify.Error.t(~code=string_of_float(value), ~name="Unknown Error", ~message="Unknown Error")
   | JSObject(objectValue) => objectValue|.Obj.magic
 }
 
@@ -86,18 +86,18 @@ let cognitoReducer = reducer => (state, action) =>
     state: reducer(state.state, action)
   }
   | `SignInError(error, username) => {
-    user: error |. Amplify.Error.codeGet == "UserNotConfirmedException" 
+    user: error |. AWSAmplify.Error.codeGet == "UserNotConfirmedException" 
       ? AccountVerificationRequired("", username)
       : SignInError(error),
     state: reducer(state.state, action)
   }
   | `SignUpCompleted(signUpResult) => {
-    user: signUpResult |. Amplify.Auth.SignUpResult.userConfirmedGet 
-      ? SignedIn(signUpResult |. Amplify.Auth.SignUpResult.userGet)
+    user: signUpResult |. AWSAmplify.Auth.SignUpResult.userConfirmedGet 
+      ? SignedIn(signUpResult |. AWSAmplify.Auth.SignUpResult.userGet)
       : AccountVerificationRequired("",
         signUpResult
-        |. Amplify.Auth.SignUpResult.userGet
-        |. Amplify.Auth.CognitoUser.usernameGet
+        |. AWSAmplify.Auth.SignUpResult.userGet
+        |. AWSAmplify.Auth.CognitoUser.usernameGet
       ),
     state: reducer(state.state, action)
   }
@@ -146,7 +146,7 @@ module Epics {
     |> mergeMap(`Observable(((username, password), _idx) => 
       Rx.merge([|
         Rx.of1(`SignInStarted(())),
-        Rx.from(`Promise(Amplify.Auth.signIn(~username, ~password)), ())
+        Rx.from(`Promise(AWSAmplify.Auth.signIn(~username, ~password)), ())
         |> map((user, _idx) => `SignInCompleted(user))
         |> catchError((error, _not) => Rx.of1(`SignInError(error|.composeError, username)))
       |])
@@ -160,7 +160,7 @@ module Epics {
     |> mergeMap(`Observable(((user, password), _idx) => 
       Rx.merge([|
         Rx.of1(`CompleteNewPasswordRequestStarted()),
-        Rx.from(`Promise(Amplify.Auth.completeNewPassword(~user, ~password, ())), ())
+        Rx.from(`Promise(AWSAmplify.Auth.completeNewPassword(~user, ~password, ())), ())
         |> map((target, _idx) => `CompleteNewPasswordRequestCompleted(target))
         |> catchError((error, _notif) => Rx.of1(`CompleteNewPasswordRequestError(error|.composeError)))
       |])))
@@ -172,8 +172,8 @@ module Epics {
     |> mergeMap(`Observable(((username, password), _idx) => 
       Rx.merge([|
         Rx.of1(`SignUpStarted(())),
-        `Promise(Amplify.Auth.signUp(
-          ~params=Amplify.Auth.SignUpParams.t(
+        `Promise(AWSAmplify.Auth.signUp(
+          ~params=AWSAmplify.Auth.SignUpParams.t(
             ~username, 
             ~password,
             /* next attribute is not needed when userPool allows emails as usernames */
@@ -191,7 +191,7 @@ module Epics {
     |> mergeMap(`Observable(((code, username), _idx) => 
       Rx.merge([|
         Rx.of1(`ConfirmSignUpStarted(code, username)),
-        Rx.from(`Promise(Amplify.Auth.confirmSignUp(~username, ~code, ())), ())
+        Rx.from(`Promise(AWSAmplify.Auth.confirmSignUp(~username, ~code, ())), ())
         |> map((result, _idx) => `ConfirmSignUpCompleted(result))
         |> catchError((error, _notif) => Rx.of1(`ConfirmSignUpError(error|.composeError, code, username)))
       |])))
@@ -203,7 +203,7 @@ module Epics {
     |> mergeMap(`Observable((username, _idx) =>
       Rx.merge([|
         Rx.of1(`ResendVerificationStarted(username)),
-        Rx.from(`Promise(Amplify.Auth.resendSignUp(~username)), ())
+        Rx.from(`Promise(AWSAmplify.Auth.resendSignUp(~username)), ())
         |> map((result, _idx) => `ResendVerificationCompleted(result, username))
         |> catchError((error, _notif) => Rx.of1(`ResendVerificationError(error|.composeError)))
       |])
@@ -216,7 +216,7 @@ module Epics {
     |> mergeMap(`Observable((_, _idx) => 
       Rx.merge([|
         Rx.of1(`SignOutStarted(())),
-        Rx.from(`Promise(Amplify.Auth.signOut(())), ())
+        Rx.from(`Promise(AWSAmplify.Auth.signOut(())), ())
         |> map((_result, _idx) => `SignOutCompleted(()))
         |> catchError((error, _notif) => Rx.of1(`SignOutError(error|.composeError)))
       |])

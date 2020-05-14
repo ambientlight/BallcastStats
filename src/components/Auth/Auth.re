@@ -99,7 +99,7 @@ let withPropagate = (dispatch, reducer) => (state, action) => {
   | `SignUpRequest() => {
     state.password == state.passwordConfirmation 
       ? dispatch(`SignUpRequest(state.email, state.password))
-      : dispatch(`SignUpRequestRejected(Amplify.Error.t(
+      : dispatch(`SignUpRequestRejected(AWSAmplify.Error.t(
         ~code="PasswordAndConfirmationDoNotMatchException", 
         ~name="PasswordAndConfirmationDoNotMatchException", 
         ~message="Password and confirmation do not match")));
@@ -187,7 +187,7 @@ module Inner {
       <MaterialUi.Card className=Styles.card>
         {switch((mode, signInState)){
         | (_, SigningIn()) => <MaterialUi.CircularProgress size=`Int(128) className=Styles.progressSpinner/>
-        | (SignIn, SignedIn(user)) when (user |. Amplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
+        | (SignIn, SignedIn(user)) when (user |. AWSAmplify.Auth.CognitoUser.challengeNameGet) == Some("NEW_PASSWORD_REQUIRED") => 
           <NewPassword state dispatch=send/>
 
         | (VerifySignUp, AccountVerificationRequired(_, username))

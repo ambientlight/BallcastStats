@@ -1,6 +1,5 @@
 open Operators;
 open Rx.Operators;
-open ReductiveObservable.Utils;
 open Utils.Rx;
 
 /**
@@ -75,15 +74,15 @@ let cognitoErrors = (reduxObservable: Rx.Observable.t(('action, 'state))) => {
     /* don't show notifications for code missmatch and code expired as they are handled in Auth */
     | (`ConfirmSignUpError(error, _, _), _) 
       when 
-         (error |. Amplify.Error.codeGet != "CodeMismatchException")
-      && (error |. Amplify.Error.codeGet != "ExpiredCodeException") => Some((error, Context.dispatch^)) 
+         (error |. AWSAmplify.Error.codeGet != "CodeMismatchException")
+      && (error |. AWSAmplify.Error.codeGet != "ExpiredCodeException") => Some((error, Context.dispatch^)) 
     | _ => None)
   |> optMap(fun | (error, Some(dispatch)) => Some((error, dispatch)) | _ => None)
-  |> tap(~next=((error: Amplify.Error.t, dispatch)) => 
+  |> tap(~next=((error: AWSAmplify.Error.t, dispatch)) => 
     dispatch(
-      error|.Amplify.Error.codeGet == "CRITICAL" 
-        ? Context.SetErrorMessage(Some(error|.Amplify.Error.messageGet))
-        : Context.SetWarningMessage(Some(error|.Amplify.Error.messageGet))
+      error|.AWSAmplify.Error.codeGet == "CRITICAL" 
+        ? Context.SetErrorMessage(Some(error|.AWSAmplify.Error.messageGet))
+        : Context.SetWarningMessage(Some(error|.AWSAmplify.Error.messageGet))
     ))
   |> take(0);
 };

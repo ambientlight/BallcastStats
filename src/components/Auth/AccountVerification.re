@@ -11,13 +11,13 @@ module Styles = AuthStyles;
 let make = (~username, ~signInState: ReductiveCognito.signInState, ~state, ~retained: retained, ~dispatch: action => unit) => {
   let verifying = switch(signInState){ | Verifying(_code, _username) => true | _ => false };
   let codeIncorrect = switch(signInState){ 
-    | AccountVerificationError(error, _code, _username) => error|.Amplify.Error.codeGet == "CodeMismatchException" 
+    | AccountVerificationError(error, _code, _username) => error|.AWSAmplify.Error.codeGet == "CodeMismatchException" 
     | _ => false };
   let codeExpired = switch(signInState){ 
-    | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "ExpiredCodeException" 
+    | AccountVerificationError(error, _, _) => error|.AWSAmplify.Error.codeGet == "ExpiredCodeException" 
     | _ => false };
   let attemptLimitExceeded = switch(signInState){
-    | AccountVerificationError(error, _, _) => error|.Amplify.Error.codeGet == "LimitExceededException"
+    | AccountVerificationError(error, _, _) => error|.AWSAmplify.Error.codeGet == "LimitExceededException"
     | _ => false };
   
   let resendingCode = switch(signInState){ | ResendingVerification(_) => true | _ => false };

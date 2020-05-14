@@ -1,6 +1,4 @@
-open Operators;
 open Rx.Operators;
-open ReductiveObservable.Utils;
 open Utils.Rx;
 
 // let goToDashboardAfterSuccessfulLogin = (reduxObservable: Rx.Observable.t(('action, 'state))) => Amplify.Auth.SignUpResult.(
@@ -22,11 +20,11 @@ let goToSignInAfterAccountConfirmation = (reduxObservable: Rx.Observable.t(('act
   |> optMap(fun | (`ConfirmSignUpCompleted(result), _) => Some(result) | _ => None)
   |> map((_result, _idx) => `RouterPushRoute(Routes.signIn));
 
-let goToSignInVerification = (reduxObservable: Rx.Observable.t(('action, 'state))) => Amplify.Auth.SignUpResult.(
+let goToSignInVerification = (reduxObservable: Rx.Observable.t(('action, 'state))) => AWSAmplify.Auth.SignUpResult.(
   reduxObservable
   |> optMap(fun 
-    | (`SignUpCompleted(signUpResult), _) when !(signUpResult |. userConfirmedGet) => Some(signUpResult |. userGet |. Amplify.Auth.CognitoUser.usernameGet)
-    | (`SignInError(error, username), _) when (error |. Amplify.Error.codeGet == "UserNotConfirmedException") => Some(username)
+    | (`SignUpCompleted(signUpResult), _) when !(signUpResult |. userConfirmedGet) => Some(signUpResult |. userGet |. AWSAmplify.Auth.CognitoUser.usernameGet)
+    | (`SignInError(error, username), _) when (error |. AWSAmplify.Error.codeGet == "UserNotConfirmedException") => Some(username)
     | _ => None)
   |> map((_username, _idx) => `RouterPushRoute(Routes.verifySignUp))
 );

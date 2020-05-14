@@ -13,7 +13,7 @@
     "extract": "cp -r src/translations lib/js/src/ && cp ./lib/js/src/Locale.bs.js ./lib/js/src/Locale.bs.js.backup && sed -i -e 's|src/translations|./translations|g' ./lib/js/src/Locale.bs.js && node ./lib/js/src/utils/TranslationExtractor.bs.js && mv ./lib/js/src/Locale.bs.js.backup ./lib/js/src/Locale.bs.js",
     "test": "./node_modules/.bin/jest",
     "testdev": "./node_modules/.bin/jest --watchAll",
-    "coverage": "./node_modules/.bin/jest --coverage" 
+    "coverage": "./node_modules/.bin/jest --coverage"
   },
   "keywords": [
     "BuckleScript"
@@ -58,8 +58,8 @@
     "-bs-g"
   ],
   "dependencies": {
-    "@ambientlight/bs-aws-amplify": "^0.1.0",
-    "@ambientlight/bs-aws-appsync": "^0.1.4",
+    "@ambientlight/bs-aws-amplify": "^0.1.1",
+    "@ambientlight/bs-aws-appsync": "^0.1.6",
     "@ambientlight/bs-rx": "^0.2.3",
     "@ambientlight/reductive-renderer-core": "^0.1.0",
     "@jsiebern/bs-material-ui": "1.2.0",
