@@ -172,7 +172,7 @@ let codeInputBase = MaterialUi.ThemeOptions.(style([
 
   selector("&>input", [
     /* fontFamily(AppTheme.typography|.Typography.subtitle1Get|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn), */
-    // fontFamily(AppTheme.typography|.Typography.buttonGet|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn),
+    fontFamily(AppTheme.typography|.Typography.buttonGet|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn),
     borderRadius(px(4)),
     margin(px(4)),
     paddingLeft(px(9)),

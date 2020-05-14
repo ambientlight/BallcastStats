@@ -85,7 +85,6 @@ let actionPalette = TypeAction.make(
 */
 
 let typography = Typography.make(
-	/*
 	~h1=TypographyStyleOptions.make(
 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
@@ -158,19 +157,15 @@ let typography = Typography.make(
 		~lineHeight="1.57",
 		()
 	),
-	*/
 	~body1=TypographyStyleOptions.make(
-		~fontFace={
-			"color": text|.TypeText.primaryGet|.Belt.Option.getExn,
-			"fontFamily": Fonts.jost,
-			"fontWeight":"400",
-			"fontSize":"1.2rem",
-			"letterSpacing":"0.00938em",
-			"lineHeight":"1.5"
-		} |> Obj.magic,
+ 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
+ 		~fontFamily=Fonts.jost,
+ 		~fontWeight="400",
+ 		~fontSize="1.2rem",
+ 		~letterSpacing="0.00938em",
+		~lineHeight="1.5",
 		()
 	),
-	/*
 	~body2=TypographyStyleOptions.make(
 		~color=text|.TypeText.primaryGet|.Belt.Option.getExn,
 		~fontFamily=Fonts.jost,
@@ -207,7 +202,6 @@ let typography = Typography.make(
 		~lineHeight="2.66",
 		()
 	),
-	*/
  
 	()
 );
@@ -234,7 +228,7 @@ let overrides = Overrides.make(
   ~muiInputLabel=InputLabelClassKey.make(
     ~root=ReactDOMRe.Style.make(
       ~color=text|.TypeText.hintGet|.Belt.Option.getExn,
-      //~fontFamily=typography|.Typography.subtitle1Get|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn,
+      ~fontFamily=typography|.Typography.subtitle1Get|.Belt.Option.getExn|.TypographyStyleOptions.fontFamilyGet|.Belt.Option.getExn,
       ~textTransform="uppercase",
       ()
     ),
