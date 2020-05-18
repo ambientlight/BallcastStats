@@ -18,189 +18,114 @@ type position = [
   | `CF
   | `ST];
 
-type gridLocation = {
-  x: int,
-  y: int,
-  xOffset: float,
-  yOffset: float
-};
+let orderValue: position => int = fun
+  | `GK => 0
+  | `LB => 1
+  | `CB => 2
+  | `RB => 3
+  | `LWB => 4
+  | `RWB => 5
+  | `DM => 6
+  | `CM => 7
+  | `LM => 8
+  | `RM => 9
+  | `AM => 10
+  | `LW => 11
+  | `RW => 12
+  | `CF => 13
+  | `ST => 14;
 
 type element = {
   position: position,
-  location: gridLocation,
-  offensiveRun: option(gridLocation),
-  defensiveRun: option(gridLocation)
+  location: ReductiveRendererCore.Grid.position
 };
 
 type t = {
   name: string,
-  base: array(element),
-  compact: array(element)
-};
-
-let flipElements = (elements: array(element), ~maxCellX = 13, _unit) =>
-  elements 
-  |. amap(element => {...element, location: {...element.location, x: maxCellX - element.location.x}});
-
-let flipToAway = (formation: t, ~maxCellX = 13, _unit) => {
-  ...formation,
-  base: formation.base |. flipElements(~maxCellX, ()),
-  compact: formation.compact |. flipElements(~maxCellX, ())
+  layout: array(element)
 };
 
 let normal_4132: t = {
   name: "4-1-3-2",
-  base: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 9, y: 2, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}) },
-    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 5, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 9, y: 8, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}) },
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}), defensiveRun: Some({ x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}) },
-    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: Some({ x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }), defensiveRun: Some({ x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 5, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }) },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: Some({ x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }) }
-  |],
-
-  compact: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
+  layout: [|
+    { position: `GK, location: { x: 1., y: 5. }},
+    { position: `LB, location: { x: 4., y: 2. }},
+    { position: `CB, location: { x: 3., y: 4. }},
+    { position: `CB, location: { x: 3., y: 6. }},
+    { position: `RB, location: { x: 4., y: 8. }},
+    { position: `DM, location: { x: 5., y: 5. }},
+    { position: `CM, location: { x: 7., y: 3. }},
+    { position: `CM, location: { x: 7., y: 7. }},
+    { position: `AM, location: { x: 9., y: 5. }},
+    { position: `LW, location: { x: 11., y: 3. }},
+    { position: `RW, location: { x: 11., y: 7. }}
   |]
 };
 
 let liv_433: t = {
   name: "4-3-3",
-   base: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 4, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 4, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `ST, location: { x: 11, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 10, y: 3, xOffset: 0.0, yOffset: -20.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 10, y: 7, xOffset: 0.0, yOffset: 20.0 }, offensiveRun: None, defensiveRun: None }
+   layout: [|
+    { position: `GK, location: { x: 1., y: 5. }},
+    { position: `LB, location: { x: 4., y: 2. }},
+    { position: `CB, location: { x: 3., y: 4. }},
+    { position: `CB, location: { x: 3., y: 6. }},
+    { position: `RB, location: { x: 4., y: 8. }},
+    { position: `DM, location: { x: 5., y: 5. }},
+    { position: `CM, location: { x: 7., y: 3. }},
+    { position: `CM, location: { x: 7., y: 7. }},
+    { position: `ST, location: { x: 11., y: 5. }},
+    { position: `LW, location: { x: 10., y: 3. }},
+    { position: `RW, location: { x: 10., y: 7. }}
   |],
-
-  compact: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 2, y: 2, xOffset: 20.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 2, y: 8, xOffset: 20.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 3, y: 5, xOffset: 20.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `ST, location: { x: 6, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
-  |]
 };
 
 let bar_433: t = {
   name: "4-3-3",
-   base: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 3, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 3, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 3, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 3, xOffset: 20.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 7, y: 7, xOffset: 20.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `ST, location: { x: 11, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: -10.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 10.0 }, offensiveRun: None, defensiveRun: None }
-  |],
-
-  compact: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 2, y: 2, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 2, y: 8, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `ST, location: { x: 6, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
+   layout: [|
+    { position: `GK, location: { x: 1., y: 5., }},
+    { position: `LB, location: { x: 3., y: 2., }},
+    { position: `CB, location: { x: 3., y: 4., }},
+    { position: `CB, location: { x: 3., y: 6., }},
+    { position: `RB, location: { x: 3., y: 8., }},
+    { position: `DM, location: { x: 5., y: 5., }},
+    { position: `CM, location: { x: 7., y: 3., }},
+    { position: `CM, location: { x: 7., y: 7., }},
+    { position: `ST, location: { x: 11., y: 5., }},
+    { position: `LW, location: { x: 11., y: 3., }},
+    { position: `RW, location: { x: 11., y: 7., }}
   |]
 };
 
-let test_def = [|
-  { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `LB, location: { x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-  { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `RB, location: { x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-  { position: `DM, location: { x: 3, y: 5, xOffset: -20.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-  { position: `CM, location: { x: 4, y: 3, xOffset: -20.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `CM, location: { x: 4, y: 7, xOffset: -20.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `AM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `LW, location: { x: 5, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-  { position: `RW, location: { x: 5, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
-|];
-
-let test_off = [|
-    { position: `GK, location: { x: 2, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 9, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 5, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 5, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 9, y: 8, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 8, y: 4, xOffset: 0.0, yOffset: -20.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 8, y: 6, xOffset: 0.0, yOffset: 20.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 10, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 10, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
-  |];
-
-/*
-let single_defensive_4132: t = {
-  name: "4-1-3-2",
-  elements: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 2, y: 3, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 2, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 2, y: 7, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 3, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 4, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 5, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 6, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 6, y: 8, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
+let def_451: t = {
+  name: "4-5-1",
+  layout: [|
+    { position: `GK, location: { x: 1., y: 5., }},
+    { position: `LB, location: { x: 2.5, y: 2., }},
+    { position: `CB, location: { x: 2.5, y: 4., }},
+    { position: `CB, location: { x: 2.5, y: 6., }},
+    { position: `RB, location: { x: 2.5, y: 8., }},
+    { position: `DM, location: { x: 4.5, y: 4., }},
+    { position: `DM, location: { x: 4.5, y: 6., }},
+    { position: `CM, location: { x: 6.5, y: 5., }},
+    { position: `LM, location: { x: 8., y: 2.5, }},
+    { position: `RM, location: { x: 8., y: 7.5, }},
+    { position: `CF, location: { x: 11., y: 5., }}
   |]
 };
 
-let single_offensive_4132: t = {
-  name: "4-1-3-2",
-  elements: [|
-    { position: `GK, location: { x: 1, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LB, location: { x: 9, y: 2, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 5, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CB, location: { x: 5, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RB, location: { x: 9, y: 8, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `DM, location: { x: 7, y: 5, xOffset: 0.0, yOffset: 0.0}, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 8, y: 4, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `CM, location: { x: 8, y: 6, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `AM, location: { x: 9, y: 5, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `LW, location: { x: 11, y: 3, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None },
-    { position: `RW, location: { x: 11, y: 7, xOffset: 0.0, yOffset: 0.0 }, offensiveRun: None, defensiveRun: None }
+let dummy = (location: ReductiveRendererCore.Grid.position, name: string) => {
+  name,
+  layout: [|
+    { position: `GK, location},
+    { position: `LB, location},
+    { position: `CB, location},
+    { position: `CB, location},
+    { position: `RB, location},
+    { position: `DM, location},
+    { position: `DM, location},
+    { position: `CM, location},
+    { position: `LM, location},
+    { position: `RM, location},
+    { position: `CF, location}
   |]
 };
-*/

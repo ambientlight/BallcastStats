@@ -1,0 +1,19 @@
+<svg width="109" height="71" viewBox="0 0 109 71" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(-90) scale(-1, 1)">
+<g filter="#filter0_d">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M37 21.3304C37 21.3304 38.1813 22.3082 39.6313 22.6244C41.0812 22.9407 42.9328 22.6244 42.9328 22.6244C42.9328 22.6244 43.5269 26.8247 43.7407 32.2781C43.9546 37.7314 43.7407 43.2257 43.7407 43.2257L54.06 46.5432L64.765 44.4081V32.2781L65.6967 22.6244C65.6967 22.6244 67.517 22.9644 69.1624 22.6244C70.8077 22.2844 71.9587 21.3304 71.9587 21.3304L68.6976 11.6592L58.663 7.17389V6.12672L57.4564 5H50.89L50.1146 6.12672V7.17389L39.6313 11.6592L37 21.3304Z" fill="url(#myGradient)"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M37 21.3304C37 21.3304 38.1813 22.3082 39.6313 22.6244C41.0812 22.9407 42.9328 22.6244 42.9328 22.6244C42.9328 22.6244 43.5269 26.8247 43.7407 32.2781C43.9546 37.7314 43.7407 43.2257 43.7407 43.2257L54.06 46.5432L64.765 44.4081V32.2781L65.6967 22.6244C65.6967 22.6244 67.517 22.9644 69.1624 22.6244C70.8077 22.2844 71.9587 21.3304 71.9587 21.3304L68.6976 11.6592L58.663 7.17389V6.12672L57.4564 5H50.89L50.1146 6.12672V7.17389L39.6313 11.6592L37 21.3304Z" stroke="#760206" stroke-width="4"/>
+</g>
+<defs>
+    <radialGradient id="myGradient">
+      <stop offset="0%"  stop-color="red" />
+      <stop offset="90%" stop-color="black" />
+    </radialGradient>
+    <filter id="filter0_d" x="30.7318" y="0" width="47.5612" height="53.6061" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="ablur"/> 
+        <feOffset dx="1" dy="1" in="ablur" result="aoff"/>
+        <feColorMatrix in="aoff" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0" result="magic"/>
+        <feBlend mode="normal" in="magic" result="effect1_dropShadow"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+</defs>
+</svg>

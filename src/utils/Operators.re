@@ -11,3 +11,6 @@ let (!!) = anything => Obj.magic(anything);
 /* misc */
 let (~~) = anything => Console.log(anything);
 let (!#) = rule => Css.important(rule);
+
+let (|@) = (a1, a2) => Array.concat([a1, a2]);
+let (<..) = (st, ed) => Belt.Array.range(st, ed - 1); 
