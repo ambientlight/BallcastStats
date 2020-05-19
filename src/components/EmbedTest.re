@@ -26,8 +26,16 @@ module EmbedRenderer {
         //rougly 2-actions per frame (tick + update) * 10 seconds (at 60 fps)
         ~maxAge=60 * 2 * 10,
         ~actionCreators={
-          "startTicker": () => Action.StartTicker(()) |. ReductiveDevTools.Utilities.Serializer.serializeAction,
-          "endTicker": () => Action.EndTicker(()) |. ReductiveDevTools.Utilities.Serializer.serializeAction,
+          "startTicker": () => {
+            let action = Action.StartTicker(()) |. ReductiveDevTools.Utilities.Serializer.serializeAction;
+            [%raw "delete action[0]"];
+            action
+          },
+          "endTicker": () => { 
+            let action = Action.EndTicker(()) |. ReductiveDevTools.Utilities.Serializer.serializeAction;
+            [%raw "delete action[0]"];
+            action
+          },
           "setFrame": frame => Action.SetFrame(frame) |. ReductiveDevTools.Utilities.Serializer.serializeAction
         },
         ~latency=0,
@@ -112,7 +120,7 @@ module EmbedContainer {
     ~marker=playerMarker,
     ~bounds=pitchBounds,
     ())
-  |> Transition.toFormation(~st=10, ~ed=70, ~formation=Formation.bar_433, ~mode=Team.View.Away, ~pitchBounds)
+  |> Transition.toFormation(~st=1, ~ed=60, ~formation=Formation.bar_433, ~mode=Team.View.Away, ~pitchBounds)
   |. Object.Group;
 
   let pitchModelDoc: Document.t = {
