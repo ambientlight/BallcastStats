@@ -23,7 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: configure amplify
-      uses: ambientlight/amplify-cli-action@0.2.1
+      uses: ambientlight/amplify-cli-action@0.3.0
       with:
         amplify_command: configure
         amplify_env: euprod
@@ -34,7 +34,7 @@ jobs:
         AWS_REGION: eu-central-1
 
     - name: configure amplify
-      uses: ambientlight/amplify-cli-action@0.2.1
+      uses: ambientlight/amplify-cli-action@0.3.0
       with:
         amplify_command: status
         amplify_arguments: '-whateverhere'
